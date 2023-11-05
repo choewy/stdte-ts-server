@@ -26,19 +26,15 @@ export class UserQuery extends BaseQuery<User> {
 
   async findUserByEmail(email: string): Promise<User> {
     return this.repository.findOne({
-      select: {
-        id: true,
-        email: true,
-        password: true,
-        name: true,
+      relations: {
+        role: { rolePolicy: true },
+        team: true,
       },
       where: { email },
     });
   }
 
   async createUser(user: DeepPartial<User>): Promise<User> {
-    user = await this.repository.save(user);
-
-    return user as User;
+    return this.repository.save(user);
   }
 }

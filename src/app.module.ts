@@ -7,7 +7,7 @@ import { AppService } from '@server/app.service';
 
 import { MySqlConfig, entireEntity } from '@server/common';
 import { CookieModule, SignModule } from '@server/core';
-import { AuthModule } from '@server/module';
+import { AuthModule, ProfileModule } from '@server/module';
 
 @Module({
   imports: [
@@ -16,6 +16,7 @@ import { AuthModule } from '@server/module';
     CookieModule,
     SignModule,
     AuthModule,
+    ProfileModule,
   ],
   controllers: [AppController],
   providers: [AppService],
