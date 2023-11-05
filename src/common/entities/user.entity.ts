@@ -49,10 +49,9 @@ class Relations {
   @ManyToOne(() => Role, (e) => e.users, {
     onDelete: 'SET NULL',
     nullable: true,
-    lazy: true,
   })
   @JoinColumn()
-  role: LazyWithNullType<Role>;
+  role: Role | null;
 
   @OneToMany(() => ProjectOwners, (e) => e.project, {
     cascade: ['insert', 'remove'],
@@ -85,10 +84,9 @@ class Relations {
   @OneToOne(() => ProjectTimeRecordLog, (e) => e.user, {
     cascade: ['insert', 'update', 'remove'],
     nullable: true,
-    lazy: true,
   })
   @JoinTable()
-  projectTimeRecordLog: LazyWithNullType<ProjectTimeRecordLog>;
+  projectTimeRecordLog: ProjectTimeRecordLog;
 }
 
 @Entity()
@@ -201,6 +199,12 @@ export class User extends Relations {
     default: EmploymentStatusValue.Wating,
   })
   employmentStatus: EmploymentStatusValue;
+
+  @Column({
+    type: 'boolean',
+    default: false,
+  })
+  init: boolean;
 
   @CreateDateColumn()
   readonly createdAt: Date;

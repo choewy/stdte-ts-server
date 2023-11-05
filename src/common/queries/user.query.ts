@@ -1,4 +1,4 @@
-import { DataSource, DeepPartial, IsNull, Not, Repository, UpdateResult } from 'typeorm';
+import { DataSource, DeepPartial, Repository, UpdateResult } from 'typeorm';
 
 import { BaseQuery } from '../constants';
 import { Role, RolePolicy, User } from '../entities';
@@ -12,10 +12,9 @@ export class UserQuery extends BaseQuery<User> {
     return new UserQuery(dataSource.getRepository(User));
   }
 
-  async findAnyUser(): Promise<User> {
+  async findUserByInit(): Promise<User> {
     return this.repository.findOne({
-      select: { id: true },
-      where: { id: Not(IsNull()) },
+      where: { init: true },
     });
   }
 
@@ -63,10 +62,6 @@ export class UserQuery extends BaseQuery<User> {
   async findUserRoleByUserId(id: number) {
     return this.repository.findOne({
       relations: { role: { rolePolicy: true } },
-      select: {
-        id: true,
-        role: true,
-      },
       where: { id },
     }) as Promise<User & { role?: Role & { rolePolicy?: RolePolicy } }>;
   }

@@ -43,6 +43,12 @@ export class Role extends Relations {
   })
   name: string;
 
+  @Column({
+    type: 'boolean',
+    default: false,
+  })
+  init: boolean;
+
   @CreateDateColumn()
   readonly createdAt: Date;
 

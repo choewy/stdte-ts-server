@@ -1,4 +1,4 @@
-import { DataSource, DeepPartial, EntityManager, IsNull, Not, Repository, UpdateResult } from 'typeorm';
+import { DataSource, DeepPartial, EntityManager, Repository, UpdateResult } from 'typeorm';
 
 import { BaseQuery } from '../constants';
 import { Role, RolePolicy } from '../entities';
@@ -12,10 +12,10 @@ export class RoleQuery extends BaseQuery<Role> {
     return new RoleQuery(dataSource.getRepository(Role));
   }
 
-  async findAnyRole(): Promise<Role> {
+  async findRoleByInit(): Promise<Role> {
     return this.repository.findOne({
       relations: { rolePolicy: true },
-      where: { id: Not(IsNull()) },
+      where: { init: true },
     });
   }
 

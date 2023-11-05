@@ -26,46 +26,105 @@ export class AppService implements OnApplicationBootstrap {
   }
 
   async onApplicationBootstrap(): Promise<void> {
-    await this.createDefaultRole();
-    await this.createDefaultUser();
+    const role = await this.createDefaultRole();
+    await this.createDefaultUser(role);
   }
 
-  private async createDefaultRole(): Promise<void> {
+  private async createDefaultRole(): Promise<Role> {
     const roleQuery = RoleQuery.withDataSource(this.dataSource);
 
-    let role = await roleQuery.findAnyRole();
+    let role = await roleQuery.findRoleByInit();
 
     if (!role) {
       role = new Role();
+      role.init = true;
       role.rolePolicy = new RolePolicy();
     }
 
-    role.name = RolePolicyScopeText.Admin;
-    role.rolePolicy.accessRole = RolePolicyScopeValue.Admin;
-    role.rolePolicy.accessTeam = RolePolicyScopeValue.Admin;
-    role.rolePolicy.accessUser = RolePolicyScopeValue.Admin;
-    role.rolePolicy.accessProject = RolePolicyScopeValue.Admin;
+    let pass = true;
 
-    await roleQuery.createRole(role);
+    const name = RolePolicyScopeText.Admin;
+    const scope = RolePolicyScopeValue.Admin;
+
+    if (role.name !== name) {
+      role.name = name;
+      pass = false;
+    }
+
+    if (role.rolePolicy.accessRole !== scope) {
+      role.rolePolicy.accessRole = scope;
+      pass = false;
+    }
+
+    if (role.rolePolicy.accessTeam !== scope) {
+      role.rolePolicy.accessTeam = scope;
+      pass = false;
+    }
+
+    if (role.rolePolicy.accessUser !== scope) {
+      role.rolePolicy.accessUser = scope;
+      pass = false;
+    }
+
+    if (role.rolePolicy.accessProject !== scope) {
+      role.rolePolicy.accessProject = scope;
+      pass = false;
+    }
+
+    if (pass) {
+      return role;
+    }
+
+    return roleQuery.createRole(role);
   }
 
-  private async createDefaultUser(): Promise<void> {
-    const roleQuery = RoleQuery.withDataSource(this.dataSource);
+  private async createDefaultUser(role: Role): Promise<User> {
     const userQuery = UserQuery.withDataSource(this.dataSource);
 
-    let user = await userQuery.findAnyUser();
+    let user = await userQuery.findUserByInit();
 
     if (!user) {
       user = new User();
+      user.init = true;
       user.password = new BcryptService().encryptPassword('master');
     }
 
-    user.name = '관리자';
-    user.email = 'master@stdte.co.kr';
-    user.authStatus = AuthStatusValue.Active;
-    user.employmentStatus = EmploymentStatusValue.Active;
-    user.role = await roleQuery.findAnyRole();
+    let pass = true;
 
-    await userQuery.createUser(user);
+    const name = '관리자';
+    const email = 'master@stdte.co.kr';
+    const authStatus = AuthStatusValue.Active;
+    const employmentStatus = EmploymentStatusValue.Active;
+
+    if (user.name !== name) {
+      user.name = name;
+      pass = false;
+    }
+
+    if (user.email !== email) {
+      user.email = email;
+      pass = false;
+    }
+
+    if (user.authStatus !== authStatus) {
+      user.authStatus = authStatus;
+      pass = false;
+    }
+
+    if (user.employmentStatus !== employmentStatus) {
+      user.employmentStatus = employmentStatus;
+      pass = false;
+    }
+
+    if (user.role?.id !== role.id) {
+      user.role = role;
+      pass = false;
+    }
+
+    if (pass) {
+      return user;
+    }
+
+    return userQuery.createUser(user);
   }
 }
