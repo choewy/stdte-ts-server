@@ -1,9 +1,9 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Patch, UseGuards } from '@nestjs/common';
 
 import { RequestUserID } from '@server/common';
 import { SignGuard } from '@server/core';
 
-import { ProfileResponseDto } from './dto';
+import { ProfileResponseDto, UpdateProfileBodyDto } from './dto';
 import { ProfileService } from './profile.service';
 
 @UseGuards(SignGuard)
@@ -14,5 +14,10 @@ export class ProfileController {
   @Get()
   async getMyProfile(@RequestUserID() userId: number): Promise<ProfileResponseDto> {
     return this.profileService.getMyProfile(userId);
+  }
+
+  @Patch()
+  async updateMyProfile(@RequestUserID() userId: number, @Body() body: UpdateProfileBodyDto) {
+    return this.profileService.updateMyProfile(userId, body);
   }
 }

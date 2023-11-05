@@ -1,4 +1,4 @@
-import { DataSource, DeepPartial, Repository } from 'typeorm';
+import { DataSource, DeepPartial, Repository, UpdateResult } from 'typeorm';
 
 import { Type } from '@nestjs/common';
 
@@ -46,5 +46,9 @@ export class UserQuery extends BaseQuery<User> {
 
   async createUser(user: DeepPartial<User>): Promise<User> {
     return this.repository.save(user);
+  }
+
+  async updateUser(id: number, user: DeepPartial<User>): Promise<UpdateResult> {
+    return this.repository.update(id, user);
   }
 }
