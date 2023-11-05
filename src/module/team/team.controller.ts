@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 
-import { GetListQueryDto } from '@server/common';
+import { ListQueryDto } from '@server/common';
 
 import { TeamService } from './team.service';
 import { GetTeamParamDto, CreateTeamBodyDto, UpdateTeamBodyDto } from './dto';
@@ -10,7 +10,7 @@ export class TeamController {
   constructor(private readonly teamService: TeamService) {}
 
   @Get()
-  async getTeamListQuery(@Query() query: GetListQueryDto) {
+  async getTeamList(@Query() query: ListQueryDto) {
     return;
   }
 

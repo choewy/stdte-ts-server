@@ -10,7 +10,7 @@ export class MapResponseDto<T, R> {
   }
 }
 
-export class GetListQueryDto {
+export class ListQueryDto {
   @IsOptional()
   @IsInt()
   @Min(0)
