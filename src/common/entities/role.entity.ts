@@ -16,11 +16,10 @@ import { User } from './user.entity';
 
 class Relations {
   @OneToOne(() => RolePolicy, (e) => e.role, {
-    cascade: ['insert', 'update', 'remove'],
-    lazy: true,
+    cascade: true,
   })
   @JoinTable()
-  rolePolicy: LazyType<RolePolicy>;
+  rolePolicy: RolePolicy;
 
   @OneToMany(() => User, (e) => e.role, {
     cascade: ['insert', 'update', 'remove'],

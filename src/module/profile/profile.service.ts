@@ -2,7 +2,7 @@ import { DataSource } from 'typeorm';
 
 import { Injectable } from '@nestjs/common';
 
-import { NotFoundMyProfileException, User, UserQuery } from '@server/common';
+import { NotFoundMyProfileException, UserQuery } from '@server/common';
 
 import { ProfileResponseDto, UpdateProfileBodyDto } from './dto';
 
@@ -11,7 +11,7 @@ export class ProfileService {
   constructor(private readonly dataSource: DataSource) {}
 
   async getMyProfile(id: number): Promise<ProfileResponseDto> {
-    const userQuery = UserQuery.withDataSource(User, this.dataSource);
+    const userQuery = UserQuery.withDataSource(this.dataSource);
     const user = await userQuery.findUserByUserId(id);
 
     if (!user) {
@@ -22,7 +22,7 @@ export class ProfileService {
   }
 
   async updateMyProfile(id: number, body: UpdateProfileBodyDto): Promise<void> {
-    const userQuery = UserQuery.withDataSource(User, this.dataSource);
+    const userQuery = UserQuery.withDataSource(this.dataSource);
     const updateResult = await userQuery.updateUser(id, {
       name: body.name ?? undefined,
       phone: body.phone,

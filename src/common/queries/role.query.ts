@@ -1,16 +1,32 @@
-import { DataSource, Repository } from 'typeorm';
-
-import { Type } from '@nestjs/common';
+import { DataSource, DeepPartial, EntityManager, IsNull, Not, Repository, UpdateResult } from 'typeorm';
 
 import { BaseQuery } from '../constants';
-import { Role } from '../entities';
+import { Role, RolePolicy } from '../entities';
 
 export class RoleQuery extends BaseQuery<Role> {
   public static withRepository(repository: Repository<Role>) {
     return new RoleQuery(repository);
   }
 
-  public static withDataSource(Entity: Type<Role>, dataSource: DataSource) {
-    return new RoleQuery(dataSource.getRepository(Entity));
+  public static withDataSource(dataSource: DataSource | EntityManager) {
+    return new RoleQuery(dataSource.getRepository(Role));
+  }
+
+  async findAnyRole(): Promise<Role> {
+    return this.repository.findOne({
+      relations: { rolePolicy: true },
+      where: { id: Not(IsNull()) },
+    });
+  }
+
+  async createRole(role: DeepPartial<Role>): Promise<Role> {
+    return this.repository.save(this.repository.create(role));
+  }
+
+  async updateRole(
+    id: number,
+    role: Partial<Omit<Role, 'rolePolicy'> & { rolePolicy?: Partial<RolePolicy> }>,
+  ): Promise<UpdateResult> {
+    return this.repository.update(id, role);
   }
 }

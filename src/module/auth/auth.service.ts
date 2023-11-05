@@ -12,6 +12,7 @@ import {
   CookieKey,
   NotFoundMyProfileException,
   WrongPasswordException,
+  ProjectTimeRecordLog,
 } from '@server/common';
 import { CookieService, BcryptService, SignService } from '@server/core';
 
@@ -35,7 +36,7 @@ export class AuthService {
   }
 
   async signin(response: Response, body: SignInBodyDto): Promise<Response> {
-    const userQuery = UserQuery.withDataSource(User, this.dataSource);
+    const userQuery = UserQuery.withDataSource(this.dataSource);
     const user = await userQuery.findUserByEmail(body.email);
 
     if (user === null) {
@@ -52,7 +53,7 @@ export class AuthService {
   }
 
   async signup(response: Response, body: SignUpBodyDto): Promise<Response> {
-    const userQuery = UserQuery.withDataSource(User, this.dataSource);
+    const userQuery = UserQuery.withDataSource(this.dataSource);
     const userExist = await userQuery.hasUserByEmail(body.email);
 
     if (userExist) {
@@ -69,6 +70,7 @@ export class AuthService {
       name: body.name,
       email: body.email,
       password: bcryptService.encryptPassword(body.password),
+      projectTimeRecordLog: new ProjectTimeRecordLog(),
     });
 
     return this.responseWithTokens(response, user, body.withTokens);
@@ -84,7 +86,7 @@ export class AuthService {
   }
 
   async updateMyPassword(id: number, email: string, body: UpdatePasswordBodyDto): Promise<void> {
-    const userQuery = UserQuery.withDataSource(User, this.dataSource);
+    const userQuery = UserQuery.withDataSource(this.dataSource);
     const user = await userQuery.findUserPasswordByUserId(id);
 
     if (user === null) {

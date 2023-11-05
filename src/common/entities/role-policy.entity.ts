@@ -1,16 +1,15 @@
 import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 
-import { LazyType, RolePolicyScopeValue } from '../constants';
+import { RolePolicyScopeValue } from '../constants';
 
 import { Role } from './role.entity';
 
 class Relations {
   @OneToOne(() => Role, (e) => e.rolePolicy, {
     onDelete: 'CASCADE',
-    lazy: true,
   })
   @JoinColumn()
-  role: LazyType<Role>;
+  role: Role;
 }
 
 @Entity()

@@ -1,6 +1,4 @@
-import { DataSource, DeepPartial, Repository, UpdateResult } from 'typeorm';
-
-import { Type } from '@nestjs/common';
+import { DataSource, DeepPartial, IsNull, Not, Repository, UpdateResult } from 'typeorm';
 
 import { BaseQuery } from '../constants';
 import { Role, RolePolicy, User } from '../entities';
@@ -10,8 +8,15 @@ export class UserQuery extends BaseQuery<User> {
     return new UserQuery(repository);
   }
 
-  public static withDataSource(Entity: Type<User>, dataSource: DataSource) {
-    return new UserQuery(dataSource.getRepository(Entity));
+  public static withDataSource(dataSource: DataSource) {
+    return new UserQuery(dataSource.getRepository(User));
+  }
+
+  async findAnyUser(): Promise<User> {
+    return this.repository.findOne({
+      select: { id: true },
+      where: { id: Not(IsNull()) },
+    });
   }
 
   async hasUserByEmail(email: string): Promise<boolean> {
@@ -60,13 +65,17 @@ export class UserQuery extends BaseQuery<User> {
       relations: { role: { rolePolicy: true } },
       select: {
         id: true,
-        role: { rolePolicy: true },
+        role: true,
       },
       where: { id },
     }) as Promise<User & { role?: Role & { rolePolicy?: RolePolicy } }>;
   }
 
   async createUser(user: DeepPartial<User>): Promise<User> {
+    if (user instanceof User === false) {
+      user = this.repository.create(user);
+    }
+
     return this.repository.save(user);
   }
 

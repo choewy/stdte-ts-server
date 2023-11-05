@@ -3,7 +3,7 @@ import { DataSource } from 'typeorm';
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 
-import { AccessDeninedException, MapResponseDto, User, UserQuery, toRolePolicyText } from '@server/common';
+import { AccessDeninedException, MapResponseDto, UserQuery, toRolePolicyText } from '@server/common';
 
 import { SetRoleGuardMetadataArgs, SetRoleGuardMetadataKeys } from './types';
 
@@ -19,7 +19,7 @@ export class RoleGuard implements CanActivate {
       throw new AccessDeninedException({ cause: 'request.userId is undefined' });
     }
 
-    const userQuery = UserQuery.withDataSource(User, this.dataSource);
+    const userQuery = UserQuery.withDataSource(this.dataSource);
     const user = await userQuery.findUserRoleByUserId(request.userId);
 
     if (user?.role?.rolePolicy === undefined) {

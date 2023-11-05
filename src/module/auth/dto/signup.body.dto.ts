@@ -7,12 +7,12 @@ export class SignUpBodyDto {
 
   @IsNotEmpty()
   @IsString()
-  @MinLength(8)
+  @MinLength(6)
   password: string;
 
   @IsNotEmpty()
   @IsString()
-  @MinLength(8)
+  @MinLength(6)
   confirmPassword: string;
 
   @IsNotEmpty()

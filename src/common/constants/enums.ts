@@ -95,6 +95,7 @@ export enum RolePolicyScopeText {
   Update = '수정',
   Delete = '삭제',
   All = '전체',
+  Admin = '관리자',
 }
 
 export enum RolePolicyScopeValue {
@@ -104,4 +105,5 @@ export enum RolePolicyScopeValue {
   Update = 3,
   Delete = 4,
   All = 5,
+  Admin = 9,
 }
