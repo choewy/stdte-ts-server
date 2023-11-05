@@ -1,13 +1,23 @@
 import { Response } from 'express';
 
-import { Body, Controller, Post, Res } from '@nestjs/common';
+import { Body, Controller, Get, Post, Res, UseFilters, UseGuards } from '@nestjs/common';
 
-import { SignInBodyDto, SignUpBodyDto } from './dto';
+import { SignGuard } from '@server/core';
+
+import { AuthResponseDto, SignInBodyDto, SignUpBodyDto } from './dto';
+import { AuthIgnoreExceptionFilter } from './auth-ignore-exception.filter';
 import { AuthService } from './auth.service';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
+
+  @Get()
+  @UseGuards(SignGuard)
+  @UseFilters(AuthIgnoreExceptionFilter)
+  async auth(): Promise<AuthResponseDto> {
+    return new AuthResponseDto(true);
+  }
 
   @Post('signin')
   async signin(@Res() response: Response, @Body() body: SignInBodyDto) {
