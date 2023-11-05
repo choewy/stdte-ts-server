@@ -3,6 +3,6 @@ import { DataSource } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
-export class TeamsService {
+export class TeamService {
   constructor(private readonly dataSource: DataSource) {}
 }

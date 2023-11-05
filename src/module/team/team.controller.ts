@@ -2,12 +2,12 @@ import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestj
 
 import { GetListQueryDto } from '@server/common';
 
-import { TeamsService } from './teams.service';
+import { TeamService } from './team.service';
 import { GetTeamParamDto, CreateTeamBodyDto, UpdateTeamBodyDto } from './dto';
 
 @Controller('teams')
 export class TeamController {
-  constructor(private readonly teamsService: TeamsService) {}
+  constructor(private readonly teamService: TeamService) {}
 
   @Get()
   async getTeamListQuery(@Query() query: GetListQueryDto) {
