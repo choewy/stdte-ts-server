@@ -1,13 +1,11 @@
 import { VerifyErrors } from 'jsonwebtoken';
 
-import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
 import { JwtConfig, User } from '@server/common';
 
 import { SignAccessPayload, SignRefreshPayload } from './types';
 
-@Injectable()
 export class SignService {
   private readonly jwtConfig = new JwtConfig();
   private readonly jwtService = new JwtService(this.jwtConfig.getJwtModuleOptions());

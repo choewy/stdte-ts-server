@@ -19,8 +19,9 @@ import { SignInBodyDto, SignResponseDto, SignUpBodyDto } from './dto';
 export class AuthService {
   private readonly bcryptService = new BcryptService();
   private readonly cookieService = new CookieService();
+  private readonly signService = new SignService();
 
-  constructor(private readonly dataSource: DataSource, private readonly signService: SignService) {}
+  constructor(private readonly dataSource: DataSource) {}
 
   private responseWithTokens(response: Response, user: User, withTokens = false): Response {
     const access = this.signService.issueAccess(user);

@@ -11,9 +11,11 @@ import { SignAccessPayload } from './types';
 
 @Injectable()
 export class SignGuardStrategy extends PassportStrategy(Strategy) {
+  private readonly cookieService = new CookieService();
+
   constructor() {
     super({
-      jwtFromRequest: ExtractJwt.fromExtractors([(request) => new CookieService().get(request, CookieKey.Access)]),
+      jwtFromRequest: ExtractJwt.fromExtractors([(request) => this.cookieService.get(request, CookieKey.Access)]),
       secretOrKey: new JwtConfig().getSecret(),
       ignoreExpiration: false,
     });

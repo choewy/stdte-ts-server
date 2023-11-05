@@ -1,12 +1,10 @@
-import { Module, forwardRef } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 
-import { SignService } from './sign.service';
 import { SignGuard } from './sign.guard';
 import { SignGuardStrategy } from './sign-guard.strategy';
 
 @Module({
-  providers: [SignService, SignGuardStrategy, SignGuard],
-  exports: [SignService, SignGuard],
+  providers: [SignGuardStrategy, SignGuard],
+  exports: [SignGuard],
 })
 export class SignModule {}
-export const SignModuleRef = forwardRef(() => SignModule);
