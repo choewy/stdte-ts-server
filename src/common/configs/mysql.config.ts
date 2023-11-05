@@ -28,7 +28,6 @@ export class MySqlConfig {
       logging: this.NODE_ENV === NodeEnv.Local ? toBoolean(this.MYSQL_LOGGING, false) : ['error', 'warn'],
       timezone: '+09:00',
       autoLoadEntities: true,
-      dropSchema: true,
       entities,
     };
   }

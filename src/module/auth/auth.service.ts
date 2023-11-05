@@ -17,18 +17,17 @@ import { SignInBodyDto, SignResponseDto, SignUpBodyDto } from './dto';
 
 @Injectable()
 export class AuthService {
-  private readonly bcryptService = new BcryptService();
-  private readonly cookieService = new CookieService();
-  private readonly signService = new SignService();
-
   constructor(private readonly dataSource: DataSource) {}
 
   private responseWithTokens(response: Response, user: User, withTokens = false): Response {
-    const access = this.signService.issueAccess(user);
-    const refresh = this.signService.issueRefresh(user);
+    const signService = new SignService();
+    const cookieService = new CookieService();
 
-    this.cookieService.set(response, CookieKey.Access, access);
-    this.cookieService.set(response, CookieKey.Refresh, refresh);
+    const access = signService.issueAccess(user);
+    const refresh = signService.issueRefresh(user);
+
+    cookieService.set(response, CookieKey.Access, access);
+    cookieService.set(response, CookieKey.Refresh, refresh);
 
     return response.status(HttpStatus.CREATED).send(new SignResponseDto(user, access, refresh, withTokens));
   }
@@ -41,7 +40,9 @@ export class AuthService {
       throw new SignInFailException();
     }
 
-    if (!this.bcryptService.comparePassword(user.password, body.password)) {
+    const bcryptService = new BcryptService();
+
+    if (!bcryptService.comparePassword(user.password, body.password)) {
       throw new SignInFailException();
     }
 
@@ -60,18 +61,22 @@ export class AuthService {
       throw new NotSamePasswordException();
     }
 
+    const bcryptService = new BcryptService();
+
     const user = await userQuery.createUser({
       name: body.name,
       email: body.email,
-      password: this.bcryptService.encryptPassword(body.password),
+      password: bcryptService.encryptPassword(body.password),
     });
 
     return this.responseWithTokens(response, user, body.withTokens);
   }
 
   async signout(response: Response): Promise<Response> {
-    this.cookieService.delete(response, CookieKey.Access);
-    this.cookieService.delete(response, CookieKey.Refresh);
+    const cookieService = new CookieService();
+
+    cookieService.delete(response, CookieKey.Access);
+    cookieService.delete(response, CookieKey.Refresh);
 
     return response.sendStatus(HttpStatus.OK);
   }

@@ -13,9 +13,6 @@ import { SignService } from './sign.service';
 
 @Injectable()
 export class SignGuard extends AuthGuard('jwt') {
-  private readonly cookieService = new CookieService();
-  private readonly signService = new SignService();
-
   canActivate(context: ExecutionContext) {
     return super.canActivate(context);
   }
@@ -32,15 +29,17 @@ export class SignGuard extends AuthGuard('jwt') {
     const request = http.getRequest<Request & { userId?: number }>();
     const response = http.getResponse<Response>();
 
+    const cookieService = new CookieService();
+
     if (error) {
       if (error.name === TokenExpiredError.name) {
-        payload = this.refreshToken(request, response);
+        payload = this.refreshTokens(request, response, cookieService);
       }
     }
 
     if (payload === false) {
-      this.cookieService.delete(response, CookieKey.Access);
-      this.cookieService.delete(response, CookieKey.Refresh);
+      cookieService.delete(response, CookieKey.Access);
+      cookieService.delete(response, CookieKey.Refresh);
 
       throw new InvalidJwtTokenException(error);
     }
@@ -50,12 +49,14 @@ export class SignGuard extends AuthGuard('jwt') {
     return payload as Payload;
   }
 
-  refreshToken(request: Request, response: Response): SignAccessPayload | false {
-    const accessToken = this.cookieService.get(request, CookieKey.Access);
-    const [accessOk, accessPayload] = this.signService.verify<SignAccessPayload>(accessToken, true);
+  private refreshTokens(request: Request, response: Response, cookieService: CookieService): SignAccessPayload | false {
+    const signService = new SignService();
 
-    const refreshToken = this.cookieService.get(request, CookieKey.Refresh);
-    const [refreshOK, refreshPayload] = this.signService.verify<SignRefreshPayload>(refreshToken);
+    const accessToken = cookieService.get(request, CookieKey.Access);
+    const [accessOk, accessPayload] = signService.verify<SignAccessPayload>(accessToken, true);
+
+    const refreshToken = cookieService.get(request, CookieKey.Refresh);
+    const [refreshOK, refreshPayload] = signService.verify<SignRefreshPayload>(refreshToken);
 
     if (
       accessOk === false ||
@@ -67,8 +68,8 @@ export class SignGuard extends AuthGuard('jwt') {
       return false;
     }
 
-    this.cookieService.set(response, CookieKey.Access, this.signService.issueAccess(accessPayload));
-    this.cookieService.set(response, CookieKey.Refresh, this.signService.issueRefresh(accessPayload));
+    cookieService.set(response, CookieKey.Access, signService.issueAccess(accessPayload));
+    cookieService.set(response, CookieKey.Refresh, signService.issueRefresh(accessPayload));
 
     return accessPayload;
   }
