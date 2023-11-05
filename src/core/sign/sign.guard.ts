@@ -45,6 +45,7 @@ export class SignGuard extends AuthGuard('jwt') {
     }
 
     http.getRequest().userId = payload.id;
+    http.getRequest().userEmail = payload.email;
 
     return payload as Payload;
   }

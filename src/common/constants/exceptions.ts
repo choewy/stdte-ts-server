@@ -12,7 +12,7 @@ export class InvalidJwtTokenException extends UnauthorizedException {
     }
   }
 
-  getResponse(): string | object {
+  public getResponse(): string | object {
     return {
       ...(super.getResponse() as object),
       cause: this.cause,
@@ -32,9 +32,15 @@ export class AlreadyExistUserException extends ConflictException {
   }
 }
 
+export class WrongPasswordException extends UnauthorizedException {
+  constructor() {
+    super('비밀번호가 일치하지 않습니다.');
+  }
+}
+
 export class NotSamePasswordException extends BadRequestException {
   constructor() {
-    super('비밀번호를 다시 확인하세요.');
+    super('비밀번호가 같지 않습니다.');
   }
 }
 

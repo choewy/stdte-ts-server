@@ -34,6 +34,17 @@ export class UserQuery extends BaseQuery<User> {
     });
   }
 
+  async findUserPasswordByUserId(id: number): Promise<User> {
+    return this.repository.findOne({
+      select: {
+        id: true,
+        email: true,
+        password: true,
+      },
+      where: { id },
+    });
+  }
+
   async findUserByUserId(id: number): Promise<User> {
     return this.repository.findOne({
       relations: {

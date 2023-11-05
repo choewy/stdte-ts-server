@@ -10,10 +10,12 @@ import {
   SignInFailException,
   NotSamePasswordException,
   CookieKey,
+  NotFoundMyProfileException,
+  WrongPasswordException,
 } from '@server/common';
 import { CookieService, BcryptService, SignService } from '@server/core';
 
-import { SignInBodyDto, SignResponseDto, SignUpBodyDto } from './dto';
+import { SignInBodyDto, SignResponseDto, SignUpBodyDto, UpdatePasswordBodyDto } from './dto';
 
 @Injectable()
 export class AuthService {
@@ -79,5 +81,32 @@ export class AuthService {
     cookieService.delete(response, CookieKey.Refresh);
 
     return response.sendStatus(HttpStatus.OK);
+  }
+
+  async updateMyPassword(id: number, email: string, body: UpdatePasswordBodyDto): Promise<void> {
+    const userQuery = UserQuery.withDataSource(User, this.dataSource);
+    const user = await userQuery.findUserPasswordByUserId(id);
+
+    if (user === null) {
+      throw new NotFoundMyProfileException();
+    }
+
+    if (user.email !== email) {
+      throw new NotFoundMyProfileException();
+    }
+
+    const bcryptService = new BcryptService();
+
+    if (!bcryptService.comparePassword(user.password, body.currentPassword)) {
+      throw new WrongPasswordException();
+    }
+
+    if (body.newPassword !== body.confirmPassword) {
+      throw new NotSamePasswordException();
+    }
+
+    await userQuery.updateUser(id, {
+      password: bcryptService.encryptPassword(body.newPassword),
+    });
   }
 }
