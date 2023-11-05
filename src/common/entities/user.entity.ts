@@ -132,7 +132,7 @@ export class User extends Relations {
     nullable: true,
     default: null,
   })
-  gender: GenderCode | null;
+  genderCode: GenderCode | null;
 
   @Column({
     type: 'varchar',
@@ -140,7 +140,7 @@ export class User extends Relations {
     nullable: true,
     default: null,
   })
-  science: string | null;
+  scienceCode: string | null;
 
   @Column({
     type: 'tinyint',

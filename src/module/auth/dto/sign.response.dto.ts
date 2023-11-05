@@ -1,6 +1,9 @@
 import {
   AuthStatusText,
+  AuthStatusValue,
   EmploymentStatusText,
+  EmploymentStatusValue,
+  MapDto,
   Role,
   Team,
   User,
@@ -16,8 +19,8 @@ export class SignResponseDto {
   public readonly id: number;
   public readonly name: string;
   public readonly email: string;
-  public readonly authStatus: AuthStatusText;
-  public readonly employmentStatus: EmploymentStatusText;
+  public readonly authStatus: MapDto<AuthStatusValue, AuthStatusText>;
+  public readonly employmentStatus: MapDto<EmploymentStatusValue, EmploymentStatusText>;
   public readonly createdAt: Date;
   public readonly role: SignRoleResponseDto = null;
   public readonly team: SignTeamResponseDto = null;
@@ -27,8 +30,8 @@ export class SignResponseDto {
     this.id = user.id;
     this.name = user.name;
     this.email = user.email;
-    this.authStatus = toAuthStatusText(user.authStatus);
-    this.employmentStatus = toEmploymentStatusText(user.employmentStatus);
+    this.authStatus = new MapDto(user.authStatus, toAuthStatusText);
+    this.employmentStatus = new MapDto(user.employmentStatus, toEmploymentStatusText);
     this.createdAt = user.createdAt;
 
     if (user.role instanceof Role) {

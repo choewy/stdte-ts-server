@@ -34,6 +34,16 @@ export class UserQuery extends BaseQuery<User> {
     });
   }
 
+  async findUserByUserId(id: number): Promise<User> {
+    return this.repository.findOne({
+      relations: {
+        role: { rolePolicy: true },
+        team: true,
+      },
+      where: { id },
+    });
+  }
+
   async createUser(user: DeepPartial<User>): Promise<User> {
     return this.repository.save(user);
   }

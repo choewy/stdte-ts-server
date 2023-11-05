@@ -37,14 +37,14 @@ export class SignGuard extends AuthGuard('jwt') {
       }
     }
 
-    if (payload === false) {
+    if (!payload) {
       cookieService.delete(response, CookieKey.Access);
       cookieService.delete(response, CookieKey.Refresh);
 
       throw new InvalidJwtTokenException(error);
     }
 
-    request.userId = payload?.id;
+    http.getRequest().userId = payload.id;
 
     return payload as Payload;
   }

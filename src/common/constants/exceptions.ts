@@ -1,4 +1,4 @@
-import { BadRequestException, ConflictException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, ConflictException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 
 export class InvalidJwtTokenException extends UnauthorizedException {
   constructor(e?: unknown) {
@@ -35,5 +35,11 @@ export class AlreadyExistUserException extends ConflictException {
 export class NotSamePasswordException extends BadRequestException {
   constructor() {
     super('비밀번호를 다시 확인하세요.');
+  }
+}
+
+export class NotFoundMyProfileException extends NotFoundException {
+  constructor() {
+    super('내 정보를 불러오는데 실패하였습니다.');
   }
 }
