@@ -10,18 +10,23 @@ import { SignAccessPayload, SignRefreshPayload } from './types';
 @Injectable()
 export class SignService {
   private readonly jwtConfig = new JwtConfig();
-
-  constructor(private readonly jwtService: JwtService) {}
+  private readonly jwtService = new JwtService(this.jwtConfig.getJwtModuleOptions());
 
   public verify<Payload = SignAccessPayload | SignRefreshPayload>(
     token: string,
+    ignoreExpiration = false,
   ): [boolean, Payload | null, VerifyErrors | null] {
+    const secret = this.jwtConfig.getSecret();
+
     let ok: boolean;
     let payload: Payload = null;
     let error: VerifyErrors = null;
 
     try {
-      payload = this.jwtService.verify(token) as Payload;
+      payload = this.jwtService.verify(token, {
+        secret,
+        ignoreExpiration,
+      }) as Payload;
       ok = true;
     } catch (e) {
       error = e;
@@ -31,7 +36,7 @@ export class SignService {
     return [ok, payload, error];
   }
 
-  public issueAccess(user: User): string {
+  public issueAccess(user: User | SignAccessPayload): string {
     const secret = this.jwtConfig.getSecret();
     const payload: SignAccessPayload = {
       id: user.id,
@@ -39,10 +44,10 @@ export class SignService {
       name: user.name,
     };
 
-    return this.jwtService.sign(payload, { secret, expiresIn: '1d' });
+    return this.jwtService.sign(payload, { secret, expiresIn: '1h' });
   }
 
-  public issueRefresh(user: User): string {
+  public issueRefresh(user: User | SignRefreshPayload): string {
     const secret = this.jwtConfig.getSecret();
     const payload: SignRefreshPayload = {
       id: user.id,

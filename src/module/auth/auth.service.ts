@@ -1,3 +1,4 @@
+import { Response } from 'express';
 import { DataSource } from 'typeorm';
 
 import { HttpStatus, Injectable } from '@nestjs/common';
@@ -13,16 +14,13 @@ import {
 import { CookieService, BcryptService, SignService } from '@server/core';
 
 import { SignInBodyDto, SignResponseDto, SignUpBodyDto } from './dto';
-import { Response } from 'express';
 
 @Injectable()
 export class AuthService {
-  constructor(
-    private readonly dataSource: DataSource,
-    private readonly cookieService: CookieService,
-    private readonly bcryptService: BcryptService,
-    private readonly signService: SignService,
-  ) {}
+  private readonly bcryptService = new BcryptService();
+  private readonly cookieService = new CookieService();
+
+  constructor(private readonly dataSource: DataSource, private readonly signService: SignService) {}
 
   private responseWithTokens(response: Response, user: User, withTokens = false): Response {
     const access = this.signService.issueAccess(user);

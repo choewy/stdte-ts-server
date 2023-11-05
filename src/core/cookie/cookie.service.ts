@@ -1,9 +1,7 @@
 import { CookieOptions, Request, Response } from 'express';
 
-import { Injectable } from '@nestjs/common';
 import { CookieKey } from '@server/common';
 
-@Injectable()
 export class CookieService {
   private readonly cookieOptions: CookieOptions = {
     path: '/',
