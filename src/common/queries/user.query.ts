@@ -12,9 +12,9 @@ export class UserQuery extends BaseQuery<User> {
     return new UserQuery(dataSource.getRepository(User));
   }
 
-  async findUserByInit(): Promise<User> {
+  async findUserByOnInit(): Promise<User> {
     return this.repository.findOne({
-      where: { init: true },
+      where: { onInit: true },
     });
   }
 

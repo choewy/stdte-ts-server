@@ -204,7 +204,7 @@ export class User extends Relations {
     type: 'boolean',
     default: false,
   })
-  init: boolean;
+  onInit: boolean;
 
   @CreateDateColumn()
   readonly createdAt: Date;

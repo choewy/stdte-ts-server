@@ -33,7 +33,7 @@ export class AppService implements OnApplicationBootstrap {
   private async createDefaultRole(): Promise<Role> {
     const roleQuery = RoleQuery.withDataSource(this.dataSource);
 
-    let role = await roleQuery.findRoleByInit();
+    let role = await roleQuery.findRoleByOnInit();
 
     if (!role) {
       role = new Role();
@@ -45,8 +45,8 @@ export class AppService implements OnApplicationBootstrap {
     const name = RolePolicyScopeText.Admin;
     const scope = RolePolicyScopeValue.Admin;
 
-    if (role.init !== true) {
-      role.init = true;
+    if (role.onInit !== true) {
+      role.onInit = true;
       pass = false;
     }
 
@@ -85,7 +85,7 @@ export class AppService implements OnApplicationBootstrap {
   private async createDefaultUser(role: Role): Promise<User> {
     const userQuery = UserQuery.withDataSource(this.dataSource);
 
-    let user = await userQuery.findUserByInit();
+    let user = await userQuery.findUserByOnInit();
 
     if (!user) {
       user = new User();
@@ -99,8 +99,8 @@ export class AppService implements OnApplicationBootstrap {
     const authStatus = AuthStatusValue.Active;
     const employmentStatus = EmploymentStatusValue.Active;
 
-    if (user.init !== true) {
-      user.init = true;
+    if (user.onInit !== true) {
+      user.onInit = true;
       pass = false;
     }
 

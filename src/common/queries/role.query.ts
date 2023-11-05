@@ -12,10 +12,10 @@ export class RoleQuery extends BaseQuery<Role> {
     return new RoleQuery(dataSource.getRepository(Role));
   }
 
-  async findRoleByInit(): Promise<Role> {
+  async findRoleByOnInit(): Promise<Role> {
     return this.repository.findOne({
       relations: { rolePolicy: true },
-      where: { init: true },
+      where: { onInit: true },
     });
   }
 
