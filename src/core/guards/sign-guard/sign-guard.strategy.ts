@@ -4,18 +4,14 @@ import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 
 import { CookieKey, JwtConfig } from '@server/common';
-
-import { CookieService } from '../cookie';
-
-import { SignAccessPayload } from './types';
+import { CookieService } from '@server/core/cookie';
+import { SignAccessPayload } from '@server/core/sign';
 
 @Injectable()
 export class SignGuardStrategy extends PassportStrategy(Strategy) {
-  private readonly cookieService = new CookieService();
-
   constructor() {
     super({
-      jwtFromRequest: ExtractJwt.fromExtractors([(request) => this.cookieService.get(request, CookieKey.Access)]),
+      jwtFromRequest: ExtractJwt.fromExtractors([(request) => new CookieService().get(request, CookieKey.Access)]),
       secretOrKey: new JwtConfig().getSecret(),
       ignoreExpiration: false,
     });

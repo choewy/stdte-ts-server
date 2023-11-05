@@ -1,4 +1,18 @@
-import { BadRequestException, ConflictException, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  ForbiddenException,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
+
+export const getResponse = (response: string | object, details?: any) => {
+  if (typeof response === 'string') {
+    return response;
+  } else {
+    return { ...response, details };
+  }
+};
 
 export class InvalidJwtTokenException extends UnauthorizedException {
   constructor(e?: unknown) {
@@ -13,10 +27,19 @@ export class InvalidJwtTokenException extends UnauthorizedException {
   }
 
   public getResponse(): string | object {
-    return {
-      ...(super.getResponse() as object),
-      cause: this.cause,
-    };
+    return getResponse(super.getResponse(), this.cause);
+  }
+}
+
+export class AccessDeninedException extends ForbiddenException {
+  constructor(cause?: any) {
+    super('접근 권한이 없습니다.');
+
+    this.cause = cause;
+  }
+
+  public getResponse(): string | object {
+    return getResponse(super.getResponse(), this.cause);
   }
 }
 

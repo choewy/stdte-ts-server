@@ -1,15 +1,18 @@
 import { Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 
-import { ListQueryDto } from '@server/common';
+import { ListQueryDto, RolePolicyScopeValue } from '@server/common';
+import { UseSignGuard, UseRoleGuard } from '@server/core';
 
 import { GetRoleParamDto } from './dto';
 import { RoleService } from './role.service';
 
+@UseSignGuard()
 @Controller('roles')
 export class RoleController {
   constructor(private readonly roleService: RoleService) {}
 
   @Get()
+  @UseRoleGuard({ accessRole: RolePolicyScopeValue.Read })
   async getRoleList(@Query() query: ListQueryDto) {
     return;
   }

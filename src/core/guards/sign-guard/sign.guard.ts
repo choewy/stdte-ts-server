@@ -5,11 +5,8 @@ import { ExecutionContext, Injectable } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
 import { CookieKey, InvalidJwtTokenException } from '@server/common';
-
-import { CookieService } from '../cookie';
-
-import { SignAccessPayload, SignRefreshPayload } from './types';
-import { SignService } from './sign.service';
+import { SignAccessPayload, SignRefreshPayload, SignService } from '@server/core/sign';
+import { CookieService } from '@server/core/cookie';
 
 @Injectable()
 export class SignGuard extends AuthGuard('jwt') {

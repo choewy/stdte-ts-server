@@ -1,12 +1,12 @@
-import { Body, Controller, Get, Patch, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Patch } from '@nestjs/common';
 
 import { RequestUserID } from '@server/common';
-import { SignGuard } from '@server/core';
+import { UseSignGuard } from '@server/core';
 
 import { ProfileResponseDto, UpdateProfileBodyDto } from './dto';
 import { ProfileService } from './profile.service';
 
-@UseGuards(SignGuard)
+@UseSignGuard()
 @Controller('profile')
 export class ProfileController {
   constructor(private readonly profileService: ProfileService) {}

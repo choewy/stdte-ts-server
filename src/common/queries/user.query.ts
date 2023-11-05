@@ -3,7 +3,7 @@ import { DataSource, DeepPartial, Repository, UpdateResult } from 'typeorm';
 import { Type } from '@nestjs/common';
 
 import { BaseQuery } from '../constants';
-import { User } from '../entities';
+import { Role, RolePolicy, User } from '../entities';
 
 export class UserQuery extends BaseQuery<User> {
   public static withRepository(repository: Repository<User>) {
@@ -34,6 +34,16 @@ export class UserQuery extends BaseQuery<User> {
     });
   }
 
+  async findUserByUserId(id: number): Promise<User> {
+    return this.repository.findOne({
+      relations: {
+        role: { rolePolicy: true },
+        team: true,
+      },
+      where: { id },
+    });
+  }
+
   async findUserPasswordByUserId(id: number): Promise<User> {
     return this.repository.findOne({
       select: {
@@ -45,14 +55,15 @@ export class UserQuery extends BaseQuery<User> {
     });
   }
 
-  async findUserByUserId(id: number): Promise<User> {
+  async findUserRoleByUserId(id: number) {
     return this.repository.findOne({
-      relations: {
+      relations: { role: { rolePolicy: true } },
+      select: {
+        id: true,
         role: { rolePolicy: true },
-        team: true,
       },
       where: { id },
-    });
+    }) as Promise<User & { role?: Role & { rolePolicy?: RolePolicy } }>;
   }
 
   async createUser(user: DeepPartial<User>): Promise<User> {

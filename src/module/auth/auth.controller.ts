@@ -1,9 +1,9 @@
 import { Response } from 'express';
 
-import { Body, Controller, Get, Patch, Post, Res, UseFilters, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Patch, Post, Res, UseFilters } from '@nestjs/common';
 
 import { RequestUserID, RequestUserEmail } from '@server/common';
-import { SignGuard } from '@server/core';
+import { UseSignGuard } from '@server/core';
 
 import { AuthResponseDto, SignInBodyDto, SignUpBodyDto, UpdatePasswordBodyDto } from './dto';
 import { AuthIgnoreExceptionFilter } from './auth-ignore-exception.filter';
@@ -14,14 +14,14 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Get()
-  @UseGuards(SignGuard)
+  @UseSignGuard()
   @UseFilters(AuthIgnoreExceptionFilter)
   async auth(): Promise<AuthResponseDto> {
     return new AuthResponseDto(true);
   }
 
   @Patch()
-  @UseGuards(SignGuard)
+  @UseSignGuard()
   async updateMyPassword(
     @RequestUserID() id: number,
     @RequestUserEmail() email: string,

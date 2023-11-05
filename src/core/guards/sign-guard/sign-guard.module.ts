@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 
-import { SignGuard } from './sign.guard';
 import { SignGuardStrategy } from './sign-guard.strategy';
+import { SignGuard } from './sign.guard';
 
 @Module({
   providers: [SignGuardStrategy, SignGuard],
   exports: [SignGuard],
 })
-export class SignModule {}
+export class SignGuardModule {}
