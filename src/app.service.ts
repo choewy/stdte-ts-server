@@ -1,8 +1,12 @@
 import { Injectable } from '@nestjs/common';
 
+import { VersionConfig } from '@server/common';
+
 @Injectable()
 export class AppService {
-  getHello(): string {
-    return 'Hello World!';
+  private readonly versionConfig = new VersionConfig();
+
+  getVersion(): string {
+    return this.versionConfig.getVersion();
   }
 }
