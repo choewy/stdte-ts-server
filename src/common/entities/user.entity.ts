@@ -31,13 +31,20 @@ import { ProjectTimeRecord } from './project-time-record.entity';
 import { ProjectTimeRecordLog } from './project-time-record-log.entity';
 
 class Relations {
-  @ManyToOne(() => Team, (e) => e.users, {
+  @ManyToOne(() => Team, (e) => e.members, {
     onDelete: 'SET NULL',
     nullable: true,
     lazy: true,
   })
   @JoinColumn()
   team: LazyWithNullType<Team>;
+
+  @OneToMany(() => Team, (e) => e.leader, {
+    cascade: ['insert', 'update', 'remove'],
+    lazy: true,
+  })
+  @JoinTable()
+  teamsByLeader: LazyType<Team[]>;
 
   @ManyToOne(() => Role, (e) => e.users, {
     onDelete: 'SET NULL',
