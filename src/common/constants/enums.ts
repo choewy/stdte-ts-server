@@ -4,6 +4,11 @@ export enum NodeEnv {
   Production = 'production',
 }
 
+export enum CookieKey {
+  Access = '__atk',
+  Refresh = '__rtk',
+}
+
 export enum GenderCode {
   Male1 = 1,
   Male2 = 3,
