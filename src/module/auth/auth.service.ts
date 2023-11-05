@@ -41,6 +41,10 @@ export class AuthService {
       throw new SignInFailException();
     }
 
+    if (!this.bcryptService.comparePassword(user.password, body.password)) {
+      throw new SignInFailException();
+    }
+
     return this.responseWithTokens(response, user, body.withTokens);
   }
 
