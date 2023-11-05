@@ -1,4 +1,5 @@
 import express from 'express';
+import cookieParser from 'cookie-parser';
 
 import { NestFactory } from '@nestjs/core';
 
@@ -10,6 +11,7 @@ async function bootstrap() {
 
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
+  app.use(cookieParser());
   app.enableCors(new CorsConfig().getCorsOptions());
 
   await app.listen(8000);
