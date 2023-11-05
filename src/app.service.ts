@@ -37,7 +37,6 @@ export class AppService implements OnApplicationBootstrap {
 
     if (!role) {
       role = new Role();
-      role.init = true;
       role.rolePolicy = new RolePolicy();
     }
 
@@ -45,6 +44,11 @@ export class AppService implements OnApplicationBootstrap {
 
     const name = RolePolicyScopeText.Admin;
     const scope = RolePolicyScopeValue.Admin;
+
+    if (role.init !== true) {
+      role.init = true;
+      pass = false;
+    }
 
     if (role.name !== name) {
       role.name = name;
@@ -85,7 +89,6 @@ export class AppService implements OnApplicationBootstrap {
 
     if (!user) {
       user = new User();
-      user.init = true;
       user.password = new BcryptService().encryptPassword('master');
     }
 
@@ -95,6 +98,11 @@ export class AppService implements OnApplicationBootstrap {
     const email = 'master@stdte.co.kr';
     const authStatus = AuthStatusValue.Active;
     const employmentStatus = EmploymentStatusValue.Active;
+
+    if (user.init !== true) {
+      user.init = true;
+      pass = false;
+    }
 
     if (user.name !== name) {
       user.name = name;
