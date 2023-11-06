@@ -7,6 +7,7 @@ import {
   AccessDeninedException,
   InjectReaderDataSource,
   MapResponseDto,
+  Role,
   UserQuery,
   toRolePolicyText,
 } from '@server/common';
@@ -23,7 +24,12 @@ export class RoleGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const http = context.switchToHttp();
-    const request = http.getRequest<Request & { userId?: number }>();
+    const request = http.getRequest<
+      Request & {
+        userId?: number;
+        userRole?: Role;
+      }
+    >();
 
     if (request.userId === undefined) {
       throw new AccessDeninedException({ cause: 'request.userId is undefined' });
@@ -32,7 +38,9 @@ export class RoleGuard implements CanActivate {
     const userQuery = UserQuery.of(this.readerDataSource);
     const user = await userQuery.findUserRoleByUserId(request.userId);
 
-    if (user?.role?.rolePolicy === undefined) {
+    request.userRole = user?.role;
+
+    if (request.userRole?.rolePolicy === undefined) {
       throw new AccessDeninedException({ cause: 'user.role.rolePolicy is undefined' });
     }
 

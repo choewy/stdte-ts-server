@@ -1,9 +1,16 @@
-import { Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
 
-import { ListQueryDto, RolePolicyScopeValue } from '@server/common';
+import {
+  ListQueryDto,
+  ListResponseDto,
+  QueryString,
+  RequestUserRole,
+  Role,
+  RolePolicyScopeValue,
+} from '@server/common';
 import { UseSignGuard, UseRoleGuard } from '@server/core';
 
-import { GetRoleParamDto } from './dto';
+import { CreateRoleBodyDto, GetRoleParamDto, RoleResponseDto, UpdateRoleBodyDto } from './dto';
 import { RoleService } from './role.service';
 
 @UseSignGuard()
@@ -13,22 +20,31 @@ export class RoleController {
 
   @Get()
   @UseRoleGuard({ accessRole: RolePolicyScopeValue.Read })
-  async getRoleList(@Query() query: ListQueryDto) {
-    return;
+  async getRoleList(
+    @QueryString(ListQueryDto) query: ListQueryDto,
+  ): Promise<ListResponseDto<RoleResponseDto, ListQueryDto>> {
+    return this.roleService.getRoleList(query);
   }
 
   @Post()
-  async createRole() {
-    return;
+  @UseRoleGuard({ accessRole: RolePolicyScopeValue.Write })
+  async createRole(@Body() body: CreateRoleBodyDto): Promise<void> {
+    return this.roleService.createRole(body);
   }
 
   @Patch(':id(\\d+)')
-  async updateRole(@Param() param: GetRoleParamDto) {
-    return;
+  @UseRoleGuard({ accessRole: RolePolicyScopeValue.Update })
+  async updateRole(
+    @RequestUserRole() role: Role,
+    @Param() param: GetRoleParamDto,
+    @Body() body: UpdateRoleBodyDto,
+  ): Promise<void> {
+    return this.roleService.updateRole(role, param.id, body);
   }
 
   @Delete(':id(\\d+)')
-  async deleteRole(@Param() param: GetRoleParamDto) {
-    return;
+  @UseRoleGuard({ accessRole: RolePolicyScopeValue.Delete })
+  async deleteRole(@RequestUserRole() role: Role, @Param() param: GetRoleParamDto): Promise<void> {
+    return this.roleService.deleteRole(role.id, param.id);
   }
 }

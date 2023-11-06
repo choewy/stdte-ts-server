@@ -1,4 +1,4 @@
-import { DataSource, DeepPartial, EntityManager, UpdateResult } from 'typeorm';
+import { DataSource, DeepPartial, DeleteResult, EntityManager, UpdateResult } from 'typeorm';
 
 import { BaseQuery } from '../constants';
 import { Role, RolePolicy } from '../entities';
@@ -8,10 +8,29 @@ export class RoleQuery extends BaseQuery<Role> {
     return new RoleQuery(source.getRepository(Role));
   }
 
+  async hasRoleByName(name: string): Promise<boolean> {
+    return this.repository.exist({
+      select: { id: true, name: true, onInit: true },
+      where: { name },
+    });
+  }
+
   async findRoleByOnInit(): Promise<Role> {
     return this.repository.findOne({
       relations: { rolePolicy: true },
       where: { onInit: true },
+    });
+  }
+
+  async findRolesAndCount(skip: number, take: number): Promise<[Role[], number]> {
+    return this.repository.findAndCount({
+      relations: {
+        rolePolicy: true,
+        users: { team: true },
+      },
+      where: { onInit: false },
+      skip,
+      take,
     });
   }
 
@@ -24,5 +43,9 @@ export class RoleQuery extends BaseQuery<Role> {
     role: Partial<Omit<Role, 'rolePolicy'> & { rolePolicy?: Partial<RolePolicy> }>,
   ): Promise<UpdateResult> {
     return this.repository.update(id, role);
+  }
+
+  async deleteRole(id: number): Promise<DeleteResult> {
+    return this.repository.delete(id);
   }
 }

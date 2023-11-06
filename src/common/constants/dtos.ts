@@ -20,8 +20,13 @@ export class ListQueryDto {
   @IsInt()
   @Max(100)
   take: number;
+
+  constructor() {
+    this.skip = 0;
+    this.take = 20;
+  }
 }
 
-export class ListResponseDto<D, Q> {
+export class ListResponseDto<D = unknown, Q = unknown> {
   constructor(public readonly total: number, public readonly rows: D[], public readonly query: Q) {}
 }

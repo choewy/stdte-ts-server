@@ -72,3 +72,27 @@ export class NotFoundMyProfileException extends NotFoundException {
     super('내 정보를 불러오는데 실패하였습니다.');
   }
 }
+
+export class AlreadyExistRoleNameException extends ConflictException {
+  constructor() {
+    super('이미 존재하는 역할명입니다.');
+  }
+}
+
+export class CannotUpdateYourRoleException extends ConflictException {
+  constructor() {
+    super('자신이 속한 역할의 현재 권한보다 낮은 권한을 부여할 수 없습니다.');
+  }
+}
+
+export class CannotDeleteYourRoleException extends ConflictException {
+  constructor() {
+    super('자신이 속한 역할은 삭제할 수 없습니다.');
+  }
+}
+
+export class NotFoundRoleException extends NotFoundException {
+  constructor() {
+    super('역할이 존재하지 않습니다.');
+  }
+}

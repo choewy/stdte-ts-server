@@ -14,6 +14,7 @@ async function bootstrap() {
   app.use(express.urlencoded({ extended: true }));
   app.use(cookieParser());
   app.enableCors(new CorsConfig().getCorsOptions());
+
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,

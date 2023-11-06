@@ -9,8 +9,6 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-import { LazyType } from '../constants';
-
 import { RolePolicy } from './role-policy.entity';
 import { User } from './user.entity';
 
@@ -23,10 +21,9 @@ class Relations {
 
   @OneToMany(() => User, (e) => e.role, {
     cascade: ['insert', 'update', 'remove'],
-    lazy: true,
   })
   @JoinTable()
-  users: LazyType<User[]>;
+  users: User[];
 }
 
 @Entity()
@@ -40,6 +37,7 @@ export class Role extends Relations {
   @Column({
     type: 'varchar',
     length: 50,
+    unique: true,
   })
   name: string;
 
