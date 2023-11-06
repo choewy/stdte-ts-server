@@ -81,13 +81,13 @@ export class AlreadyExistRoleNameException extends ConflictException {
 
 export class CannotUpdateYourRoleException extends ConflictException {
   constructor() {
-    super('자신이 속한 역할의 현재 권한보다 낮은 권한을 부여할 수 없습니다.');
+    super('현재 자신의 역할에 부여된 권한보다 낮은 권한을 부여할 수 없습니다.');
   }
 }
 
 export class CannotDeleteYourRoleException extends ConflictException {
   constructor() {
-    super('자신이 속한 역할은 삭제할 수 없습니다.');
+    super('현재 자신의 역할은 삭제할 수 없습니다.');
   }
 }
 
