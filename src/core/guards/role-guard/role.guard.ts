@@ -1,15 +1,25 @@
 import { DataSource } from 'typeorm';
 
-import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
+import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 
-import { AccessDeninedException, MapResponseDto, UserQuery, toRolePolicyText } from '@server/common';
+import {
+  AccessDeninedException,
+  InjectReaderDataSource,
+  MapResponseDto,
+  UserQuery,
+  toRolePolicyText,
+} from '@server/common';
 
 import { SetRoleGuardMetadataArgs, SetRoleGuardMetadataKeys } from './types';
 
 @Injectable()
 export class RoleGuard implements CanActivate {
-  constructor(private readonly reflector: Reflector, private readonly dataSource: DataSource) {}
+  constructor(
+    @InjectReaderDataSource()
+    private readonly readerDataSource: DataSource,
+    private readonly reflector: Reflector,
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const http = context.switchToHttp();
@@ -19,7 +29,7 @@ export class RoleGuard implements CanActivate {
       throw new AccessDeninedException({ cause: 'request.userId is undefined' });
     }
 
-    const userQuery = UserQuery.withDataSource(this.dataSource);
+    const userQuery = UserQuery.of(this.readerDataSource);
     const user = await userQuery.findUserRoleByUserId(request.userId);
 
     if (user?.role?.rolePolicy === undefined) {

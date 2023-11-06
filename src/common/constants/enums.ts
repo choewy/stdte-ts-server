@@ -1,5 +1,5 @@
 export enum TypeOrmConnection {
-  Writer = 'default',
+  Writer = 'writer',
   Reader = 'reader',
 }
 

@@ -1,15 +1,11 @@
-import { DataSource, DeepPartial, EntityManager, Repository, UpdateResult } from 'typeorm';
+import { DataSource, DeepPartial, EntityManager, UpdateResult } from 'typeorm';
 
 import { BaseQuery } from '../constants';
 import { Role, RolePolicy } from '../entities';
 
 export class RoleQuery extends BaseQuery<Role> {
-  public static withRepository(repository: Repository<Role>) {
-    return new RoleQuery(repository);
-  }
-
-  public static withDataSource(dataSource: DataSource | EntityManager) {
-    return new RoleQuery(dataSource.getRepository(Role));
+  public static of(source: DataSource | EntityManager) {
+    return new RoleQuery(source.getRepository(Role));
   }
 
   async findRoleByOnInit(): Promise<Role> {

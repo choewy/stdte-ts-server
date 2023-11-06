@@ -2,17 +2,21 @@ import { DataSource } from 'typeorm';
 
 import { Injectable } from '@nestjs/common';
 
-import { NotFoundMyProfileException, UserQuery } from '@server/common';
+import { InjectReaderDataSource, InjectWriterDataSource, NotFoundMyProfileException, UserQuery } from '@server/common';
 
 import { ProfileResponseDto, UpdateProfileBodyDto } from './dto';
 
 @Injectable()
 export class ProfileService {
-  constructor(private readonly dataSource: DataSource) {}
+  constructor(
+    @InjectWriterDataSource()
+    private readonly writerDataSource: DataSource,
+    @InjectReaderDataSource()
+    private readonly readerDataSource: DataSource,
+  ) {}
 
   async getMyProfile(id: number): Promise<ProfileResponseDto> {
-    const userQuery = UserQuery.withDataSource(this.dataSource);
-    const user = await userQuery.findUserByUserId(id);
+    const user = await UserQuery.of(this.readerDataSource).findUserByUserId(id);
 
     if (!user) {
       throw new NotFoundMyProfileException();
@@ -22,8 +26,7 @@ export class ProfileService {
   }
 
   async updateMyProfile(id: number, body: UpdateProfileBodyDto): Promise<void> {
-    const userQuery = UserQuery.withDataSource(this.dataSource);
-    const updateResult = await userQuery.updateUser(id, {
+    const updateResult = await UserQuery.of(this.writerDataSource).updateUser(id, {
       name: body.name ?? undefined,
       phone: body.phone,
       birthday: body.birthday,

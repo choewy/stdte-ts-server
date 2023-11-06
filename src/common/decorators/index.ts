@@ -1,1 +1,1 @@
-export * from './repository.decorator';
+export * from './datasource.decorators';

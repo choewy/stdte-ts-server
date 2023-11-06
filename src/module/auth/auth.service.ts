@@ -13,6 +13,8 @@ import {
   NotFoundMyProfileException,
   WrongPasswordException,
   ProjectTimeRecordLog,
+  InjectWriterDataSource,
+  InjectReaderDataSource,
 } from '@server/common';
 import { CookieService, BcryptService, SignService } from '@server/core';
 
@@ -20,7 +22,12 @@ import { SignInBodyDto, SignResponseDto, SignUpBodyDto, UpdatePasswordBodyDto } 
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly dataSource: DataSource) {}
+  constructor(
+    @InjectWriterDataSource()
+    private readonly writerDataSource: DataSource,
+    @InjectReaderDataSource()
+    private readonly readerDataSource: DataSource,
+  ) {}
 
   private responseWithTokens(response: Response, user: User, withTokens = false): Response {
     const signService = new SignService();
@@ -36,8 +43,7 @@ export class AuthService {
   }
 
   async signin(response: Response, body: SignInBodyDto): Promise<Response> {
-    const userQuery = UserQuery.withDataSource(this.dataSource);
-    const user = await userQuery.findUserByEmail(body.email);
+    const user = await UserQuery.of(this.readerDataSource).findUserByEmail(body.email);
 
     if (user === null) {
       throw new SignInFailException();
@@ -53,8 +59,7 @@ export class AuthService {
   }
 
   async signup(response: Response, body: SignUpBodyDto): Promise<Response> {
-    const userQuery = UserQuery.withDataSource(this.dataSource);
-    const userExist = await userQuery.hasUserByEmail(body.email);
+    const userExist = await UserQuery.of(this.readerDataSource).hasUserByEmail(body.email);
 
     if (userExist) {
       throw new AlreadyExistUserException();
@@ -66,7 +71,7 @@ export class AuthService {
 
     const bcryptService = new BcryptService();
 
-    const user = await userQuery.createUser({
+    const user = await UserQuery.of(this.writerDataSource).createUser({
       name: body.name,
       email: body.email,
       password: bcryptService.encryptPassword(body.password),
@@ -86,8 +91,7 @@ export class AuthService {
   }
 
   async updateMyPassword(id: number, email: string, body: UpdatePasswordBodyDto): Promise<void> {
-    const userQuery = UserQuery.withDataSource(this.dataSource);
-    const user = await userQuery.findUserPasswordByUserId(id);
+    const user = await UserQuery.of(this.readerDataSource).findUserPasswordByUserId(id);
 
     if (user === null) {
       throw new NotFoundMyProfileException();
@@ -107,7 +111,7 @@ export class AuthService {
       throw new NotSamePasswordException();
     }
 
-    await userQuery.updateUser(id, {
+    await UserQuery.of(this.writerDataSource).updateUser(id, {
       password: bcryptService.encryptPassword(body.newPassword),
     });
   }

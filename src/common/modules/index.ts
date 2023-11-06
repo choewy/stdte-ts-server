@@ -1,1 +1,1 @@
-export * from './typeorm-reader.module';
+export * from './typeorm.modules';

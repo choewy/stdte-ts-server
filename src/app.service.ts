@@ -5,6 +5,8 @@ import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
 import {
   AuthStatusValue,
   EmploymentStatusValue,
+  InjectReaderDataSource,
+  InjectWriterDataSource,
   Role,
   RolePolicy,
   RolePolicyScopeText,
@@ -19,7 +21,12 @@ import { BcryptService } from './core';
 
 @Injectable()
 export class AppService implements OnApplicationBootstrap {
-  constructor(private readonly dataSource: DataSource) {}
+  constructor(
+    @InjectWriterDataSource()
+    private readonly writerDataSource: DataSource,
+    @InjectReaderDataSource()
+    private readonly readerDataSource: DataSource,
+  ) {}
 
   public getVersion(): string {
     return new VersionConfig().getVersion();
@@ -31,9 +38,7 @@ export class AppService implements OnApplicationBootstrap {
   }
 
   private async createDefaultRole(): Promise<Role> {
-    const roleQuery = RoleQuery.withDataSource(this.dataSource);
-
-    let role = await roleQuery.findRoleByOnInit();
+    let role = await RoleQuery.of(this.readerDataSource).findRoleByOnInit();
 
     if (!role) {
       role = new Role();
@@ -79,13 +84,11 @@ export class AppService implements OnApplicationBootstrap {
       return role;
     }
 
-    return roleQuery.createRole(role);
+    return RoleQuery.of(this.writerDataSource).createRole(role);
   }
 
   private async createDefaultUser(role: Role): Promise<User> {
-    const userQuery = UserQuery.withDataSource(this.dataSource);
-
-    let user = await userQuery.findUserByOnInit();
+    let user = await UserQuery.of(this.readerDataSource).findUserByOnInit();
 
     if (!user) {
       user = new User();
@@ -133,6 +136,6 @@ export class AppService implements OnApplicationBootstrap {
       return user;
     }
 
-    return userQuery.createUser(user);
+    return UserQuery.of(this.writerDataSource).createUser(user);
   }
 }
