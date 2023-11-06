@@ -1,3 +1,8 @@
+export enum TypeOrmConnection {
+  Writer = 'default',
+  Reader = 'reader',
+}
+
 export enum NodeEnv {
   Local = 'local',
   Develop = 'develop',

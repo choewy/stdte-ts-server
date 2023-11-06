@@ -12,7 +12,8 @@ import { AuthModule, ProfileModule, RoleModule, TeamModule } from '@server/modul
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    TypeOrmModule.forRoot(new MySqlConfig().getTypeOrmModuleOptions(entireEntity)),
+    TypeOrmModule.forRoot(new MySqlConfig().getTypeOrmModuleWriterOptions(entireEntity)),
+    TypeOrmModule.forRoot(new MySqlConfig().getTypeOrmModuleReaderOptions(entireEntity)),
     SignGuardModule,
     RoleGuardModule,
     AuthModule,
