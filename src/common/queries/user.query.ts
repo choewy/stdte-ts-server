@@ -1,4 +1,4 @@
-import { DataSource, DeepPartial, EntityManager, UpdateResult } from 'typeorm';
+import { DataSource, DeepPartial, EntityManager, In, UpdateResult } from 'typeorm';
 
 import { BaseQuery } from '../constants';
 import { Role, RolePolicy, User } from '../entities';
@@ -11,6 +11,16 @@ export class UserQuery extends BaseQuery<User> {
   async findUserByOnInit(): Promise<User> {
     return this.repository.findOne({
       where: { onInit: true },
+    });
+  }
+
+  async findUserIdInIds(ids: number[]): Promise<User[]> {
+    return this.repository.find({
+      select: { id: true },
+      where: {
+        id: In(ids),
+        onInit: false,
+      },
     });
   }
 
@@ -62,15 +72,15 @@ export class UserQuery extends BaseQuery<User> {
     }) as Promise<User & { role?: Role & { rolePolicy?: RolePolicy } }>;
   }
 
-  async createUser(user: DeepPartial<User>): Promise<User> {
-    if (user instanceof User === false) {
-      user = this.repository.create(user);
-    }
-
-    return this.repository.save(user);
+  async saveUser(user: DeepPartial<User>): Promise<User> {
+    return this.repository.save(this.repository.create(user));
   }
 
-  async updateUser(id: number, user: DeepPartial<User>): Promise<UpdateResult> {
+  async saveUsers(users: DeepPartial<User>[]): Promise<User[]> {
+    return this.repository.save(this.repository.create(users));
+  }
+
+  async updateUser(id: number | number[], user: DeepPartial<User>): Promise<UpdateResult> {
     return this.repository.update(id, user);
   }
 }

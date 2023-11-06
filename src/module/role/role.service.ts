@@ -12,7 +12,10 @@ import {
   ListResponseDto,
   NotFoundRoleException,
   Role,
+  RolePolicyQuery,
   RoleQuery,
+  User,
+  UserQuery,
 } from '@server/common';
 
 import { CreateRoleBodyDto, RoleResponseDto, UpdateRoleBodyDto } from './dto';
@@ -43,7 +46,13 @@ export class RoleService {
       throw new AlreadyExistRoleNameException();
     }
 
-    await RoleQuery.of(this.writerDataSource).createRole({
+    let users: User[] = [];
+
+    if (body.users.length > 0) {
+      users = await UserQuery.of(this.readerDataSource).findUserIdInIds(body.users);
+    }
+
+    await RoleQuery.of(this.writerDataSource).saveRole({
       name: body.name,
       rolePolicy: {
         accessRole: body.rolePolicy.accessRoleValue,
@@ -51,6 +60,7 @@ export class RoleService {
         accessUser: body.rolePolicy.accessUserValue,
         accessProject: body.rolePolicy.accessProjectValue,
       },
+      users,
     });
   }
 
@@ -63,19 +73,41 @@ export class RoleService {
       throw new CannotUpdateYourRoleException();
     }
 
-    const { affected } = await RoleQuery.of(this.writerDataSource).updateRole(updateRoleId, {
-      name: body.name,
-      rolePolicy: {
-        accessRole: body.rolePolicy?.accessRoleValue,
-        accessTeam: body.rolePolicy?.accessTeamValue,
-        accessUser: body.rolePolicy?.accessUserValue,
-        accessProject: body.rolePolicy?.accessProjectValue,
-      },
-    });
+    const roleExist = await RoleQuery.of(this.readerDataSource).hasRoleById(updateRoleId);
 
-    if (affected === 0) {
+    if (!roleExist) {
       throw new NotFoundRoleException();
     }
+
+    let users: User[] = [];
+
+    if (body.users.length > 0) {
+      users = await UserQuery.of(this.readerDataSource).findUserIdInIds(body.users);
+    }
+
+    await this.writerDataSource.transaction<void>(async (em) => {
+      if (body.name) {
+        await RoleQuery.of(em).updateRole(updateRoleId, {
+          name: body.name,
+        });
+      }
+
+      if (body.rolePolicy) {
+        await RolePolicyQuery.of(em).updateRolePolicy(updateRoleId, {
+          accessRole: body.rolePolicy.accessRoleValue,
+          accessTeam: body.rolePolicy.accessTeamValue,
+          accessUser: body.rolePolicy.accessUserValue,
+          accessProject: body.rolePolicy.accessProjectValue,
+        });
+      }
+
+      if (users.length > 0) {
+        await UserQuery.of(em).updateUser(
+          users.map(({ id }) => id),
+          { role: { id: updateRoleId } },
+        );
+      }
+    });
   }
 
   async deleteRole(userRoleId: number, deleteRoleId: number): Promise<void> {
@@ -83,10 +115,12 @@ export class RoleService {
       throw new CannotDeleteYourRoleException();
     }
 
-    const { affected } = await RoleQuery.of(this.writerDataSource).deleteRole(deleteRoleId);
+    const roleExist = await RoleQuery.of(this.readerDataSource).hasRoleById(deleteRoleId);
 
-    if (affected === 0) {
+    if (!roleExist) {
       throw new NotFoundRoleException();
     }
+
+    await RoleQuery.of(this.writerDataSource).deleteRole(deleteRoleId);
   }
 }

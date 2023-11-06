@@ -71,7 +71,7 @@ export class AuthService {
 
     const bcryptService = new BcryptService();
 
-    const user = await UserQuery.of(this.writerDataSource).createUser({
+    const user = await UserQuery.of(this.writerDataSource).saveUser({
       name: body.name,
       email: body.email,
       password: bcryptService.encryptPassword(body.password),

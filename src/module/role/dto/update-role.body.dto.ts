@@ -1,4 +1,4 @@
-import { IsInstance, IsOptional, IsString, MinLength } from 'class-validator';
+import { IsArray, IsInstance, IsInt, IsOptional, IsString, Min, MinLength } from 'class-validator';
 
 import { UpdateRolePolicyBodyDto } from './update-role-policy.body.dto';
 
@@ -11,4 +11,10 @@ export class UpdateRoleBodyDto {
   @IsOptional()
   @IsInstance(UpdateRolePolicyBodyDto)
   rolePolicy?: UpdateRolePolicyBodyDto;
+
+  @IsOptional()
+  @IsArray()
+  @IsInt({ each: true })
+  @Min(1, { each: true })
+  users?: number[];
 }

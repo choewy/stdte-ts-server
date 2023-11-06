@@ -73,6 +73,12 @@ export class NotFoundMyProfileException extends NotFoundException {
   }
 }
 
+export class NotExistUserException extends NotFoundException {
+  constructor() {
+    super('사용자 정보를 찾을 수 없습니다.');
+  }
+}
+
 export class AlreadyExistRoleNameException extends ConflictException {
   constructor() {
     super('이미 존재하는 역할명입니다.');

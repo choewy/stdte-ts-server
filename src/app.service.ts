@@ -84,7 +84,7 @@ export class AppService implements OnApplicationBootstrap {
       return role;
     }
 
-    return RoleQuery.of(this.writerDataSource).createRole(role);
+    return RoleQuery.of(this.writerDataSource).saveRole(role);
   }
 
   private async createDefaultUser(role: Role): Promise<User> {
@@ -136,6 +136,6 @@ export class AppService implements OnApplicationBootstrap {
       return user;
     }
 
-    return UserQuery.of(this.writerDataSource).createUser(user);
+    return UserQuery.of(this.writerDataSource).saveUser(user);
   }
 }
