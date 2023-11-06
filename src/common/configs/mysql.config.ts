@@ -1,6 +1,6 @@
-import { Type } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { EntityClassOrSchema } from '@nestjs/typeorm/dist/interfaces/entity-class-or-schema.type';
 
 import { NodeEnv, TypeOrmConnection, toBoolean } from '../constants';
 
@@ -18,7 +18,7 @@ export class MySqlConfig {
   private readonly MYSQL_SYNC = this.configService.get<string>('MYSQL_SYNC');
   private readonly MYSQL_LOGGING = this.configService.get<string>('MYSQL_LOGGING');
 
-  public getTypeOrmModuleWriterOptions(entities: Type<any>[]): TypeOrmModuleOptions {
+  public getTypeOrmModuleWriterOptions(entities: EntityClassOrSchema[]): TypeOrmModuleOptions {
     return {
       name: TypeOrmConnection.Writer,
       type: 'mysql',
@@ -35,7 +35,7 @@ export class MySqlConfig {
     };
   }
 
-  public getTypeOrmModuleReaderOptions(entities: Type<any>[]): TypeOrmModuleOptions {
+  public getTypeOrmModuleReaderOptions(entities: EntityClassOrSchema[]): TypeOrmModuleOptions {
     return {
       name: TypeOrmConnection.Reader,
       type: 'mysql',
