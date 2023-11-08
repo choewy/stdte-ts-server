@@ -12,10 +12,13 @@ import {
   RolePolicyScopeText,
   RolePolicyScopeValue,
 } from './enums';
+import { toEnumValues } from './helpers';
 
 export const trueValues = ['true', true, '1', 1];
 export const falseValues = ['false', false, '0', 0];
 
+export const degreeValues = toEnumValues(DegreeValue, Number);
+export const degreeTexts = toEnumValues(DegreeText, String);
 export const degreeToTextMap = {
   [DegreeValue.Null]: DegreeText.Null,
   [DegreeValue.HighSchool]: DegreeText.HighSchool,
@@ -24,7 +27,6 @@ export const degreeToTextMap = {
   [DegreeValue.Master]: DegreeText.Master,
   [DegreeValue.Doctor]: DegreeText.Doctor,
 };
-
 export const degreeToValueMap = {
   [DegreeText.Null]: DegreeValue.Master,
   [DegreeText.HighSchool]: DegreeValue.HighSchool,
@@ -34,25 +36,27 @@ export const degreeToValueMap = {
   [DegreeText.Doctor]: DegreeValue.Doctor,
 };
 
+export const authStatusValues = toEnumValues(AuthStatusValue, Number);
+export const authStatusTexts = toEnumValues(AuthStatusText, String);
 export const authStatusToTextMap = {
   [AuthStatusValue.Wating]: AuthStatusText.Wating,
   [AuthStatusValue.Active]: AuthStatusText.Active,
   [AuthStatusValue.Reject]: AuthStatusText.Reject,
 };
-
 export const authStatusToValueMap = {
   [AuthStatusText.Wating]: AuthStatusValue.Wating,
   [AuthStatusText.Active]: AuthStatusValue.Active,
   [AuthStatusText.Reject]: AuthStatusValue.Reject,
 };
 
+export const employmentStatusValues = toEnumValues(EmploymentStatusValue, Number);
+export const employmentStatusTexts = toEnumValues(EmploymentStatusText, String);
 export const employmentStatusToTextMap = {
   [EmploymentStatusValue.Wating]: EmploymentStatusText.Wating,
   [EmploymentStatusValue.Active]: EmploymentStatusText.Active,
   [EmploymentStatusValue.Vacate]: EmploymentStatusText.Vacate,
   [EmploymentStatusValue.Retire]: EmploymentStatusText.Retire,
 };
-
 export const employmentStatusToValueMap = {
   [EmploymentStatusText.Wating]: EmploymentStatusValue.Wating,
   [EmploymentStatusText.Active]: EmploymentStatusValue.Active,
@@ -60,16 +64,19 @@ export const employmentStatusToValueMap = {
   [EmploymentStatusText.Retire]: EmploymentStatusValue.Retire,
 };
 
+export const projectScopeValues = toEnumValues(ProjectScopeValue, Number);
+export const projectScopeTexts = toEnumValues(ProjectScopeText, String);
 export const projectScopeToTextMap = {
   [ProjectScopeValue.Public]: ProjectScopeText.Public,
   [ProjectScopeValue.Team]: ProjectScopeText.Team,
 };
-
 export const projectScopeToValueMap = {
   [ProjectScopeText.Public]: ProjectScopeValue.Public,
   [ProjectScopeText.Team]: ProjectScopeValue.Team,
 };
 
+export const projectStatusValues = toEnumValues(ProjectStatusValue, Number);
+export const projectStatusTexts = toEnumValues(ProjectStatusText, String);
 export const projectStatusToTextMap = {
   [ProjectStatusValue.Wating]: ProjectStatusText.Wating,
   [ProjectStatusValue.Active]: ProjectStatusText.Active,
@@ -78,7 +85,6 @@ export const projectStatusToTextMap = {
   [ProjectStatusValue.Finish]: ProjectStatusText.Finish,
   [ProjectStatusValue.AfterService]: ProjectStatusText.AfterService,
 };
-
 export const projectStatusToValueMap = {
   [ProjectStatusText.Wating]: ProjectStatusValue.Wating,
   [ProjectStatusText.Active]: ProjectStatusValue.Active,
@@ -88,6 +94,8 @@ export const projectStatusToValueMap = {
   [ProjectStatusText.AfterService]: ProjectStatusValue.AfterService,
 };
 
+export const rolePolicyScopeValues = toEnumValues(RolePolicyScopeValue, Number);
+export const rolePolicyScopeTexts = toEnumValues(RolePolicyScopeText, String);
 export const rolePolicyScopeToTextMap = {
   [RolePolicyScopeValue.Limit]: RolePolicyScopeText.Limit,
   [RolePolicyScopeValue.Read]: RolePolicyScopeText.Read,
@@ -96,7 +104,6 @@ export const rolePolicyScopeToTextMap = {
   [RolePolicyScopeValue.Delete]: RolePolicyScopeText.Delete,
   [RolePolicyScopeValue.All]: RolePolicyScopeText.All,
 };
-
 export const rolePolicyScopeToValueMap = {
   [RolePolicyScopeText.Limit]: RolePolicyScopeValue.Limit,
   [RolePolicyScopeText.Read]: RolePolicyScopeValue.Read,
