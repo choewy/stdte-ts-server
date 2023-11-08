@@ -9,7 +9,6 @@ import {
   InjectReaderDataSource,
   InjectWriterDataSource,
   ListQueryDto,
-  ListResponseDto,
   NotFoundRoleException,
   Role,
   RolePolicyQuery,
@@ -18,7 +17,7 @@ import {
   UserQuery,
 } from '@server/common';
 
-import { CreateRoleBodyDto, RoleResponseDto, UpdateRoleBodyDto } from './dto';
+import { CreateRoleBodyDto, RoleListResponseDto, RoleResponseDto, UpdateRoleBodyDto } from './dto';
 
 @Injectable()
 export class RoleService {
@@ -29,10 +28,10 @@ export class RoleService {
     private readonly readerDataSource: DataSource,
   ) {}
 
-  async getRoleList(query: ListQueryDto): Promise<ListResponseDto<RoleResponseDto, ListQueryDto>> {
+  async getRoleList(query: ListQueryDto): Promise<RoleListResponseDto> {
     const [rows, total] = await RoleQuery.of(this.readerDataSource).findRolesAndCount(query.skip, query.take);
 
-    return new ListResponseDto(
+    return new RoleListResponseDto(
       total,
       rows.map((row) => new RoleResponseDto(row)),
       query,

@@ -1,18 +1,11 @@
 import {
-  AuthStatusText,
-  AuthStatusValue,
-  DegreeText,
-  DegreeValue,
-  EmploymentStatusText,
-  EmploymentStatusValue,
+  AuthStatusMapResponseDto,
+  DegreeMapResponseDto,
+  EmploymentStatusMapResponseDto,
   GenderCode,
-  MapResponseDto,
   Role,
   Team,
   User,
-  toAuthStatusText,
-  toDegreeText,
-  toEmploymentStatusText,
 } from '@server/common';
 
 import { ProfileRoleResponseDto } from './profile-role.response.dto';
@@ -25,13 +18,13 @@ export class ProfileResponseDto {
   public readonly birthday: Date | null;
   public readonly genderCode: GenderCode | null;
   public readonly scienceCode: string | null;
-  public readonly degree: MapResponseDto<DegreeValue, DegreeText>;
+  public readonly degree: DegreeMapResponseDto;
   public readonly school: string | null;
   public readonly major: string | null;
   public readonly carType: string | null;
   public readonly carNumber: string | null;
-  public readonly authStatus: MapResponseDto<AuthStatusValue, AuthStatusText>;
-  public readonly employmentStatus: MapResponseDto<EmploymentStatusValue, EmploymentStatusText>;
+  public readonly authStatus: AuthStatusMapResponseDto;
+  public readonly employmentStatus: EmploymentStatusMapResponseDto;
   public readonly createdAt: Date;
   public readonly role: ProfileRoleResponseDto = null;
   public readonly team: ProfileTeamResponseDto = null;
@@ -43,13 +36,13 @@ export class ProfileResponseDto {
     this.birthday = user.birthday;
     this.genderCode = user.genderCode;
     this.scienceCode = user.scienceCode;
-    this.degree = new MapResponseDto(user.degree, toDegreeText);
+    this.degree = new DegreeMapResponseDto(user.degree);
     this.school = user.school;
     this.major = user.major;
     this.carType = user.carType;
     this.carNumber = user.carNumber;
-    this.authStatus = new MapResponseDto(user.authStatus, toAuthStatusText);
-    this.employmentStatus = new MapResponseDto(user.employmentStatus, toEmploymentStatusText);
+    this.authStatus = new AuthStatusMapResponseDto(user.authStatus);
+    this.employmentStatus = new EmploymentStatusMapResponseDto(user.employmentStatus);
     this.createdAt = user.createdAt;
 
     if (user.role instanceof Role) {
