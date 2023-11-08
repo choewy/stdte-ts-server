@@ -1,37 +1,45 @@
-import {
-  AuthStatusText,
-  AuthStatusValue,
-  EmploymentStatusText,
-  EmploymentStatusValue,
-  MapResponseDto,
-  Role,
-  Team,
-  User,
-  toAuthStatusText,
-  toEmploymentStatusText,
-} from '@server/common';
+import { ApiResponseProperty } from '@nestjs/swagger';
+
+import { AuthStatusMapResponseDto, EmploymentStatusMapResponseDto, Role, Team, User } from '@server/common';
 
 import { SignTokenResponseDto } from './sign-token.response.dto';
 import { SignRoleResponseDto } from './sign-role.response.dto';
 import { SignTeamResponseDto } from './sign-team.response.dto';
 
 export class SignResponseDto {
-  public readonly id: number;
-  public readonly name: string;
-  public readonly email: string;
-  public readonly authStatus: MapResponseDto<AuthStatusValue, AuthStatusText>;
-  public readonly employmentStatus: MapResponseDto<EmploymentStatusValue, EmploymentStatusText>;
-  public readonly createdAt: Date;
-  public readonly role: SignRoleResponseDto = null;
-  public readonly team: SignTeamResponseDto = null;
-  public readonly tokens?: SignTokenResponseDto;
+  @ApiResponseProperty({ type: Number })
+  id: number;
+
+  @ApiResponseProperty({ type: String })
+  name: string;
+
+  @ApiResponseProperty({ type: String })
+  email: string;
+
+  @ApiResponseProperty({ type: AuthStatusMapResponseDto })
+  authStatus: AuthStatusMapResponseDto;
+
+  @ApiResponseProperty({ type: EmploymentStatusMapResponseDto })
+  employmentStatus: EmploymentStatusMapResponseDto;
+
+  @ApiResponseProperty({ type: Date })
+  createdAt: Date;
+
+  @ApiResponseProperty({ type: SignRoleResponseDto })
+  role: SignRoleResponseDto = null;
+
+  @ApiResponseProperty({ type: SignTeamResponseDto })
+  team: SignTeamResponseDto = null;
+
+  @ApiResponseProperty({ type: SignTokenResponseDto })
+  tokens?: SignTokenResponseDto;
 
   constructor(user: User, access: string, refresh: string, withTokens = false) {
     this.id = user.id;
     this.name = user.name;
     this.email = user.email;
-    this.authStatus = new MapResponseDto(user.authStatus, toAuthStatusText);
-    this.employmentStatus = new MapResponseDto(user.employmentStatus, toEmploymentStatusText);
+    this.authStatus = new AuthStatusMapResponseDto(user.authStatus);
+    this.employmentStatus = new EmploymentStatusMapResponseDto(user.employmentStatus);
     this.createdAt = user.createdAt;
 
     if (user.role instanceof Role) {
