@@ -2,10 +2,11 @@ import express from 'express';
 import cookieParser from 'cookie-parser';
 
 import { NestFactory } from '@nestjs/core';
+import { ValidationPipe } from '@nestjs/common';
 
 import { CorsConfig } from '@server/common';
 import { AppModule } from '@server/app.module';
-import { ValidationPipe } from '@nestjs/common';
+import { AppSwagger } from '@server/app.swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -25,6 +26,8 @@ async function bootstrap() {
       },
     }),
   );
+
+  new AppSwagger(app).setup('api-docs');
 
   await app.listen(8000);
 }
