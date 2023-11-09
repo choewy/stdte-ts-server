@@ -3,6 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 
 import { INestApplication } from '@nestjs/common';
 import { DocumentBuilder, OpenAPIObject, SwaggerModule } from '@nestjs/swagger';
+import { SwaggerUiOptions } from '@nestjs/swagger/dist/interfaces/swagger-ui-options.interface';
 
 import { ExpressBasicAuthConfig } from './common';
 
@@ -28,11 +29,9 @@ export class AppSwagger {
       req.path.startsWith(path) ? expressBasicRequestHandler(req, res, next) : next();
     });
 
-    const documentConfig = this.build();
-    const document = this.document(documentConfig);
+    const swaggerDocument = this.document(this.build());
+    const swaggerOptions: SwaggerUiOptions = { defaultModelsExpandDepth: 0 };
 
-    SwaggerModule.setup(path, this.app, document, {
-      swaggerOptions: { defaultModelsExpandDepth: 0 },
-    });
+    SwaggerModule.setup(path, this.app, swaggerDocument, { swaggerOptions });
   }
 }
