@@ -121,12 +121,12 @@ export const MapResponseType = <Enum1, Enum2>(enum1: Enum1, enum2: Enum2, transf
   return MapType;
 };
 
-export const ListResponseType = <D, Q>(row: Type<D>, query: Type<Q>) => {
+export const ListResponseType = <D, Q>(Row: Type<D>, query: Type<Q>) => {
   class ListType {
     @ApiResponseProperty({ type: Number })
     total: number;
 
-    @ApiResponseProperty({ type: [row] })
+    @ApiResponseProperty({ type: [Row] })
     rows: D[];
 
     @ApiResponseProperty({ type: query })

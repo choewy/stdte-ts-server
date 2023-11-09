@@ -1,12 +1,21 @@
+import { ApiResponseProperty } from '@nestjs/swagger';
+
 import { Team, User } from '@server/common';
 
 import { RoleUserTeamResponseDto } from './role-user-team.response.dto';
 
 export class RoleUserResponseDto {
-  public readonly id: number;
-  public readonly email: string;
-  public readonly name: string;
-  public readonly team: RoleUserTeamResponseDto = null;
+  @ApiResponseProperty({ type: Number })
+  id: number;
+
+  @ApiResponseProperty({ type: String })
+  email: string;
+
+  @ApiResponseProperty({ type: String })
+  name: string;
+
+  @ApiResponseProperty({ type: RoleUserTeamResponseDto })
+  team: RoleUserTeamResponseDto = null;
 
   constructor(user: User) {
     this.id = user.id;

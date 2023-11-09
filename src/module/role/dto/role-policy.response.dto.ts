@@ -1,11 +1,22 @@
+import { ApiResponseProperty } from '@nestjs/swagger';
+
 import { RolePolicy, RolePolicyScopeMapResponseDto } from '@server/common';
 
 export class RolePolicyResponseDto {
-  public readonly accessRole: RolePolicyScopeMapResponseDto;
-  public readonly accessTeam: RolePolicyScopeMapResponseDto;
-  public readonly accessUser: RolePolicyScopeMapResponseDto;
-  public readonly accessProject: RolePolicyScopeMapResponseDto;
-  public readonly updatedAt: Date;
+  @ApiResponseProperty({ type: RolePolicyScopeMapResponseDto })
+  accessRole: RolePolicyScopeMapResponseDto;
+
+  @ApiResponseProperty({ type: RolePolicyScopeMapResponseDto })
+  accessTeam: RolePolicyScopeMapResponseDto;
+
+  @ApiResponseProperty({ type: RolePolicyScopeMapResponseDto })
+  accessUser: RolePolicyScopeMapResponseDto;
+
+  @ApiResponseProperty({ type: RolePolicyScopeMapResponseDto })
+  accessProject: RolePolicyScopeMapResponseDto;
+
+  @ApiResponseProperty({ type: Date })
+  updatedAt: Date;
 
   constructor(rolePolicy: RolePolicy) {
     this.accessRole = new RolePolicyScopeMapResponseDto(rolePolicy.accessRole);
