@@ -26,6 +26,6 @@ import { AuthModule, ProfileModule, RoleModule, TeamModule } from '@server/modul
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(HttpRequestMiddleware).exclude('/').forRoutes('(.*)');
+    consumer.apply(HttpRequestMiddleware).exclude('/', '/api-docs(.*)').forRoutes('(.*)');
   }
 }

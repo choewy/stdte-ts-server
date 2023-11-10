@@ -19,6 +19,7 @@ async function bootstrap() {
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
   app.enableCors(corsConfig.getCorsOptions());
+
   app.setGlobalPrefix('v1', { exclude: ['/'] });
   app.useGlobalInterceptors(await app.resolve(HttpRequestInterceptor));
   app.useGlobalFilters(await app.resolve(HttpRequestFilter));
