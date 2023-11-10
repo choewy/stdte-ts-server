@@ -1,15 +1,28 @@
+import { ApiResponseProperty } from '@nestjs/swagger';
+
 import { Role } from '@server/common';
 
 import { RolePolicyResponseDto } from './role-policy.response.dto';
 import { RoleUserResponseDto } from './role-user.response.dto';
 
 export class RoleResponseDto {
-  public readonly id: number;
-  public readonly name: string;
-  public readonly createdAt: Date;
-  public readonly updatedAt: Date;
-  public readonly rolePolicy: RolePolicyResponseDto;
-  public readonly users: RoleUserResponseDto[];
+  @ApiResponseProperty({ type: Number })
+  id: number;
+
+  @ApiResponseProperty({ type: String })
+  name: string;
+
+  @ApiResponseProperty({ type: Date })
+  createdAt: Date;
+
+  @ApiResponseProperty({ type: Date })
+  updatedAt: Date;
+
+  @ApiResponseProperty({ type: RolePolicyResponseDto })
+  rolePolicy: RolePolicyResponseDto;
+
+  @ApiResponseProperty({ type: [RoleUserResponseDto] })
+  users: RoleUserResponseDto[];
 
   constructor(role: Role) {
     this.id = role.id;

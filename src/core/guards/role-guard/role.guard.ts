@@ -6,10 +6,9 @@ import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import {
   AccessDeninedException,
   InjectReaderDataSource,
-  MapResponseDto,
   Role,
+  RolePolicyScopeMapResponseDto,
   UserQuery,
-  toRolePolicyText,
 } from '@server/common';
 
 import { SetRoleGuardMetadataArgs, SetRoleGuardMetadataKeys } from './types';
@@ -58,8 +57,8 @@ export class RoleGuard implements CanActivate {
       if (userValue < guardValue) {
         throw new AccessDeninedException({
           key,
-          user: new MapResponseDto(userValue, toRolePolicyText),
-          metadata: new MapResponseDto(guardValue, toRolePolicyText),
+          user: new RolePolicyScopeMapResponseDto(userValue),
+          metadata: new RolePolicyScopeMapResponseDto(guardValue),
         });
       }
     }

@@ -6,7 +6,8 @@ import { ValidationPipe } from '@nestjs/common';
 
 import { CorsConfig, ServerConfig } from '@server/common';
 import { AppModule } from '@server/app.module';
-import { LoggerInterceptor } from './core';
+import { AppSwagger } from '@server/app.swagger';
+import { LoggerInterceptor } from '@server/core';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -18,6 +19,8 @@ async function bootstrap() {
   app.use(express.urlencoded({ extended: true }));
   app.use(cookieParser());
   app.enableCors(corsConfig.getCorsOptions());
+
+  app.setGlobalPrefix('v1', { exclude: ['/'] });
   app.useGlobalInterceptors(app.get(LoggerInterceptor));
   app.useGlobalPipes(
     new ValidationPipe({
@@ -29,6 +32,8 @@ async function bootstrap() {
       },
     }),
   );
+
+  new AppSwagger(app).setup('api-docs');
 
   await app.listen(...serverConfig.getListenOptions());
 }

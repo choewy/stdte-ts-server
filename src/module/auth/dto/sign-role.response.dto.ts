@@ -1,11 +1,17 @@
 import { Role, RolePolicy } from '@server/common';
 
 import { SignRolePolicyReponseDto } from './sign-role-policy.response.dto';
+import { ApiResponseProperty } from '@nestjs/swagger';
 
 export class SignRoleResponseDto {
-  public readonly id: number;
-  public readonly name: string;
-  public readonly policy: SignRolePolicyReponseDto = null;
+  @ApiResponseProperty({ type: Number })
+  id: number;
+
+  @ApiResponseProperty({ type: String })
+  name: string;
+
+  @ApiResponseProperty({ type: SignRolePolicyReponseDto })
+  policy: SignRolePolicyReponseDto = null;
 
   constructor(role: Role) {
     this.id = role.id;

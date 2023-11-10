@@ -1,21 +1,24 @@
-import {
-  MapResponseDto,
-  RolePolicy,
-  RolePolicyScopeText,
-  RolePolicyScopeValue,
-  toRolePolicyText,
-} from '@server/common';
+import { ApiResponseProperty } from '@nestjs/swagger';
+
+import { RolePolicy, RolePolicyScopeMapResponseDto } from '@server/common';
 
 export class SignRolePolicyReponseDto {
-  public readonly accessRole: MapResponseDto<RolePolicyScopeValue, RolePolicyScopeText>;
-  public readonly accessUser: MapResponseDto<RolePolicyScopeValue, RolePolicyScopeText>;
-  public readonly accessTeam: MapResponseDto<RolePolicyScopeValue, RolePolicyScopeText>;
-  public readonly accessProject: MapResponseDto<RolePolicyScopeValue, RolePolicyScopeText>;
+  @ApiResponseProperty({ type: RolePolicyScopeMapResponseDto })
+  accessRole: RolePolicyScopeMapResponseDto;
+
+  @ApiResponseProperty({ type: RolePolicyScopeMapResponseDto })
+  accessUser: RolePolicyScopeMapResponseDto;
+
+  @ApiResponseProperty({ type: RolePolicyScopeMapResponseDto })
+  accessTeam: RolePolicyScopeMapResponseDto;
+
+  @ApiResponseProperty({ type: RolePolicyScopeMapResponseDto })
+  accessProject: RolePolicyScopeMapResponseDto;
 
   constructor(rolePolicy: RolePolicy) {
-    this.accessRole = new MapResponseDto(rolePolicy.accessRole, toRolePolicyText);
-    this.accessUser = new MapResponseDto(rolePolicy.accessUser, toRolePolicyText);
-    this.accessTeam = new MapResponseDto(rolePolicy.accessTeam, toRolePolicyText);
-    this.accessProject = new MapResponseDto(rolePolicy.accessProject, toRolePolicyText);
+    this.accessRole = new RolePolicyScopeMapResponseDto(rolePolicy.accessTeam);
+    this.accessUser = new RolePolicyScopeMapResponseDto(rolePolicy.accessUser);
+    this.accessTeam = new RolePolicyScopeMapResponseDto(rolePolicy.accessTeam);
+    this.accessProject = new RolePolicyScopeMapResponseDto(rolePolicy.accessProject);
   }
 }

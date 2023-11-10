@@ -1,11 +1,18 @@
+import { ApiResponseProperty } from '@nestjs/swagger';
+
 import { Role, RolePolicy } from '@server/common';
 
 import { ProfileRolePolicyResponseDto } from './profile-role-policy.response.dto';
 
 export class ProfileRoleResponseDto {
-  public readonly id: number;
-  public readonly name: string;
-  public readonly policy: ProfileRolePolicyResponseDto = null;
+  @ApiResponseProperty({ type: Number })
+  id: number;
+
+  @ApiResponseProperty({ type: String })
+  name: string;
+
+  @ApiResponseProperty({ type: ProfileRolePolicyResponseDto })
+  policy: ProfileRolePolicyResponseDto = null;
 
   constructor(role: Role) {
     this.id = role.id;

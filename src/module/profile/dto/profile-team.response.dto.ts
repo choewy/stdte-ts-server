@@ -1,8 +1,13 @@
+import { ApiResponseProperty } from '@nestjs/swagger';
+
 import { Team } from '@server/common';
 
 export class ProfileTeamResponseDto {
-  public readonly id: number;
-  public readonly name: string;
+  @ApiResponseProperty({ type: Number })
+  id: number;
+
+  @ApiResponseProperty({ type: String })
+  name: string;
 
   constructor(team: Team) {
     this.id = team.id;

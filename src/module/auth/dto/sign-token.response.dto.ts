@@ -1,3 +1,14 @@
+import { ApiResponseProperty } from '@nestjs/swagger';
+
 export class SignTokenResponseDto {
-  constructor(public readonly access: string, public readonly refres: string) {}
+  @ApiResponseProperty({ type: String })
+  access: string;
+
+  @ApiResponseProperty({ type: String })
+  refresh: string;
+
+  constructor(access: string, refresh: string) {
+    this.access = access;
+    this.refresh = refresh;
+  }
 }
