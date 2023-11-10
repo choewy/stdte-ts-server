@@ -1,14 +1,7 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { ApiConflictResponse, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 
-import {
-  ExceptionResponseDto,
-  ListQueryDto,
-  QueryString,
-  RequestUserRole,
-  Role,
-  RolePolicyScopeValue,
-} from '@server/common';
+import { ExceptionResponseDto, ListQueryDto, RequestUserRole, Role, RolePolicyScopeValue } from '@server/common';
 import { UseSignGuard, UseRoleGuard } from '@server/core';
 
 import { CreateRoleBodyDto, GetRoleParamDto, RoleListResponseDto, UpdateRoleBodyDto } from './dto';
@@ -24,7 +17,7 @@ export class RoleController {
   @UseRoleGuard({ accessRole: RolePolicyScopeValue.Read })
   @ApiOperation({ summary: 'get role list' })
   @ApiOkResponse({ type: RoleListResponseDto })
-  async getRoleList(@QueryString(ListQueryDto) query: ListQueryDto): Promise<RoleListResponseDto> {
+  async getRoleList(@Query() query: ListQueryDto): Promise<RoleListResponseDto> {
     return this.roleService.getRoleList(query);
   }
 
