@@ -1,3 +1,7 @@
+export enum MetadataKey {
+  SetIgnoreException = 'ignore-exception',
+}
+
 export enum TypeOrmConnection {
   Writer = 'writer',
   Reader = 'reader',
