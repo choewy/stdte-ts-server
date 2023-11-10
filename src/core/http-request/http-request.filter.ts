@@ -1,12 +1,13 @@
 import { Response } from 'express';
 import { DataSource } from 'typeorm';
 
-import { ArgumentsHost, Catch, HttpException } from '@nestjs/common';
+import { ArgumentsHost, Catch, HttpException, Injectable, Scope } from '@nestjs/common';
 import { BaseExceptionFilter } from '@nestjs/core';
 
 import { HttpRequest, HttpRequestLog, InjectWriterDataSource } from '@server/common';
 
 @Catch(HttpException)
+@Injectable({ scope: Scope.REQUEST })
 export class HttpRequestFilter extends BaseExceptionFilter {
   constructor(
     @InjectWriterDataSource()
