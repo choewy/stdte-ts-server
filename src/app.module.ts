@@ -5,7 +5,7 @@ import { AppController } from '@server/app.controller';
 import { AppService } from '@server/app.service';
 
 import { MySqlConfig, TypeOrmReaderModule, TypeOrmWriterModule, entireEntity } from '@server/common';
-import { SignGuardModule, RoleGuardModule } from '@server/core';
+import { SignGuardModule, RoleGuardModule, LoggerModule } from '@server/core';
 import { AuthModule, ProfileModule, RoleModule, TeamModule } from '@server/module';
 
 @Module({
@@ -13,6 +13,7 @@ import { AuthModule, ProfileModule, RoleModule, TeamModule } from '@server/modul
     ConfigModule.forRoot(),
     TypeOrmWriterModule.forRoot(new MySqlConfig().getTypeOrmModuleWriterOptions(entireEntity)),
     TypeOrmReaderModule.forRoot(new MySqlConfig().getTypeOrmModuleReaderOptions(entireEntity)),
+    LoggerModule,
     SignGuardModule,
     RoleGuardModule,
     AuthModule,
