@@ -12,3 +12,5 @@ export * from './project-time-record-log.entity';
 export * from './project-owners.entity';
 export * from './project-managers.entity';
 export * from './project-leaders.entity';
+
+export * from './http-request-log.entity';
