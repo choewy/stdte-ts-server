@@ -1,8 +1,8 @@
 import { v4 } from 'uuid';
 import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryColumn, UpdateDateColumn } from 'typeorm';
 
-import { RequestMethod } from '@nestjs/common';
 import { User } from './user.entity';
+import { Base64ValueTransformer } from '../constants';
 
 class Relations {
   @ManyToOne(() => User, {
@@ -18,13 +18,7 @@ export class HttpRequestLog extends Relations {
     type: 'varchar',
     length: 100,
   })
-  readonly requestId: string = [Date.now(), v4()].join('_');
-
-  @Column({
-    type: 'varchar',
-    length: 10,
-  })
-  method: RequestMethod;
+  readonly id: string = [Date.now(), v4()].join('_');
 
   @Column({
     type: 'varchar',
@@ -33,32 +27,52 @@ export class HttpRequestLog extends Relations {
   ip: string;
 
   @Column({
-    type: 'json',
-    nullable: true,
-    default: null,
+    type: 'varchar',
+    length: 10,
   })
-  params: JSON | null;
+  method: string;
 
   @Column({
-    type: 'json',
-    nullable: true,
-    default: null,
+    type: 'varchar',
+    length: 1024,
   })
-  query: JSON | null;
+  path: string;
 
   @Column({
-    type: 'json',
+    type: 'varchar',
+    length: 1024,
     nullable: true,
     default: null,
+    transformer: new Base64ValueTransformer(),
   })
-  body: JSON | null;
+  params: Record<string, string> | string | null;
 
   @Column({
-    type: 'json',
+    type: 'varchar',
+    length: 1024,
     nullable: true,
     default: null,
+    transformer: new Base64ValueTransformer(),
   })
-  exception: JSON | null;
+  query: Record<string, any> | string | null;
+
+  @Column({
+    type: 'varchar',
+    length: 1024,
+    nullable: true,
+    default: null,
+    transformer: new Base64ValueTransformer(),
+  })
+  body: object | string | null;
+
+  @Column({
+    type: 'varchar',
+    length: 1024,
+    nullable: true,
+    default: null,
+    transformer: new Base64ValueTransformer(),
+  })
+  exception: object | string | null;
 
   @Column({
     type: 'smallint',

@@ -26,6 +26,7 @@ import {
   toProjectStatusText,
   toRolePolicyText,
 } from './helpers';
+import { Type } from 'class-transformer';
 
 export class ExceptionResponseDtatilsDto {
   @ApiResponseProperty({ type: String })
@@ -69,12 +70,14 @@ export class ListQueryDto {
   @IsOptional()
   @IsInt()
   @Min(0)
+  @Type(() => Number)
   skip: number;
 
   @ApiPropertyOptional({ type: Number, example: 20 })
   @IsOptional()
   @IsInt()
   @Max(100)
+  @Type(() => Number)
   take: number;
 
   constructor() {
