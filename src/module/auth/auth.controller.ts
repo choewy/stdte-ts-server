@@ -1,13 +1,12 @@
 import { Response } from 'express';
 
-import { Body, Controller, Get, Patch, Post, Res, UseFilters } from '@nestjs/common';
+import { Body, Controller, Get, Patch, Post, Req, Res } from '@nestjs/common';
 import { ApiCreatedResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 
-import { RequestUserID, RequestUserEmail } from '@server/common';
-import { UseSignGuard } from '@server/core';
+import { RequestUserID, RequestUserEmail, HttpRequest } from '@server/common';
+import { SignGuard, UseRoleGuard, UseSignGuard } from '@server/core';
 
 import { AuthResponseDto, SignInBodyDto, SignResponseDto, SignUpBodyDto, UpdatePasswordBodyDto } from './dto';
-import { AuthIgnoreExceptionFilter } from './auth-ignore-exception.filter';
 import { AuthService } from './auth.service';
 
 @ApiTags('auth')
@@ -16,12 +15,11 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Get()
-  @UseSignGuard()
-  @UseFilters(AuthIgnoreExceptionFilter)
+  @UseRoleGuard({}, SignGuard)
   @ApiOperation({ summary: 'auth check' })
   @ApiOkResponse({ type: AuthResponseDto })
-  async auth(): Promise<AuthResponseDto> {
-    return new AuthResponseDto(true);
+  async auth(@Req() request: HttpRequest): Promise<AuthResponseDto> {
+    return new AuthResponseDto(request);
   }
 
   @Patch()

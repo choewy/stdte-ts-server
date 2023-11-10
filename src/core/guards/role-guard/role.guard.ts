@@ -5,8 +5,8 @@ import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 
 import {
   AccessDeninedException,
+  HttpRequest,
   InjectReaderDataSource,
-  Role,
   RolePolicyScopeMapResponseDto,
   UserQuery,
 } from '@server/common';
@@ -23,15 +23,19 @@ export class RoleGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const http = context.switchToHttp();
-    const request = http.getRequest<
-      Request & {
-        userId?: number;
-        userRole?: Role;
-      }
-    >();
+    const request = http.getRequest<HttpRequest>();
 
     if (request.userId === undefined) {
       throw new AccessDeninedException({ cause: 'request.userId is undefined' });
+    }
+
+    const roleGuardMetadata = this.reflector.getAllAndOverride<SetRoleGuardMetadataArgs>(RoleGuard.name, [
+      context.getClass(),
+      context.getHandler(),
+    ]);
+
+    if (roleGuardMetadata === undefined) {
+      return true;
     }
 
     const userQuery = UserQuery.of(this.readerDataSource);
@@ -43,14 +47,9 @@ export class RoleGuard implements CanActivate {
       throw new AccessDeninedException({ cause: 'user.role.rolePolicy is undefined' });
     }
 
-    const roleGuardMetadata = this.reflector.getAllAndOverride<SetRoleGuardMetadataArgs>(RoleGuard.name, [
-      context.getClass(),
-      context.getHandler(),
-    ]);
+    const roleGuardMetadataKeys = Object.keys(roleGuardMetadata) as SetRoleGuardMetadataKeys[];
 
-    const keys = Object.keys(roleGuardMetadata) as SetRoleGuardMetadataKeys[];
-
-    for (const key of keys) {
+    for (const key of roleGuardMetadataKeys) {
       const userValue = user.role.rolePolicy[key];
       const guardValue = roleGuardMetadata[key];
 

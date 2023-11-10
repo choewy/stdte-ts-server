@@ -76,22 +76,22 @@ export const toBoolean = (value: string | number | boolean, defaultReturnValue =
 };
 
 export const toDegreeText = (value: DegreeValue) => degreeToTextMap[value];
-export const toDegreeValue = (value: DegreeText) => degreeToValueMap[value];
+export const toDegreeValue = (text: DegreeText) => degreeToValueMap[text];
 
 export const toAuthStatusText = (value: AuthStatusValue) => authStatusToTextMap[value];
-export const toAuthStatusValue = (value: AuthStatusText) => authStatusToValueMap[value];
+export const toAuthStatusValue = (text: AuthStatusText) => authStatusToValueMap[text];
 
 export const toEmploymentStatusText = (value: EmploymentStatusValue) => employmentStatusToTextMap[value];
-export const toEmploymentStatusValue = (value: EmploymentStatusText) => employmentStatusToValueMap[value];
+export const toEmploymentStatusValue = (text: EmploymentStatusText) => employmentStatusToValueMap[text];
 
 export const toProjectScopeText = (value: ProjectScopeValue) => projectScopeToTextMap[value];
-export const toProjectScopesValue = (value: ProjectScopeText) => projectScopeToValueMap[value];
+export const toProjectScopesValue = (text: ProjectScopeText) => projectScopeToValueMap[text];
 
 export const toProjectStatusText = (value: ProjectStatusValue) => projectStatusToTextMap[value];
-export const toProjectStatusValue = (value: ProjectStatusText) => projectStatusToValueMap[value];
+export const toProjectStatusValue = (text: ProjectStatusText) => projectStatusToValueMap[text];
 
 export const toRolePolicyText = (value: RolePolicyScopeValue) => rolePolicyScopeToTextMap[value];
-export const toRolePolicyValue = (value: RolePolicyScopeText) => rolePolicyScopeToValueMap[value];
+export const toRolePolicyValue = (text: RolePolicyScopeText) => rolePolicyScopeToValueMap[text];
 
 export const MapResponseType = <Enum1, Enum2>(enum1: Enum1, enum2: Enum2, transform: (value: Enum1) => Enum2) => {
   const enum1Values = toEnumValues(enum1, Number);
@@ -110,11 +110,11 @@ export const MapResponseType = <Enum1, Enum2>(enum1: Enum1, enum2: Enum2, transf
       enum: enum2,
       example: enum2Values.join(' | '),
     })
-    transform: Enum2;
+    text: Enum2;
 
     constructor(value: unknown) {
       this.value = value as Enum1;
-      this.transform = transform(value as Enum1);
+      this.text = transform(value as Enum1);
     }
   }
 

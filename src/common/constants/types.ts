@@ -6,6 +6,7 @@ export type HttpRequest = Request & {
   httpRequestLog: HttpRequestLog;
   userId?: number;
   userEmail?: string;
+  userName?: string;
   userRole?: Role;
 };
 

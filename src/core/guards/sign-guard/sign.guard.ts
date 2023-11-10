@@ -1,10 +1,10 @@
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { TokenExpiredError, VerifyErrors } from 'jsonwebtoken';
 
 import { ExecutionContext, Injectable } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
-import { CookieKey, InvalidJwtTokenException } from '@server/common';
+import { CookieKey, HttpRequest, InvalidJwtTokenException } from '@server/common';
 import { SignAccessPayload, SignRefreshPayload, SignService } from '@server/core/sign';
 import { CookieService } from '@server/core/cookie';
 
@@ -23,7 +23,7 @@ export class SignGuard extends AuthGuard('jwt') {
     let payload = result as SignAccessPayload | false;
 
     const http = context.switchToHttp();
-    const request = http.getRequest<Request & { userId?: number }>();
+    const request = http.getRequest<HttpRequest>();
     const response = http.getResponse<Response>();
 
     const cookieService = new CookieService();
@@ -41,13 +41,18 @@ export class SignGuard extends AuthGuard('jwt') {
       throw new InvalidJwtTokenException(error);
     }
 
-    http.getRequest().userId = payload.id;
-    http.getRequest().userEmail = payload.email;
+    request.userId = payload.id;
+    request.userEmail = payload.email;
+    request.userName = payload.name;
 
     return payload as Payload;
   }
 
-  private refreshTokens(request: Request, response: Response, cookieService: CookieService): SignAccessPayload | false {
+  private refreshTokens(
+    request: HttpRequest,
+    response: Response,
+    cookieService: CookieService,
+  ): SignAccessPayload | false {
     const signService = new SignService();
 
     const accessToken = cookieService.get(request, CookieKey.Access);

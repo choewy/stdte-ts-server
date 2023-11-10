@@ -17,6 +17,10 @@ export const RequestUserEmail = createParamDecorator((_: unknown, ctx: Execution
   return ctx.switchToHttp().getRequest<HttpRequest>().userEmail ?? null;
 });
 
+export const RequestUserName = createParamDecorator((_: unknown, ctx: ExecutionContext): string | null => {
+  return ctx.switchToHttp().getRequest<HttpRequest>().userName ?? null;
+});
+
 export const RequestUserRole = createParamDecorator((_: unknown, ctx: ExecutionContext): Role | null => {
   return ctx.switchToHttp().getRequest<HttpRequest>().userRole ?? null;
 });

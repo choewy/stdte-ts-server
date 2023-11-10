@@ -103,6 +103,7 @@ export const rolePolicyScopeToTextMap = {
   [RolePolicyScopeValue.Update]: RolePolicyScopeText.Update,
   [RolePolicyScopeValue.Delete]: RolePolicyScopeText.Delete,
   [RolePolicyScopeValue.All]: RolePolicyScopeText.All,
+  [RolePolicyScopeValue.Admin]: RolePolicyScopeText.Admin,
 };
 export const rolePolicyScopeToValueMap = {
   [RolePolicyScopeText.Limit]: RolePolicyScopeValue.Limit,
@@ -111,4 +112,5 @@ export const rolePolicyScopeToValueMap = {
   [RolePolicyScopeText.Update]: RolePolicyScopeValue.Update,
   [RolePolicyScopeText.Delete]: RolePolicyScopeValue.Delete,
   [RolePolicyScopeText.All]: RolePolicyScopeValue.All,
+  [RolePolicyScopeText.Admin]: RolePolicyScopeValue.Admin,
 };

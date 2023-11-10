@@ -1,16 +1,28 @@
 import { ApiResponseProperty } from '@nestjs/swagger';
 
-import { ExceptionResponseDto } from '@server/common';
+import { HttpRequest } from '@server/common';
+import { AuthRoleResponseDto } from './auth-role.response.dto';
 
 export class AuthResponseDto {
-  @ApiResponseProperty({ type: Boolean })
-  ok: boolean;
+  @ApiResponseProperty({ type: Number })
+  id: number;
 
-  @ApiResponseProperty({ type: ExceptionResponseDto })
-  failReason?: ExceptionResponseDto;
+  @ApiResponseProperty({ type: String })
+  email: string;
 
-  constructor(ok: boolean, failReason?: ExceptionResponseDto) {
-    this.ok = ok;
-    this.failReason = failReason;
+  @ApiResponseProperty({ type: String })
+  name: string;
+
+  @ApiResponseProperty({ type: AuthRoleResponseDto })
+  role: AuthRoleResponseDto = null;
+
+  constructor(request: HttpRequest) {
+    this.id = request.userId;
+    this.email = request.userEmail;
+    this.name = request.userName;
+
+    if (request.userRole) {
+      this.role = new AuthRoleResponseDto(request.userRole);
+    }
   }
 }
