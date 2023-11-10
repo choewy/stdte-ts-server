@@ -1,11 +1,11 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 
 import { AppController } from '@server/app.controller';
 import { AppService } from '@server/app.service';
 
 import { MySqlConfig, TypeOrmReaderModule, TypeOrmWriterModule, entireEntity } from '@server/common';
-import { SignGuardModule, RoleGuardModule, LoggerModule } from '@server/core';
+import { SignGuardModule, RoleGuardModule, HttpRequestModule, HttpRequestMiddleware } from '@server/core';
 import { AuthModule, ProfileModule, RoleModule, TeamModule } from '@server/module';
 
 @Module({
@@ -13,7 +13,7 @@ import { AuthModule, ProfileModule, RoleModule, TeamModule } from '@server/modul
     ConfigModule.forRoot(),
     TypeOrmWriterModule.forRoot(new MySqlConfig().getTypeOrmModuleWriterOptions(entireEntity)),
     TypeOrmReaderModule.forRoot(new MySqlConfig().getTypeOrmModuleReaderOptions(entireEntity)),
-    LoggerModule,
+    HttpRequestModule,
     SignGuardModule,
     RoleGuardModule,
     AuthModule,
@@ -24,4 +24,8 @@ import { AuthModule, ProfileModule, RoleModule, TeamModule } from '@server/modul
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(HttpRequestMiddleware).exclude('/').forRoutes('(.*)');
+  }
+}
