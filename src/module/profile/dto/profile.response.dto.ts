@@ -27,7 +27,11 @@ export class ProfileResponseDto {
   @ApiResponseProperty({ type: Date })
   birthday: Date | null;
 
-  @ApiResponseProperty({ type: Number, enum: GenderCode, example: toEnumValues(GenderCode, Number).join(' | ') })
+  @ApiResponseProperty({
+    type: Number,
+    enum: GenderCode,
+    example: toEnumValues(GenderCode, Number).join(' | '),
+  })
   genderCode: GenderCode | null;
 
   @ApiResponseProperty({ type: String })
