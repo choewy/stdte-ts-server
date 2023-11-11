@@ -20,17 +20,13 @@ export class HttpRequestInterceptor implements NestInterceptor {
         const request = http.getRequest<HttpRequest>();
         const response = http.getResponse<Response>();
 
-        const httpRequestLog = request.httpRequestLog;
-
-        if (httpRequestLog === undefined) {
-          return;
+        if (request.httpRequestLog) {
+          const httpRequestLogRepository = this.dataSource.getRepository(HttpRequestLog);
+          await httpRequestLogRepository.update(request.httpRequestLog.id, {
+            user: { id: request.userId },
+            status: response.statusCode,
+          });
         }
-
-        const httpRequestLogRepository = this.dataSource.getRepository(HttpRequestLog);
-        await httpRequestLogRepository.update(httpRequestLog.id, {
-          user: { id: request.userId },
-          status: response.statusCode,
-        });
       }),
     );
   }
