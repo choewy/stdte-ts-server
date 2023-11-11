@@ -12,8 +12,9 @@ import {
 } from '@nestjs/common';
 import { BaseExceptionFilter } from '@nestjs/core';
 
-import { HttpRequest, HttpRequestLog, InjectWriterDataSource } from '@server/common';
+import { ExceptionResponseDtatilsDto, HttpRequest, HttpRequestLog, InjectWriterDataSource } from '@server/common';
 import { HttpRequestLogger } from './http-request.logger';
+import { STATUS_CODES } from 'http';
 
 @Catch()
 @Injectable({ scope: Scope.REQUEST })
@@ -21,6 +22,7 @@ export class HttpRequestFilter extends BaseExceptionFilter {
   constructor(
     @InjectWriterDataSource()
     private readonly dataSource: DataSource,
+    private readonly logger: HttpRequestLogger,
   ) {
     super();
   }
@@ -30,14 +32,17 @@ export class HttpRequestFilter extends BaseExceptionFilter {
     const request = http.getRequest<HttpRequest>();
     const response = http.getResponse<Response>();
 
+    let error: Error;
     let exception: HttpException;
 
     if (e instanceof HttpException) {
+      error = null;
       exception = e;
     } else {
+      error = e;
       exception = new InternalServerErrorException({
-        name: e.name,
-        message: e.message,
+        name: error.name,
+        message: error.message,
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
       });
     }
@@ -46,12 +51,17 @@ export class HttpRequestFilter extends BaseExceptionFilter {
       const httpRequestLogRepository = this.dataSource.getRepository(HttpRequestLog);
       await httpRequestLogRepository.update(request.httpRequestLog.id, {
         user: { id: request.userId },
-        exception: exception.getResponse() as object,
-        status: exception.getStatus(),
+        statusCode: exception.getStatus(),
+        statusMessage: STATUS_CODES[exception.getStatus()],
+        exceptionName: exception.name,
+        exceptionMessage: (exception.getResponse() as ExceptionResponseDtatilsDto).message,
+        errorName: error?.name,
+        errorMessage: error?.message,
+        errorStack: error?.stack,
       });
     }
 
-    new HttpRequestLogger(request, response).catch(exception, e);
+    this.logger.catch(request, exception, e);
 
     response.status(exception.getStatus()).send(exception.getResponse());
   }

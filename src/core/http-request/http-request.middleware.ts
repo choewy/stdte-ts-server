@@ -17,9 +17,9 @@ export class HttpRequestMiddleware {
       ip: request.ip,
       method: request.method,
       path: request.path,
-      params: request.params,
-      query: request.query,
-      body: request.body,
+      params: Object.keys(request.params).length > 0 ? JSON.stringify(request.path) : null,
+      query: Object.keys(request.query).length > 0 ? JSON.stringify(request.query) : null,
+      body: Object.keys(request.body).length > 0 ? JSON.stringify(request.body) : null,
     });
 
     request.httpRequestLog = await httpRequestLogRepository.save(httpRequestLog);

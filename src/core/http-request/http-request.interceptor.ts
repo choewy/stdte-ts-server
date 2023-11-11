@@ -1,4 +1,5 @@
 import { tap } from 'rxjs';
+import { STATUS_CODES } from 'http';
 import { Response } from 'express';
 import { DataSource } from 'typeorm';
 
@@ -13,6 +14,7 @@ export class HttpRequestInterceptor implements NestInterceptor {
   constructor(
     @InjectWriterDataSource()
     private readonly dataSource: DataSource,
+    private readonly logger: HttpRequestLogger,
   ) {}
 
   async intercept(context: ExecutionContext, next: CallHandler<any>) {
@@ -29,11 +31,12 @@ export class HttpRequestInterceptor implements NestInterceptor {
         const httpRequestLogRepository = this.dataSource.getRepository(HttpRequestLog);
         await httpRequestLogRepository.update(request.httpRequestLog.id, {
           user: { id: request.userId },
-          status: response.statusCode,
+          statusCode: response.statusCode,
+          statusMessage: STATUS_CODES[response.statusCode],
         });
       }
 
-      new HttpRequestLogger(request, response).done();
+      this.logger.done(request, response);
     };
   }
 }

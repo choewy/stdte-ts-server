@@ -2,7 +2,6 @@ import { v4 } from 'uuid';
 import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryColumn, UpdateDateColumn } from 'typeorm';
 
 import { User } from './user.entity';
-import { Base64ValueTransformer } from '../constants';
 
 class Relations {
   @ManyToOne(() => User, {
@@ -43,36 +42,24 @@ export class HttpRequestLog extends Relations {
     length: 1024,
     nullable: true,
     default: null,
-    transformer: new Base64ValueTransformer(),
   })
-  params: Record<string, string> | string | null;
+  params: string | null;
 
   @Column({
     type: 'varchar',
     length: 1024,
     nullable: true,
     default: null,
-    transformer: new Base64ValueTransformer(),
   })
-  query: Record<string, any> | string | null;
+  query: string | null;
 
   @Column({
     type: 'varchar',
-    length: 1024,
+    length: 5012,
     nullable: true,
     default: null,
-    transformer: new Base64ValueTransformer(),
   })
-  body: object | string | null;
-
-  @Column({
-    type: 'varchar',
-    length: 1024,
-    nullable: true,
-    default: null,
-    transformer: new Base64ValueTransformer(),
-  })
-  exception: object | string | null;
+  body: string | null;
 
   @Column({
     type: 'smallint',
@@ -80,7 +67,55 @@ export class HttpRequestLog extends Relations {
     nullable: true,
     default: null,
   })
-  status: number | null;
+  statusCode: number | null;
+
+  @Column({
+    type: 'varchar',
+    length: 50,
+    nullable: true,
+    default: null,
+  })
+  statusMessage: string | null;
+
+  @Column({
+    type: 'varchar',
+    length: 200,
+    nullable: true,
+    default: null,
+  })
+  exceptionName: string | null;
+
+  @Column({
+    type: 'varchar',
+    length: 200,
+    nullable: true,
+    default: null,
+  })
+  exceptionMessage: string | null;
+
+  @Column({
+    type: 'varchar',
+    length: 200,
+    nullable: true,
+    default: null,
+  })
+  errorName: string | null;
+
+  @Column({
+    type: 'varchar',
+    length: 200,
+    nullable: true,
+    default: null,
+  })
+  errorMessage: string | null;
+
+  @Column({
+    type: 'varchar',
+    length: 5012,
+    nullable: true,
+    default: null,
+  })
+  errorStack: string | null;
 
   @CreateDateColumn()
   readonly createdAt: Date;

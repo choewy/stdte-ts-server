@@ -49,9 +49,10 @@ export class AuthService {
       throw new SignInFailException();
     }
 
+    const password = Buffer.from(body.password, 'base64').toString('utf-8');
     const bcryptService = new BcryptService();
 
-    if (!bcryptService.comparePassword(user.password, body.password)) {
+    if (!bcryptService.comparePassword(user.password, password)) {
       throw new SignInFailException();
     }
 
@@ -65,7 +66,10 @@ export class AuthService {
       throw new AlreadyExistUserException();
     }
 
-    if (body.password !== body.confirmPassword) {
+    const password = Buffer.from(body.password, 'base64').toString('utf-8');
+    const confirmPassword = Buffer.from(body.confirmPassword, 'base64').toString('utf-8');
+
+    if (password !== confirmPassword) {
       throw new NotSamePasswordException();
     }
 
@@ -74,7 +78,7 @@ export class AuthService {
     const user = await UserQuery.of(this.writerDataSource).saveUser({
       name: body.name,
       email: body.email,
-      password: bcryptService.encryptPassword(body.password),
+      password: bcryptService.encryptPassword(password),
       projectTimeRecordLog: new ProjectTimeRecordLog(),
     });
 
@@ -101,18 +105,22 @@ export class AuthService {
       throw new NotFoundMyProfileException();
     }
 
+    const currentPassword = Buffer.from(body.currentPassword, 'base64').toString('utf-8');
+    const newPassword = Buffer.from(body.newPassword, 'base64').toString('utf-8');
+    const confirmPassword = Buffer.from(body.confirmPassword, 'base64').toString('utf-8');
+
     const bcryptService = new BcryptService();
 
-    if (!bcryptService.comparePassword(user.password, body.currentPassword)) {
+    if (!bcryptService.comparePassword(user.password, currentPassword)) {
       throw new WrongPasswordException();
     }
 
-    if (body.newPassword !== body.confirmPassword) {
+    if (newPassword !== confirmPassword) {
       throw new NotSamePasswordException();
     }
 
     await UserQuery.of(this.writerDataSource).updateUser(id, {
-      password: bcryptService.encryptPassword(body.newPassword),
+      password: bcryptService.encryptPassword(newPassword),
     });
   }
 }
