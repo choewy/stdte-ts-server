@@ -42,12 +42,18 @@ export class RoleGuard implements CanActivate {
     const user = await userQuery.findUserRoleByUserId(request.userId);
 
     request.userRole = user?.role;
+    request.userAuthStatus = user?.authStatus;
+    request.userEmplymentStatus = user?.employmentStatus;
+
+    const roleGuardMetadataKeys = Object.keys(roleGuardMetadata) as SetRoleGuardMetadataKeys[];
+
+    if (roleGuardMetadataKeys.length === 0) {
+      return true;
+    }
 
     if (request.userRole?.rolePolicy === undefined) {
       throw new AccessDeninedException({ cause: 'user.role.rolePolicy is undefined' });
     }
-
-    const roleGuardMetadataKeys = Object.keys(roleGuardMetadata) as SetRoleGuardMetadataKeys[];
 
     for (const key of roleGuardMetadataKeys) {
       const userValue = user.role.rolePolicy[key];
