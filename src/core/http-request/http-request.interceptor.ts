@@ -6,6 +6,8 @@ import { CallHandler, ExecutionContext, Injectable, NestInterceptor, Scope } fro
 
 import { HttpRequest, HttpRequestLog, InjectWriterDataSource } from '@server/common';
 
+import { HttpRequestLogger } from './http-request.logger';
+
 @Injectable({ scope: Scope.REQUEST })
 export class HttpRequestInterceptor implements NestInterceptor {
   constructor(
@@ -14,20 +16,24 @@ export class HttpRequestInterceptor implements NestInterceptor {
   ) {}
 
   async intercept(context: ExecutionContext, next: CallHandler<any>) {
-    return next.handle().pipe(
-      tap(async () => {
-        const http = context.switchToHttp();
-        const request = http.getRequest<HttpRequest>();
-        const response = http.getResponse<Response>();
+    return next.handle().pipe(tap(this.tabObserverOrNext(context)));
+  }
 
-        if (request.httpRequestLog) {
-          const httpRequestLogRepository = this.dataSource.getRepository(HttpRequestLog);
-          await httpRequestLogRepository.update(request.httpRequestLog.id, {
-            user: { id: request.userId },
-            status: response.statusCode,
-          });
-        }
-      }),
-    );
+  private tabObserverOrNext(context: ExecutionContext): () => Promise<void> {
+    return async () => {
+      const http = context.switchToHttp();
+      const request = http.getRequest<HttpRequest>();
+      const response = http.getResponse<Response>();
+
+      if (request.httpRequestLog) {
+        const httpRequestLogRepository = this.dataSource.getRepository(HttpRequestLog);
+        await httpRequestLogRepository.update(request.httpRequestLog.id, {
+          user: { id: request.userId },
+          status: response.statusCode,
+        });
+      }
+
+      new HttpRequestLogger(request, response).done();
+    };
   }
 }

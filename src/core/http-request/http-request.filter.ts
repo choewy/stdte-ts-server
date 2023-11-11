@@ -13,6 +13,7 @@ import {
 import { BaseExceptionFilter } from '@nestjs/core';
 
 import { HttpRequest, HttpRequestLog, InjectWriterDataSource } from '@server/common';
+import { HttpRequestLogger } from './http-request.logger';
 
 @Catch()
 @Injectable({ scope: Scope.REQUEST })
@@ -49,6 +50,8 @@ export class HttpRequestFilter extends BaseExceptionFilter {
         status: exception.getStatus(),
       });
     }
+
+    new HttpRequestLogger(request, response).catch(exception, e);
 
     response.status(exception.getStatus()).send(exception.getResponse());
   }
