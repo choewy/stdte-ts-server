@@ -16,7 +16,7 @@ import {
   InjectWriterDataSource,
   InjectReaderDataSource,
 } from '@server/common';
-import { CookieService, BcryptService, SignService } from '@server/core';
+import { CookieService, BcryptService, SignService, HashService } from '@server/core';
 
 import { SignInBodyDto, SignResponseDto, SignUpBodyDto, UpdatePasswordBodyDto } from './dto';
 
@@ -49,7 +49,9 @@ export class AuthService {
       throw new SignInFailException();
     }
 
-    const password = Buffer.from(body.password, 'base64').toString('utf-8');
+    const hashService = new HashService();
+    const password = hashService.fromHex(body.password);
+
     const bcryptService = new BcryptService();
 
     if (!bcryptService.comparePassword(user.password, password)) {
@@ -66,8 +68,10 @@ export class AuthService {
       throw new AlreadyExistUserException();
     }
 
-    const password = Buffer.from(body.password, 'base64').toString('utf-8');
-    const confirmPassword = Buffer.from(body.confirmPassword, 'base64').toString('utf-8');
+    const hashService = new HashService();
+
+    const password = hashService.fromHex(body.password);
+    const confirmPassword = hashService.fromHex(body.confirmPassword);
 
     if (password !== confirmPassword) {
       throw new NotSamePasswordException();
@@ -105,9 +109,11 @@ export class AuthService {
       throw new NotFoundMyProfileException();
     }
 
-    const currentPassword = Buffer.from(body.currentPassword, 'base64').toString('utf-8');
-    const newPassword = Buffer.from(body.newPassword, 'base64').toString('utf-8');
-    const confirmPassword = Buffer.from(body.confirmPassword, 'base64').toString('utf-8');
+    const hashService = new HashService();
+
+    const currentPassword = hashService.fromHex(body.currentPassword);
+    const newPassword = hashService.fromHex(body.newPassword);
+    const confirmPassword = hashService.fromHex(body.confirmPassword);
 
     const bcryptService = new BcryptService();
 
