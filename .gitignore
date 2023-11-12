@@ -1,5 +1,6 @@
 # development
 /local
+.env.local
 
 # compiled output
 /dist
