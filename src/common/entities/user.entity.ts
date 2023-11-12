@@ -12,14 +12,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-import {
-  AuthStatusValue,
-  DegreeValue,
-  EmploymentStatusValue,
-  GenderCode,
-  LazyType,
-  LazyWithNullType,
-} from '../constants';
+import { AuthStatus, Degree, EmploymentStatus, GenderCode, LazyType } from '../constants';
 
 import { Team } from './team.entity';
 import { Role } from './role.entity';
@@ -34,10 +27,9 @@ class Relations {
   @ManyToOne(() => Team, (e) => e.members, {
     onDelete: 'SET NULL',
     nullable: true,
-    lazy: true,
   })
   @JoinColumn()
-  team: LazyWithNullType<Team>;
+  team: Team | null;
 
   @OneToMany(() => Team, (e) => e.leader, {
     cascade: ['insert', 'update', 'remove'],
@@ -150,9 +142,9 @@ export class User extends Relations {
   @Column({
     type: 'tinyint',
     nullable: true,
-    default: DegreeValue.Null,
+    default: Degree.Null,
   })
-  degree: DegreeValue;
+  degree: Degree;
 
   @Column({
     type: 'varchar',
@@ -189,16 +181,16 @@ export class User extends Relations {
   @Column({
     type: 'tinyint',
     nullable: true,
-    default: AuthStatusValue.Wating,
+    default: AuthStatus.Wating,
   })
-  authStatus: AuthStatusValue;
+  authStatus: AuthStatus;
 
   @Column({
     type: 'tinyint',
     nullable: true,
-    default: EmploymentStatusValue.Wating,
+    default: EmploymentStatus.Null,
   })
-  employmentStatus: EmploymentStatusValue;
+  employmentStatus: EmploymentStatus;
 
   @Column({
     type: 'boolean',

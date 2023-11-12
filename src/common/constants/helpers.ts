@@ -1,37 +1,4 @@
-import { ApiResponseProperty } from '@nestjs/swagger';
-
-import {
-  AuthStatusText,
-  AuthStatusValue,
-  DegreeText,
-  DegreeValue,
-  EmploymentStatusText,
-  EmploymentStatusValue,
-  ProjectScopeText,
-  ProjectScopeValue,
-  ProjectStatusText,
-  ProjectStatusValue,
-  RolePolicyScopeText,
-  RolePolicyScopeValue,
-} from './enums';
-
-import {
-  authStatusToTextMap,
-  authStatusToValueMap,
-  degreeToTextMap,
-  degreeToValueMap,
-  employmentStatusToTextMap,
-  employmentStatusToValueMap,
-  falseValues,
-  projectScopeToTextMap,
-  projectScopeToValueMap,
-  projectStatusToTextMap,
-  projectStatusToValueMap,
-  rolePolicyScopeToTextMap,
-  rolePolicyScopeToValueMap,
-  trueValues,
-} from './constants';
-import { Type } from '@nestjs/common';
+import { FALSE_VALUES, TRUE_VALUES } from './constants';
 
 export const toEnumKeys = <E>(e: E, type?: StringConstructor | NumberConstructor) => {
   const keys = Object.keys(e) as Array<string | number>;
@@ -64,80 +31,13 @@ export const toEnumValues = <E>(e: E, type?: StringConstructor | NumberConstruct
 };
 
 export const toBoolean = (value: string | number | boolean, defaultReturnValue = null) => {
-  if (trueValues.includes(value)) {
+  if (TRUE_VALUES.includes(value)) {
     return true;
   }
 
-  if (falseValues.includes(value)) {
+  if (FALSE_VALUES.includes(value)) {
     return false;
   }
 
   return defaultReturnValue;
-};
-
-export const toDegreeText = (value: DegreeValue) => degreeToTextMap[value];
-export const toDegreeValue = (text: DegreeText) => degreeToValueMap[text];
-
-export const toAuthStatusText = (value: AuthStatusValue) => authStatusToTextMap[value];
-export const toAuthStatusValue = (text: AuthStatusText) => authStatusToValueMap[text];
-
-export const toEmploymentStatusText = (value: EmploymentStatusValue) => employmentStatusToTextMap[value];
-export const toEmploymentStatusValue = (text: EmploymentStatusText) => employmentStatusToValueMap[text];
-
-export const toProjectScopeText = (value: ProjectScopeValue) => projectScopeToTextMap[value];
-export const toProjectScopesValue = (text: ProjectScopeText) => projectScopeToValueMap[text];
-
-export const toProjectStatusText = (value: ProjectStatusValue) => projectStatusToTextMap[value];
-export const toProjectStatusValue = (text: ProjectStatusText) => projectStatusToValueMap[text];
-
-export const toRolePolicyText = (value: RolePolicyScopeValue) => rolePolicyScopeToTextMap[value];
-export const toRolePolicyValue = (text: RolePolicyScopeText) => rolePolicyScopeToValueMap[text];
-
-export const MapResponseType = <Enum1, Enum2>(enum1: Enum1, enum2: Enum2, transform: (value: Enum1) => Enum2) => {
-  const enum1Values = toEnumValues(enum1, Number);
-  const enum2Values = toEnumValues(enum2, String);
-
-  class MapType {
-    @ApiResponseProperty({
-      type: String,
-      enum: enum1,
-      example: enum1Values.join(' | '),
-    })
-    value: Enum1;
-
-    @ApiResponseProperty({
-      type: String,
-      enum: enum2,
-      example: enum2Values.join(' | '),
-    })
-    text: Enum2;
-
-    constructor(value: unknown) {
-      this.value = value as Enum1;
-      this.text = transform(value as Enum1);
-    }
-  }
-
-  return MapType;
-};
-
-export const ListResponseType = <D, Q>(Row: Type<D>, query: Type<Q>) => {
-  class ListType {
-    @ApiResponseProperty({ type: Number })
-    total: number;
-
-    @ApiResponseProperty({ type: [Row] })
-    rows: D[];
-
-    @ApiResponseProperty({ type: query })
-    query: Q;
-
-    constructor(total: number, rows: D[], query: Q) {
-      this.total = total;
-      this.rows = rows;
-      this.query = query;
-    }
-  }
-
-  return ListType;
 };

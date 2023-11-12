@@ -11,7 +11,7 @@ import {
   JoinColumn,
 } from 'typeorm';
 
-import { LazyType, LazyWithNullType } from '../constants';
+import { LazyType } from '../constants';
 
 import { User } from './user.entity';
 import { ProjectType } from './project-type.entity';
@@ -20,10 +20,9 @@ class Relations {
   @ManyToOne(() => User, (e) => e.teamsByLeader, {
     onDelete: 'SET NULL',
     nullable: true,
-    lazy: true,
   })
   @JoinColumn()
-  leader: LazyWithNullType<User>;
+  leader: User | null;
 
   @OneToMany(() => User, (e) => e.team, {
     cascade: ['update'],

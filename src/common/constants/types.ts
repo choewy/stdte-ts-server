@@ -1,16 +1,10 @@
 import { Request } from 'express';
 
-import { HttpRequestLog, Role } from '../entities';
-import { AuthStatusValue, EmploymentStatusValue } from './enums';
+import { HttpRequestLog, User } from '../entities';
 
 export type HttpRequest = Request & {
   httpRequestLog: HttpRequestLog;
-  userId?: number;
-  userEmail?: string;
-  userName?: string;
-  userRole?: Role;
-  userAuthStatus?: AuthStatusValue;
-  userEmploymentStatus?: EmploymentStatusValue;
+  user?: User;
 };
 
 export type LazyType<T> = T | Promise<T>;

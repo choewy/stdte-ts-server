@@ -11,7 +11,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-import { LazyType, LazyWithNullType, ProjectScopeValue } from '../constants';
+import { LazyType, LazyWithNullType, ProjectScope } from '../constants';
 
 import { Team } from './team.entity';
 import { Project } from './project.entity';
@@ -59,9 +59,9 @@ export class ProjectType extends Relations {
   @Column({
     type: 'tinyint',
     unsigned: true,
-    default: ProjectScopeValue.Team,
+    default: ProjectScope.Team,
   })
-  scope: ProjectScopeValue;
+  scope: ProjectScope;
 
   @CreateDateColumn()
   readonly createdAt: Date;

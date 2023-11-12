@@ -4,6 +4,5 @@ export * from './constants';
 export * from './helpers';
 export * from './classes';
 export * from './exceptions';
-export * from './dtos';
 export * from './decorators';
 export * from './transformers';

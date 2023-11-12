@@ -4,25 +4,13 @@ import { ExecutionContext, SetMetadata, createParamDecorator } from '@nestjs/com
 import { InjectDataSource } from '@nestjs/typeorm';
 
 import { TypeOrmConnection, HttpRequest, MetadataKey } from '../constants';
-import { HttpRequestLog, Role } from '../entities';
+import { HttpRequestLog, User } from '../entities';
 
 export const InjectWriterDataSource = () => InjectDataSource(TypeOrmConnection.Writer);
 export const InjectReaderDataSource = () => InjectDataSource(TypeOrmConnection.Reader);
 
-export const RequestUserID = createParamDecorator((_: unknown, ctx: ExecutionContext): number | null => {
-  return ctx.switchToHttp().getRequest<HttpRequest>().userId ?? null;
-});
-
-export const RequestUserEmail = createParamDecorator((_: unknown, ctx: ExecutionContext): string | null => {
-  return ctx.switchToHttp().getRequest<HttpRequest>().userEmail ?? null;
-});
-
-export const RequestUserName = createParamDecorator((_: unknown, ctx: ExecutionContext): string | null => {
-  return ctx.switchToHttp().getRequest<HttpRequest>().userName ?? null;
-});
-
-export const RequestUserRole = createParamDecorator((_: unknown, ctx: ExecutionContext): Role | null => {
-  return ctx.switchToHttp().getRequest<HttpRequest>().userRole ?? null;
+export const RequestUser = createParamDecorator((_: unknown, ctx: ExecutionContext): User | null => {
+  return ctx.switchToHttp().getRequest<HttpRequest>().user ?? null;
 });
 
 export const RequestLog = createParamDecorator((_: unknown, ctx: ExecutionContext): HttpRequestLog | null => {

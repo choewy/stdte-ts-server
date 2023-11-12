@@ -1,6 +1,6 @@
 import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 
-import { RolePolicyScopeValue } from '../constants';
+import { RolePolicyScope } from '../constants';
 
 import { Role } from './role.entity';
 
@@ -23,30 +23,30 @@ export class RolePolicy extends Relations {
   @Column({
     type: 'tinyint',
     unsigned: true,
-    default: RolePolicyScopeValue.Limit,
+    default: RolePolicyScope.Limit,
   })
-  accessRole: RolePolicyScopeValue;
+  accessRole: RolePolicyScope;
 
   @Column({
     type: 'tinyint',
     unsigned: true,
-    default: RolePolicyScopeValue.Limit,
+    default: RolePolicyScope.Limit,
   })
-  accessTeam: RolePolicyScopeValue;
+  accessTeam: RolePolicyScope;
 
   @Column({
     type: 'tinyint',
     unsigned: true,
-    default: RolePolicyScopeValue.Limit,
+    default: RolePolicyScope.Limit,
   })
-  accessUser: RolePolicyScopeValue;
+  accessUser: RolePolicyScope;
 
   @Column({
     type: 'tinyint',
     unsigned: true,
-    default: RolePolicyScopeValue.Limit,
+    default: RolePolicyScope.Limit,
   })
-  accessProject: RolePolicyScopeValue;
+  accessProject: RolePolicyScope;
 
   @UpdateDateColumn()
   readonly updatedAt: Date;

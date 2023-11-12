@@ -11,7 +11,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-import { LazyType, LazyWithNullType, ProjectScopeValue, ProjectStatusValue } from '../constants';
+import { LazyType, LazyWithNullType, ProjectScope, ProjectStatus } from '../constants';
 
 import { User } from './user.entity';
 import { ProjectType } from './project-type.entity';
@@ -104,16 +104,16 @@ export class Project extends Relations {
   @Column({
     type: 'tinyint',
     unsigned: true,
-    default: ProjectScopeValue.Team,
+    default: ProjectScope.Team,
   })
-  scope: ProjectScopeValue;
+  scope: ProjectScope;
 
   @Column({
     type: 'tinyint',
     unsigned: true,
-    default: ProjectStatusValue.Wating,
+    default: ProjectStatus.Wating,
   })
-  status: ProjectStatusValue;
+  status: ProjectStatus;
 
   @Column({
     type: 'date',
