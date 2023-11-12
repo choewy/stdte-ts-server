@@ -12,9 +12,10 @@ import {
 } from '@nestjs/common';
 import { BaseExceptionFilter } from '@nestjs/core';
 
-import { ExceptionResponseDetailsDto, HttpRequest, HttpRequestLog, InjectWriterDataSource } from '@server/common';
+import { HttpRequest, HttpRequestLog, InjectWriterDataSource } from '@server/common';
 import { HttpRequestLogger } from './http-request.logger';
 import { STATUS_CODES } from 'http';
+import { ExceptionResponseDetailsDto } from '@server/dto';
 
 @Catch()
 @Injectable({ scope: Scope.REQUEST })
@@ -50,7 +51,7 @@ export class HttpRequestFilter extends BaseExceptionFilter {
     if (request.httpRequestLog) {
       const httpRequestLogRepository = this.dataSource.getRepository(HttpRequestLog);
       await httpRequestLogRepository.update(request.httpRequestLog.id, {
-        user: { id: request.userId },
+        user: { id: request.user?.id },
         statusCode: exception.getStatus(),
         statusMessage: STATUS_CODES[exception.getStatus()],
         exceptionName: exception.name,

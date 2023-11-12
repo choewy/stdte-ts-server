@@ -30,7 +30,7 @@ export class HttpRequestInterceptor implements NestInterceptor {
       if (request.httpRequestLog) {
         const httpRequestLogRepository = this.dataSource.getRepository(HttpRequestLog);
         await httpRequestLogRepository.update(request.httpRequestLog.id, {
-          user: { id: request.userId },
+          user: { id: request.user?.id },
           statusCode: response.statusCode,
           statusMessage: STATUS_CODES[response.statusCode],
         });

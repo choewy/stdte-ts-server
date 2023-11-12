@@ -1,15 +1,30 @@
 import { Response } from 'express';
+import { DataSource } from 'typeorm';
 import { TokenExpiredError, VerifyErrors } from 'jsonwebtoken';
 
-import { ExecutionContext, Injectable } from '@nestjs/common';
+import { ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
-import { CookieKey, HttpRequest, InvalidJwtTokenException } from '@server/common';
+import {
+  CookieKey,
+  HttpRequest,
+  InjectReaderDataSource,
+  InvalidJwtTokenException,
+  User,
+  UserQuery,
+} from '@server/common';
 import { SignAccessPayload, SignRefreshPayload, SignService } from '@server/core/sign';
 import { CookieService } from '@server/core/cookie';
 
 @Injectable()
 export class SignGuard extends AuthGuard('jwt') {
+  constructor(
+    @InjectReaderDataSource()
+    private readonly dataSource: DataSource,
+  ) {
+    super();
+  }
+
   canActivate(context: ExecutionContext) {
     return super.canActivate(context);
   }
@@ -19,7 +34,7 @@ export class SignGuard extends AuthGuard('jwt') {
     result: Payload,
     error: VerifyErrors,
     context: ExecutionContext,
-  ) {
+  ): any {
     let payload = result as SignAccessPayload | false;
 
     const http = context.switchToHttp();
@@ -41,11 +56,15 @@ export class SignGuard extends AuthGuard('jwt') {
       throw new InvalidJwtTokenException(error);
     }
 
-    request.userId = payload.id;
-    request.userEmail = payload.email;
-    request.userName = payload.name;
+    return new UserQuery(this.dataSource.getRepository(User)).findUserInGuard(payload.id).then((user) => {
+      if (user == null) {
+        throw new UnauthorizedException();
+      }
 
-    return payload as Payload;
+      request.user = user;
+
+      return user;
+    });
   }
 
   private refreshTokens(

@@ -1,32 +1,21 @@
-import { DataSource } from 'typeorm';
-
 import { Reflector } from '@nestjs/core';
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 
-import {
-  AccessDeninedException,
-  HttpRequest,
-  InjectReaderDataSource,
-  RolePolicyScopeMapResponseDto,
-  UserQuery,
-} from '@server/common';
+import { AccessDeninedException, HttpRequest, ROLE_POLICY_SCOPE_TEXTS } from '@server/common';
+import { EnumMapResponseDto } from '@server/dto';
 
 import { SetRoleGuardMetadataArgs, SetRoleGuardMetadataKeys } from './types';
 
 @Injectable()
 export class RoleGuard implements CanActivate {
-  constructor(
-    @InjectReaderDataSource()
-    private readonly readerDataSource: DataSource,
-    private readonly reflector: Reflector,
-  ) {}
+  constructor(private readonly reflector: Reflector) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const http = context.switchToHttp();
     const request = http.getRequest<HttpRequest>();
 
-    if (request.userId === undefined) {
-      throw new AccessDeninedException({ cause: 'request.userId is undefined' });
+    if (request.user == null) {
+      throw new AccessDeninedException({ cause: 'request.user is null' });
     }
 
     const roleGuardMetadata = this.reflector.getAllAndOverride<SetRoleGuardMetadataArgs>(RoleGuard.name, [
@@ -34,16 +23,9 @@ export class RoleGuard implements CanActivate {
       context.getHandler(),
     ]);
 
-    if (roleGuardMetadata === undefined) {
+    if (roleGuardMetadata == null) {
       return true;
     }
-
-    const userQuery = UserQuery.of(this.readerDataSource);
-    const user = await userQuery.findUserRoleByUserId(request.userId);
-
-    request.userRole = user?.role;
-    request.userAuthStatus = user?.authStatus;
-    request.userEmploymentStatus = user?.employmentStatus;
 
     const roleGuardMetadataKeys = Object.keys(roleGuardMetadata) as SetRoleGuardMetadataKeys[];
 
@@ -51,19 +33,19 @@ export class RoleGuard implements CanActivate {
       return true;
     }
 
-    if (request.userRole?.rolePolicy === undefined) {
+    if (request.user?.role?.rolePolicy == null) {
       throw new AccessDeninedException({ cause: 'user.role.rolePolicy is undefined' });
     }
 
     for (const key of roleGuardMetadataKeys) {
-      const userValue = user.role.rolePolicy[key];
-      const guardValue = roleGuardMetadata[key];
+      const userRoleScope = request.user.role.rolePolicy[key];
+      const guardRoleScope = roleGuardMetadata[key];
 
-      if (userValue < guardValue) {
+      if (userRoleScope < guardRoleScope) {
         throw new AccessDeninedException({
           key,
-          user: new RolePolicyScopeMapResponseDto(userValue),
-          metadata: new RolePolicyScopeMapResponseDto(guardValue),
+          user: new EnumMapResponseDto(userRoleScope, ROLE_POLICY_SCOPE_TEXTS),
+          metadata: new EnumMapResponseDto(guardRoleScope, ROLE_POLICY_SCOPE_TEXTS),
         });
       }
     }
