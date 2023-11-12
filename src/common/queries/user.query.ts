@@ -8,6 +8,16 @@ export class UserQuery extends BaseQuery<User> {
     return new UserQuery(source.getRepository(User));
   }
 
+  async findUserInGuard(id: number): Promise<User> {
+    return this.repository.findOne({
+      relations: {
+        role: { rolePolicy: true },
+        team: true,
+      },
+      where: { id },
+    });
+  }
+
   async findUserByOnInit(): Promise<User> {
     return this.repository.findOne({
       where: { onInit: true },
