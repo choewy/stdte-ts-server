@@ -4,7 +4,7 @@ import { Body, Controller, Get, Patch, Post, Res } from '@nestjs/common';
 import { ApiCreatedResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { RequestUser, User } from '@server/common';
-import { SignGuard, UseRoleGuard, UseSignGuard } from '@server/core';
+import { UseRoleGuard, UseAuthGuard, AuthGuard } from '@server/core';
 import { RequestUserResponseDto } from '@server/dto';
 
 import { SignInBodyDto, SignUpBodyDto, UpdatePasswordBodyDto } from './dto';
@@ -16,7 +16,7 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Get()
-  @UseRoleGuard({}, SignGuard)
+  @UseRoleGuard({}, AuthGuard)
   @ApiOperation({ summary: 'auth check' })
   @ApiOkResponse({ type: RequestUserResponseDto })
   async auth(@RequestUser() user: User): Promise<RequestUserResponseDto> {
@@ -24,7 +24,7 @@ export class AuthController {
   }
 
   @Patch()
-  @UseSignGuard()
+  @UseAuthGuard()
   @ApiOperation({ summary: 'update my password' })
   @ApiOkResponse()
   async updateMyPassword(@RequestUser() user: User, @Body() body: UpdatePasswordBodyDto): Promise<void> {

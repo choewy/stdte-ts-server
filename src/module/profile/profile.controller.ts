@@ -2,13 +2,13 @@ import { Body, Controller, Get, Patch } from '@nestjs/common';
 import { ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { RequestUser, User } from '@server/common';
-import { UseSignGuard } from '@server/core';
+import { UseAuthGuard } from '@server/core';
 
 import { ProfileResponseDto, UpdateProfileBodyDto } from './dto';
 import { ProfileService } from './profile.service';
 import { ExceptionResponseDto } from '@server/dto';
 
-@UseSignGuard()
+@UseAuthGuard()
 @ApiTags('profile')
 @Controller('profile')
 export class ProfileController {

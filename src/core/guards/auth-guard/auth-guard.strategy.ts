@@ -8,7 +8,7 @@ import { CookieService } from '@server/core/cookie';
 import { SignAccessPayload } from '@server/core/sign';
 
 @Injectable()
-export class SignGuardStrategy extends PassportStrategy(Strategy) {
+export class AuthGuardStrategy extends PassportStrategy(Strategy) {
   constructor() {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([(request) => new CookieService().get(request, CookieKey.Access)]),

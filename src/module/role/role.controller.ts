@@ -2,13 +2,13 @@ import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestj
 import { ApiConflictResponse, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { RequestUser, RolePolicyScope, User } from '@server/common';
-import { UseSignGuard, UseRoleGuard } from '@server/core';
+import { UseAuthGuard, UseRoleGuard } from '@server/core';
 import { ExceptionResponseDto, ListQueryDto } from '@server/dto';
 
 import { CreateRoleBodyDto, GetRoleParamDto, RoleListResponseDto, UpdateRoleBodyDto } from './dto';
 import { RoleService } from './role.service';
 
-@UseSignGuard()
+@UseAuthGuard()
 @ApiTags('roles')
 @Controller('roles')
 export class RoleController {

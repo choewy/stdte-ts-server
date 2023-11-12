@@ -3,7 +3,7 @@ import { DataSource } from 'typeorm';
 import { TokenExpiredError, VerifyErrors } from 'jsonwebtoken';
 
 import { ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
+import { AuthGuard as JwtAuthGuard } from '@nestjs/passport';
 
 import {
   CookieKey,
@@ -17,7 +17,7 @@ import { SignAccessPayload, SignRefreshPayload, SignService } from '@server/core
 import { CookieService } from '@server/core/cookie';
 
 @Injectable()
-export class SignGuard extends AuthGuard('jwt') {
+export class AuthGuard extends JwtAuthGuard('jwt') {
   constructor(
     @InjectReaderDataSource()
     private readonly dataSource: DataSource,
