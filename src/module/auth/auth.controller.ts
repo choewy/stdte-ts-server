@@ -1,12 +1,13 @@
 import { Response } from 'express';
 
-import { Body, Controller, Get, Patch, Post, Req, Res } from '@nestjs/common';
+import { Body, Controller, Get, Patch, Post, Res } from '@nestjs/common';
 import { ApiCreatedResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 
-import { RequestUserID, RequestUserEmail, HttpRequest } from '@server/common';
+import { RequestUser, User } from '@server/common';
 import { SignGuard, UseRoleGuard, UseSignGuard } from '@server/core';
+import { RequestUserResponseDto } from '@server/dto';
 
-import { AuthResponseDto, SignInBodyDto, SignResponseDto, SignUpBodyDto, UpdatePasswordBodyDto } from './dto';
+import { SignInBodyDto, SignUpBodyDto, UpdatePasswordBodyDto } from './dto';
 import { AuthService } from './auth.service';
 
 @ApiTags('auth')
@@ -17,33 +18,29 @@ export class AuthController {
   @Get()
   @UseRoleGuard({}, SignGuard)
   @ApiOperation({ summary: 'auth check' })
-  @ApiOkResponse({ type: AuthResponseDto })
-  async auth(@Req() request: HttpRequest): Promise<AuthResponseDto> {
-    return new AuthResponseDto(request);
+  @ApiOkResponse({ type: RequestUserResponseDto })
+  async auth(@RequestUser() user: User): Promise<RequestUserResponseDto> {
+    return new RequestUserResponseDto(user);
   }
 
   @Patch()
   @UseSignGuard()
   @ApiOperation({ summary: 'update my password' })
   @ApiOkResponse()
-  async updateMyPassword(
-    @RequestUserID() id: number,
-    @RequestUserEmail() email: string,
-    @Body() body: UpdatePasswordBodyDto,
-  ): Promise<void> {
-    return this.authService.updateMyPassword(id, email, body);
+  async updateMyPassword(@RequestUser() user: User, @Body() body: UpdatePasswordBodyDto): Promise<void> {
+    return this.authService.updateMyPassword(user, body);
   }
 
   @Post('signin')
   @ApiOperation({ summary: 'signin' })
-  @ApiCreatedResponse({ type: SignResponseDto })
+  @ApiCreatedResponse({ type: RequestUserResponseDto })
   async signin(@Res() response: Response, @Body() body: SignInBodyDto): Promise<Response> {
     return this.authService.signin(response, body);
   }
 
   @Post('signup')
   @ApiOperation({ summary: 'signup' })
-  @ApiCreatedResponse({ type: SignResponseDto })
+  @ApiCreatedResponse({ type: RequestUserResponseDto })
   async signup(@Res() response: Response, @Body() body: SignUpBodyDto): Promise<Response> {
     return this.authService.signup(response, body);
   }

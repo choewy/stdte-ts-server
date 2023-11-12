@@ -10,15 +10,15 @@ import {
   SignInFailException,
   NotSamePasswordException,
   CookieKey,
-  NotFoundMyProfileException,
   WrongPasswordException,
   ProjectTimeRecordLog,
   InjectWriterDataSource,
   InjectReaderDataSource,
 } from '@server/common';
 import { CookieService, BcryptService, SignService, HashService } from '@server/core';
+import { RequestUserResponseDto } from '@server/dto';
 
-import { SignInBodyDto, SignResponseDto, SignUpBodyDto, UpdatePasswordBodyDto } from './dto';
+import { SignInBodyDto, SignUpBodyDto, UpdatePasswordBodyDto } from './dto';
 
 @Injectable()
 export class AuthService {
@@ -29,7 +29,7 @@ export class AuthService {
     private readonly readerDataSource: DataSource,
   ) {}
 
-  private responseWithTokens(response: Response, user: User, withTokens = false): Response {
+  private responseWithTokens(response: Response, user: User): Response {
     const signService = new SignService();
     const cookieService = new CookieService();
 
@@ -39,7 +39,7 @@ export class AuthService {
     cookieService.set(response, CookieKey.Access, access);
     cookieService.set(response, CookieKey.Refresh, refresh);
 
-    return response.status(HttpStatus.CREATED).send(new SignResponseDto(user, access, refresh, withTokens));
+    return response.status(HttpStatus.CREATED).send(new RequestUserResponseDto(user));
   }
 
   async signin(response: Response, body: SignInBodyDto): Promise<Response> {
@@ -58,7 +58,7 @@ export class AuthService {
       throw new SignInFailException();
     }
 
-    return this.responseWithTokens(response, user, body.withTokens);
+    return this.responseWithTokens(response, user);
   }
 
   async signup(response: Response, body: SignUpBodyDto): Promise<Response> {
@@ -86,7 +86,7 @@ export class AuthService {
       projectTimeRecordLog: new ProjectTimeRecordLog(),
     });
 
-    return this.responseWithTokens(response, user, body.withTokens);
+    return this.responseWithTokens(response, user);
   }
 
   async signout(response: Response): Promise<Response> {
@@ -98,17 +98,7 @@ export class AuthService {
     return response.sendStatus(HttpStatus.OK);
   }
 
-  async updateMyPassword(id: number, email: string, body: UpdatePasswordBodyDto): Promise<void> {
-    const user = await UserQuery.of(this.readerDataSource).findUserPasswordByUserId(id);
-
-    if (user === null) {
-      throw new NotFoundMyProfileException();
-    }
-
-    if (user.email !== email) {
-      throw new NotFoundMyProfileException();
-    }
-
+  async updateMyPassword(user: User, body: UpdatePasswordBodyDto): Promise<void> {
     const hashService = new HashService();
 
     const currentPassword = hashService.fromHex(body.currentPassword);
@@ -125,7 +115,7 @@ export class AuthService {
       throw new NotSamePasswordException();
     }
 
-    await UserQuery.of(this.writerDataSource).updateUser(id, {
+    await UserQuery.of(this.writerDataSource).updateUser(user.id, {
       password: bcryptService.encryptPassword(newPassword),
     });
   }
