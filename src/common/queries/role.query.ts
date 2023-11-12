@@ -22,8 +22,8 @@ export class RoleQuery extends BaseQuery<Role> {
     });
   }
 
-  async findRoleByOnInit(): Promise<Role> {
-    return this.repository.findOne({
+  async findRolesByOnInit(): Promise<Role[]> {
+    return this.repository.find({
       relations: { rolePolicy: true },
       where: { onInit: true },
     });
@@ -39,6 +39,10 @@ export class RoleQuery extends BaseQuery<Role> {
       skip,
       take,
     });
+  }
+
+  async saveRoles(roles: DeepPartial<Role>[]): Promise<Role[]> {
+    return this.repository.save(roles.map((role) => this.repository.create(role)));
   }
 
   async saveRole(role: DeepPartial<Role>): Promise<Role> {

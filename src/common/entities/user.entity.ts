@@ -1,6 +1,7 @@
 import {
   Column,
   CreateDateColumn,
+  DeepPartial,
   DeleteDateColumn,
   Entity,
   JoinColumn,
@@ -206,4 +207,12 @@ export class User extends Relations {
 
   @DeleteDateColumn()
   readonly deletedAt: Date | null;
+
+  constructor(user?: DeepPartial<User>) {
+    super();
+
+    if (user) {
+      Object.assign(this, user);
+    }
+  }
 }

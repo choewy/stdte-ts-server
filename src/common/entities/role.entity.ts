@@ -1,6 +1,7 @@
 import {
   Column,
   CreateDateColumn,
+  DeepPartial,
   Entity,
   JoinTable,
   OneToMany,
@@ -52,4 +53,12 @@ export class Role extends Relations {
 
   @UpdateDateColumn()
   readonly updatedAt: Date;
+
+  constructor(role?: DeepPartial<Role>) {
+    super();
+
+    if (role) {
+      Object.assign(this, role);
+    }
+  }
 }

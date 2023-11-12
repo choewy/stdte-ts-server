@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { Column, DeepPartial, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 
 import { RolePolicyScope } from '../constants';
 
@@ -50,4 +50,12 @@ export class RolePolicy extends Relations {
 
   @UpdateDateColumn()
   readonly updatedAt: Date;
+
+  constructor(rolePolicy?: DeepPartial<RolePolicy>) {
+    super();
+
+    if (rolePolicy) {
+      Object.assign(this, rolePolicy);
+    }
+  }
 }

@@ -1,7 +1,6 @@
 import { AuthStatus, Degree, EmploymentStatus, ProjectScope, ProjectStatus, RolePolicyScope } from './enums';
 
 export const TRUE_VALUES = ['true', true, '1', 1];
-
 export const FALSE_VALUES = ['false', false, '0', 0];
 
 export const DEGREE_TEXTS = {

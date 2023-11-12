@@ -7,3 +7,4 @@ export * from './configs';
 export * from './entities';
 export * from './queries';
 export * from './modules';
+export * from './init';

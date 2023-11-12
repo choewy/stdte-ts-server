@@ -3,14 +3,10 @@ import { DataSource } from 'typeorm';
 import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
 
 import {
-  AuthStatusValue,
-  EmploymentStatusValue,
+  InitEntity,
   InjectReaderDataSource,
   InjectWriterDataSource,
   Role,
-  RolePolicy,
-  RolePolicyScopeText,
-  RolePolicyScopeValue,
   RoleQuery,
   User,
   UserQuery,
@@ -33,109 +29,104 @@ export class AppService implements OnApplicationBootstrap {
   }
 
   async onApplicationBootstrap(): Promise<void> {
-    const role = await this.createDefaultRole();
-    await this.createDefaultUser(role);
+    const initEntity = new InitEntity();
+
+    await this.createDefaultRole(initEntity.roles);
+    await this.createDefaultUser(initEntity.users);
   }
 
-  private async createDefaultRole(): Promise<Role> {
-    let role = await RoleQuery.of(this.readerDataSource).findRoleByOnInit();
+  private async createDefaultRole(rows: Role[]): Promise<void> {
+    const roles = await RoleQuery.of(this.readerDataSource).findRolesByOnInit();
 
-    if (!role) {
-      role = new Role();
-      role.rolePolicy = new RolePolicy();
+    const entities: Role[] = [];
+
+    for (const row of rows) {
+      const role = roles.find(({ id }) => id === row.id);
+
+      if (!role) {
+        entities.push(row);
+        continue;
+      }
+
+      if (role.name !== row.name) {
+        entities.push(row);
+        continue;
+      }
+
+      if (role.rolePolicy?.accessRole !== row.rolePolicy.accessRole) {
+        entities.push(row);
+        continue;
+      }
+
+      if (role.rolePolicy?.accessTeam !== row.rolePolicy.accessTeam) {
+        entities.push(row);
+        continue;
+      }
+
+      if (role.rolePolicy?.accessUser !== row.rolePolicy.accessUser) {
+        entities.push(row);
+        continue;
+      }
+
+      if (role.rolePolicy?.accessProject !== row.rolePolicy.accessProject) {
+        entities.push(row);
+        continue;
+      }
     }
 
-    let pass = true;
-
-    const name = RolePolicyScopeText.Admin;
-    const scope = RolePolicyScopeValue.Admin;
-
-    if (role.onInit !== true) {
-      role.onInit = true;
-      pass = false;
+    if (entities.length === 0) {
+      return;
     }
 
-    if (role.name !== name) {
-      role.name = name;
-      pass = false;
-    }
-
-    if (role.rolePolicy.accessRole !== scope) {
-      role.rolePolicy.accessRole = scope;
-      pass = false;
-    }
-
-    if (role.rolePolicy.accessTeam !== scope) {
-      role.rolePolicy.accessTeam = scope;
-      pass = false;
-    }
-
-    if (role.rolePolicy.accessUser !== scope) {
-      role.rolePolicy.accessUser = scope;
-      pass = false;
-    }
-
-    if (role.rolePolicy.accessProject !== scope) {
-      role.rolePolicy.accessProject = scope;
-      pass = false;
-    }
-
-    if (pass) {
-      return role;
-    }
-
-    return RoleQuery.of(this.writerDataSource).saveRole(role);
+    await RoleQuery.of(this.writerDataSource).saveRoles(entities);
   }
 
-  private async createDefaultUser(role: Role): Promise<User> {
-    let user = await UserQuery.of(this.readerDataSource).findUserByOnInit();
+  private async createDefaultUser(rows: User[]): Promise<void> {
+    const bcryptService = new BcryptService();
 
-    if (!user) {
-      user = new User();
-      user.password = new BcryptService().encryptPassword('master');
+    const users = await UserQuery.of(this.readerDataSource).findUsersByOnInit();
+
+    const entities: User[] = [];
+
+    for (const row of rows) {
+      const user = users.find(({ id }) => id === row.id);
+
+      if (!user) {
+        row.password = bcryptService.encryptPassword(row.password);
+        entities.push(row);
+        continue;
+      }
+
+      if (user.name !== row.name) {
+        entities.push(row);
+        continue;
+      }
+
+      if (user.email !== row.email) {
+        entities.push(row);
+        continue;
+      }
+
+      if (user.authStatus !== row.authStatus) {
+        entities.push(row);
+        continue;
+      }
+
+      if (user.employmentStatus !== row.employmentStatus) {
+        entities.push(row);
+        continue;
+      }
+
+      if (user.role?.id !== row.role.id) {
+        entities.push(row);
+        continue;
+      }
     }
 
-    let pass = true;
-
-    const name = '관리자';
-    const email = 'master@stdte.co.kr';
-    const authStatus = AuthStatusValue.Active;
-    const employmentStatus = EmploymentStatusValue.Active;
-
-    if (user.onInit !== true) {
-      user.onInit = true;
-      pass = false;
+    if (entities.length === 0) {
+      return;
     }
 
-    if (user.name !== name) {
-      user.name = name;
-      pass = false;
-    }
-
-    if (user.email !== email) {
-      user.email = email;
-      pass = false;
-    }
-
-    if (user.authStatus !== authStatus) {
-      user.authStatus = authStatus;
-      pass = false;
-    }
-
-    if (user.employmentStatus !== employmentStatus) {
-      user.employmentStatus = employmentStatus;
-      pass = false;
-    }
-
-    if (user.role?.id !== role.id) {
-      user.role = role;
-      pass = false;
-    }
-
-    if (pass) {
-      return user;
-    }
-
-    return UserQuery.of(this.writerDataSource).saveUser(user);
+    await UserQuery.of(this.writerDataSource).saveUsers(entities);
   }
 }
