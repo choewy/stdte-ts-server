@@ -43,7 +43,7 @@ export class RoleGuard implements CanActivate {
 
     request.userRole = user?.role;
     request.userAuthStatus = user?.authStatus;
-    request.userEmplymentStatus = user?.employmentStatus;
+    request.userEmploymentStatus = user?.employmentStatus;
 
     const roleGuardMetadataKeys = Object.keys(roleGuardMetadata) as SetRoleGuardMetadataKeys[];
 

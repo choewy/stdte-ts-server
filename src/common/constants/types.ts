@@ -10,7 +10,7 @@ export type HttpRequest = Request & {
   userName?: string;
   userRole?: Role;
   userAuthStatus?: AuthStatusValue;
-  userEmplymentStatus?: EmploymentStatusValue;
+  userEmploymentStatus?: EmploymentStatusValue;
 };
 
 export type LazyType<T> = T | Promise<T>;

@@ -17,7 +17,7 @@ export class AuthResponseDto {
   authStatus: AuthStatusMapResponseDto;
 
   @ApiResponseProperty({ type: EmploymentStatusMapResponseDto })
-  emplymentStatus: EmploymentStatusMapResponseDto;
+  employmentStatus: EmploymentStatusMapResponseDto;
 
   @ApiResponseProperty({ type: AuthRoleResponseDto })
   role: AuthRoleResponseDto = null;
@@ -27,7 +27,7 @@ export class AuthResponseDto {
     this.email = request.userEmail;
     this.name = request.userName;
     this.authStatus = new AuthStatusMapResponseDto(request.userAuthStatus);
-    this.emplymentStatus = new EmploymentStatusMapResponseDto(request.userEmplymentStatus);
+    this.employmentStatus = new EmploymentStatusMapResponseDto(request.userEmploymentStatus);
 
     if (request.userRole) {
       this.role = new AuthRoleResponseDto(request.userRole);

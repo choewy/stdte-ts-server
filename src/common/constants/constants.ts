@@ -40,13 +40,15 @@ export const authStatusValues = toEnumValues(AuthStatusValue, Number);
 export const authStatusTexts = toEnumValues(AuthStatusText, String);
 export const authStatusToTextMap = {
   [AuthStatusValue.Wating]: AuthStatusText.Wating,
-  [AuthStatusValue.Active]: AuthStatusText.Active,
   [AuthStatusValue.Reject]: AuthStatusText.Reject,
+  [AuthStatusValue.Active]: AuthStatusText.Active,
+  [AuthStatusValue.Disable]: AuthStatusText.Disable,
 };
 export const authStatusToValueMap = {
   [AuthStatusText.Wating]: AuthStatusValue.Wating,
-  [AuthStatusText.Active]: AuthStatusValue.Active,
   [AuthStatusText.Reject]: AuthStatusValue.Reject,
+  [AuthStatusText.Active]: AuthStatusValue.Active,
+  [AuthStatusText.Disable]: AuthStatusValue.Disable,
 };
 
 export const employmentStatusValues = toEnumValues(EmploymentStatusValue, Number);
