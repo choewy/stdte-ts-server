@@ -7,6 +7,11 @@ export enum TypeOrmConnection {
   Reader = 'reader',
 }
 
+export enum Order {
+  Asc = 0,
+  Desc = 1,
+}
+
 export enum NodeEnv {
   Local = 'local',
   Develop = 'develop',

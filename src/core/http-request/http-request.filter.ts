@@ -1,3 +1,4 @@
+import { STATUS_CODES } from 'http';
 import { Response } from 'express';
 import { DataSource } from 'typeorm';
 
@@ -12,10 +13,10 @@ import {
 } from '@nestjs/common';
 import { BaseExceptionFilter } from '@nestjs/core';
 
-import { HttpRequest, HttpRequestLog, InjectWriterDataSource } from '@server/common';
-import { HttpRequestLogger } from './http-request.logger';
-import { STATUS_CODES } from 'http';
+import { HttpRequest, HttpRequestLogQuery, InjectWriterDataSource } from '@server/common';
 import { ExceptionResponseDetailsDto } from '@server/dto';
+
+import { HttpRequestLogger } from './http-request.logger';
 
 @Catch()
 @Injectable({ scope: Scope.REQUEST })
@@ -49,8 +50,8 @@ export class HttpRequestFilter extends BaseExceptionFilter {
     }
 
     if (request.httpRequestLog) {
-      const httpRequestLogRepository = this.dataSource.getRepository(HttpRequestLog);
-      await httpRequestLogRepository.update(request.httpRequestLog.id, {
+      const httpRequestLogQuery = HttpRequestLogQuery.of(this.dataSource);
+      await httpRequestLogQuery.updateHttpRequestLog(request.httpRequestLog.id, {
         user: { id: request.user?.id },
         statusCode: exception.getStatus(),
         statusMessage: STATUS_CODES[exception.getStatus()],

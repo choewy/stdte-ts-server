@@ -5,7 +5,7 @@ import { DataSource } from 'typeorm';
 
 import { CallHandler, ExecutionContext, Injectable, NestInterceptor, Scope } from '@nestjs/common';
 
-import { HttpRequest, HttpRequestLog, InjectWriterDataSource } from '@server/common';
+import { HttpRequest, HttpRequestLogQuery, InjectWriterDataSource } from '@server/common';
 
 import { HttpRequestLogger } from './http-request.logger';
 
@@ -28,8 +28,8 @@ export class HttpRequestInterceptor implements NestInterceptor {
       const response = http.getResponse<Response>();
 
       if (request.httpRequestLog) {
-        const httpRequestLogRepository = this.dataSource.getRepository(HttpRequestLog);
-        await httpRequestLogRepository.update(request.httpRequestLog.id, {
+        const httpRequestLogQuery = HttpRequestLogQuery.of(this.dataSource);
+        await httpRequestLogQuery.updateHttpRequestLog(request.httpRequestLog.id, {
           user: { id: request.user?.id },
           statusCode: response.statusCode,
           statusMessage: STATUS_CODES[response.statusCode],

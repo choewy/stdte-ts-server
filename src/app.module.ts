@@ -6,7 +6,7 @@ import { AppService } from '@server/app.service';
 
 import { MySqlConfig, TypeOrmReaderModule, TypeOrmWriterModule, entireEntity } from '@server/common';
 import { AuthGuardModule, RoleGuardModule, HttpRequestModule, HttpRequestMiddleware } from '@server/core';
-import { AuthModule, ProfileModule, RoleModule, TeamModule } from '@server/module';
+import { AuthModule, LogModule, ProfileModule, RoleModule, TeamModule } from '@server/module';
 
 @Module({
   imports: [
@@ -20,6 +20,7 @@ import { AuthModule, ProfileModule, RoleModule, TeamModule } from '@server/modul
     ProfileModule,
     RoleModule,
     TeamModule,
+    LogModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -17,9 +17,4 @@ export class ListQueryDto {
   @Max(100)
   @Type(() => Number)
   take: number;
-
-  constructor() {
-    this.skip = 0;
-    this.take = 20;
-  }
 }
