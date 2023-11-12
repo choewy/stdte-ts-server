@@ -1,8 +1,8 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
-import { ListQueryDto } from '@server/common';
 import { UseSignGuard } from '@server/core';
+import { ListQueryDto } from '@server/dto';
 
 import { TeamService } from './team.service';
 import { GetTeamParamDto, CreateTeamBodyDto, UpdateTeamBodyDto } from './dto';
