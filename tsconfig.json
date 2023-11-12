@@ -25,6 +25,8 @@
       "@server/common/*": ["src/common/*"],
       "@server/core": ["src/core"],
       "@server/core/*": ["src/core/*"],
+      "@server/dto": ["src/dto"],
+      "@server/dto/*": ["src/dto/*"],
       "@server/module": ["src/module"],
       "@server/module/*": ["src/module/*"],
       "@server/*": ["src/*"]
