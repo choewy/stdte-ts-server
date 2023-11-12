@@ -1,15 +1,16 @@
 import { ApiResponseProperty } from '@nestjs/swagger';
 
 import {
-  AuthStatusMapResponseDto,
-  DegreeMapResponseDto,
-  EmploymentStatusMapResponseDto,
+  AUTH_STATUS_TEXTS,
+  EMPLOYMENT_STATUS_TEXTS,
+  DEGREE_TEXTS,
   GenderCode,
   Role,
   Team,
   User,
   toEnumValues,
 } from '@server/common';
+import { EnumMapResponseDto } from '@server/dto';
 
 import { ProfileRoleResponseDto } from './profile-role.response.dto';
 import { ProfileTeamResponseDto } from './profile-team.response.dto';
@@ -37,8 +38,8 @@ export class ProfileResponseDto {
   @ApiResponseProperty({ type: String })
   scienceCode: string | null;
 
-  @ApiResponseProperty({ type: DegreeMapResponseDto })
-  degree: DegreeMapResponseDto;
+  @ApiResponseProperty({ type: EnumMapResponseDto })
+  degree: EnumMapResponseDto;
 
   @ApiResponseProperty({ type: String })
   school: string | null;
@@ -52,11 +53,11 @@ export class ProfileResponseDto {
   @ApiResponseProperty({ type: String })
   carNumber: string | null;
 
-  @ApiResponseProperty({ type: AuthStatusMapResponseDto })
-  authStatus: AuthStatusMapResponseDto;
+  @ApiResponseProperty({ type: EnumMapResponseDto })
+  authStatus: EnumMapResponseDto;
 
-  @ApiResponseProperty({ type: EmploymentStatusMapResponseDto })
-  employmentStatus: EmploymentStatusMapResponseDto;
+  @ApiResponseProperty({ type: EnumMapResponseDto })
+  employmentStatus: EnumMapResponseDto;
 
   @ApiResponseProperty({ type: Date })
   createdAt: Date;
@@ -74,13 +75,13 @@ export class ProfileResponseDto {
     this.birthday = user.birthday;
     this.genderCode = user.genderCode;
     this.scienceCode = user.scienceCode;
-    this.degree = new DegreeMapResponseDto(user.degree);
+    this.degree = new EnumMapResponseDto(user.degree, DEGREE_TEXTS);
     this.school = user.school;
     this.major = user.major;
     this.carType = user.carType;
     this.carNumber = user.carNumber;
-    this.authStatus = new AuthStatusMapResponseDto(user.authStatus);
-    this.employmentStatus = new EmploymentStatusMapResponseDto(user.employmentStatus);
+    this.authStatus = new EnumMapResponseDto(user.authStatus, AUTH_STATUS_TEXTS);
+    this.employmentStatus = new EnumMapResponseDto(user.employmentStatus, EMPLOYMENT_STATUS_TEXTS);
     this.createdAt = user.createdAt;
 
     if (user.role instanceof Role) {
