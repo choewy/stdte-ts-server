@@ -56,8 +56,15 @@ export class SignGuard extends AuthGuard('jwt') {
       throw new InvalidJwtTokenException(error);
     }
 
-    return new UserQuery(this.dataSource.getRepository(User)).findUserInGuard(payload.id).then((user) => {
+    const id = payload.id;
+    const email = payload.email;
+
+    return new UserQuery(this.dataSource.getRepository(User)).findUserInGuard(id).then((user) => {
       if (user == null) {
+        throw new UnauthorizedException();
+      }
+
+      if (user.email !== email) {
         throw new UnauthorizedException();
       }
 
