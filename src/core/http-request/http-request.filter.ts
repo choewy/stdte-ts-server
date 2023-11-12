@@ -12,7 +12,7 @@ import {
 } from '@nestjs/common';
 import { BaseExceptionFilter } from '@nestjs/core';
 
-import { ExceptionResponseDtatilsDto, HttpRequest, HttpRequestLog, InjectWriterDataSource } from '@server/common';
+import { ExceptionResponseDetailsDto, HttpRequest, HttpRequestLog, InjectWriterDataSource } from '@server/common';
 import { HttpRequestLogger } from './http-request.logger';
 import { STATUS_CODES } from 'http';
 
@@ -54,7 +54,7 @@ export class HttpRequestFilter extends BaseExceptionFilter {
         statusCode: exception.getStatus(),
         statusMessage: STATUS_CODES[exception.getStatus()],
         exceptionName: exception.name,
-        exceptionMessage: (exception.getResponse() as ExceptionResponseDtatilsDto).message,
+        exceptionMessage: (exception.getResponse() as ExceptionResponseDetailsDto).message,
         errorName: error?.name,
         errorMessage: error?.message,
         errorStack: error?.stack,

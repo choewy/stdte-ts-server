@@ -28,7 +28,7 @@ import {
 } from './helpers';
 import { Type } from 'class-transformer';
 
-export class ExceptionResponseDtatilsDto {
+export class ExceptionResponseDetailsDto {
   @ApiResponseProperty({ type: String })
   name: string;
 
@@ -53,8 +53,8 @@ export class ExceptionResponseDto {
   @ApiResponseProperty({ type: String })
   error: string;
 
-  @ApiResponseProperty({ type: ExceptionResponseDtatilsDto })
-  details: ExceptionResponseDtatilsDto;
+  @ApiResponseProperty({ type: ExceptionResponseDetailsDto })
+  details: ExceptionResponseDetailsDto;
 
   constructor(exception: HttpException) {
     const exceptionResponse = exception.getResponse();
