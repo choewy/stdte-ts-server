@@ -1,8 +1,9 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { ApiConflictResponse, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 
-import { ExceptionResponseDto, ListQueryDto, RequestUserRole, Role, RolePolicyScopeValue } from '@server/common';
+import { RequestUser, RolePolicyScope, User } from '@server/common';
 import { UseSignGuard, UseRoleGuard } from '@server/core';
+import { ExceptionResponseDto, ListQueryDto } from '@server/dto';
 
 import { CreateRoleBodyDto, GetRoleParamDto, RoleListResponseDto, UpdateRoleBodyDto } from './dto';
 import { RoleService } from './role.service';
@@ -14,7 +15,7 @@ export class RoleController {
   constructor(private readonly roleService: RoleService) {}
 
   @Get()
-  @UseRoleGuard({ accessRole: RolePolicyScopeValue.Read })
+  @UseRoleGuard({ accessRole: RolePolicyScope.Read })
   @ApiOperation({ summary: 'get role list' })
   @ApiOkResponse({ type: RoleListResponseDto })
   async getRoleList(@Query() query: ListQueryDto): Promise<RoleListResponseDto> {
@@ -22,7 +23,7 @@ export class RoleController {
   }
 
   @Post()
-  @UseRoleGuard({ accessRole: RolePolicyScopeValue.Write })
+  @UseRoleGuard({ accessRole: RolePolicyScope.Write })
   @ApiOperation({ summary: 'create role' })
   @ApiConflictResponse({ type: ExceptionResponseDto })
   async createRole(@Body() body: CreateRoleBodyDto): Promise<void> {
@@ -30,23 +31,23 @@ export class RoleController {
   }
 
   @Patch(':id(\\d+)')
-  @UseRoleGuard({ accessRole: RolePolicyScopeValue.Update })
+  @UseRoleGuard({ accessRole: RolePolicyScope.Update })
   @ApiOperation({ summary: 'update role' })
   @ApiConflictResponse({ type: ExceptionResponseDto })
   @ApiNotFoundResponse({ type: ExceptionResponseDto })
   async updateRole(
-    @RequestUserRole() role: Role,
+    @RequestUser() user: User,
     @Param() param: GetRoleParamDto,
     @Body() body: UpdateRoleBodyDto,
   ): Promise<void> {
-    return this.roleService.updateRole(role, param.id, body);
+    return this.roleService.updateRole(user, param.id, body);
   }
 
   @Delete(':id(\\d+)')
-  @UseRoleGuard({ accessRole: RolePolicyScopeValue.Delete })
+  @UseRoleGuard({ accessRole: RolePolicyScope.Delete })
   @ApiOperation({ summary: 'delete role' })
   @ApiNotFoundResponse({ type: ExceptionResponseDto })
-  async deleteRole(@RequestUserRole() role: Role, @Param() param: GetRoleParamDto): Promise<void> {
-    return this.roleService.deleteRole(role.id, param.id);
+  async deleteRole(@RequestUser() user: User, @Param() param: GetRoleParamDto): Promise<void> {
+    return this.roleService.deleteRole(user, param.id);
   }
 }

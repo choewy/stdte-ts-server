@@ -2,30 +2,30 @@ import { IsEnum, IsInt, IsNotEmpty } from 'class-validator';
 
 import { ApiProperty } from '@nestjs/swagger';
 
-import { RolePolicyScopeValue, toEnumValues } from '@server/common';
+import { RolePolicyScope, toEnumValues } from '@server/common';
 
 export class CreateRolePolicyBodyDto {
-  @ApiProperty({ type: Number, enum: toEnumValues(RolePolicyScopeValue, Number) })
+  @ApiProperty({ type: Number, enum: toEnumValues(RolePolicyScope, Number) })
   @IsNotEmpty()
   @IsInt()
-  @IsEnum(RolePolicyScopeValue)
-  accessRoleValue: RolePolicyScopeValue;
+  @IsEnum(RolePolicyScope)
+  accessRoleValue: RolePolicyScope;
 
-  @ApiProperty({ type: Number, enum: toEnumValues(RolePolicyScopeValue, Number) })
+  @ApiProperty({ type: Number, enum: toEnumValues(RolePolicyScope, Number) })
   @IsNotEmpty()
   @IsInt()
-  @IsEnum(RolePolicyScopeValue)
-  accessTeamValue: RolePolicyScopeValue;
+  @IsEnum(RolePolicyScope)
+  accessTeamValue: RolePolicyScope;
 
-  @ApiProperty({ type: Number, enum: toEnumValues(RolePolicyScopeValue, Number) })
+  @ApiProperty({ type: Number, enum: toEnumValues(RolePolicyScope, Number) })
   @IsNotEmpty()
   @IsInt()
-  @IsEnum(RolePolicyScopeValue)
-  accessUserValue: RolePolicyScopeValue;
+  @IsEnum(RolePolicyScope)
+  accessUserValue: RolePolicyScope;
 
-  @ApiProperty({ type: Number, enum: toEnumValues(RolePolicyScopeValue, Number) })
+  @ApiProperty({ type: Number, enum: toEnumValues(RolePolicyScope, Number) })
   @IsNotEmpty()
   @IsInt()
-  @IsEnum(RolePolicyScopeValue)
-  accessProjectValue: RolePolicyScopeValue;
+  @IsEnum(RolePolicyScope)
+  accessProjectValue: RolePolicyScope;
 }

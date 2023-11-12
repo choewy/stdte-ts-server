@@ -1,4 +1,4 @@
-import { ListQueryDto, ListResponseType } from '@server/common';
+import { ListQueryDto, ListResponseType } from '@server/dto';
 
 import { RoleResponseDto } from './role.response.dto';
 

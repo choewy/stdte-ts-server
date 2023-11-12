@@ -8,14 +8,13 @@ import {
   CannotUpdateYourRoleException,
   InjectReaderDataSource,
   InjectWriterDataSource,
-  ListQueryDto,
   NotFoundRoleException,
-  Role,
   RolePolicyQuery,
   RoleQuery,
   User,
   UserQuery,
 } from '@server/common';
+import { ListQueryDto } from '@server/dto';
 
 import { CreateRoleBodyDto, RoleListResponseDto, RoleResponseDto, UpdateRoleBodyDto } from './dto';
 
@@ -63,11 +62,11 @@ export class RoleService {
     });
   }
 
-  async updateRole(userRole: Role, updateRoleId: number, body: UpdateRoleBodyDto): Promise<void> {
+  async updateRole(user: User, updateRoleId: number, body: UpdateRoleBodyDto): Promise<void> {
     if (
-      userRole.id === updateRoleId &&
+      user?.role?.id === updateRoleId &&
       body.rolePolicy?.accessRoleValue &&
-      userRole.rolePolicy.accessRole > body.rolePolicy.accessRoleValue
+      user?.role?.rolePolicy?.accessRole > body.rolePolicy.accessRoleValue
     ) {
       throw new CannotUpdateYourRoleException();
     }
@@ -109,8 +108,8 @@ export class RoleService {
     });
   }
 
-  async deleteRole(userRoleId: number, deleteRoleId: number): Promise<void> {
-    if (userRoleId === deleteRoleId) {
+  async deleteRole(user: User, deleteRoleId: number): Promise<void> {
+    if (user?.role?.id === deleteRoleId) {
       throw new CannotDeleteYourRoleException();
     }
 
