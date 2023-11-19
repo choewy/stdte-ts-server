@@ -70,7 +70,6 @@ export class AppService implements OnApplicationBootstrap {
 
       if (role.rolePolicy?.accessProject !== row.rolePolicy.accessProject) {
         entities.push(row);
-        continue;
       }
     }
 
@@ -119,7 +118,6 @@ export class AppService implements OnApplicationBootstrap {
 
       if (user.role?.id !== row.role.id) {
         entities.push(row);
-        continue;
       }
     }
 

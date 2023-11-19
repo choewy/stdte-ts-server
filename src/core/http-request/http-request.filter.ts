@@ -59,7 +59,7 @@ export class HttpRequestFilter extends BaseExceptionFilter {
         exceptionMessage: (exception.getResponse() as ExceptionResponseDetailsDto).message,
         errorName: error?.name,
         errorMessage: error?.message,
-        errorStack: error?.stack,
+        errorStack: error?.stack ? error.stack.slice(0, 5012) : undefined,
       });
     }
 
