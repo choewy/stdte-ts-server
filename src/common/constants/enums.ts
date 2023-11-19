@@ -74,6 +74,6 @@ export enum RolePolicyScope {
   Update = 4,
   Delete = 5,
   Entire = 6,
-  Developer = 7,
-  Admin = 8,
+  Admin = 7,
+  Developer = 8,
 }

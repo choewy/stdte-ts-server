@@ -47,6 +47,6 @@ export const ROLE_POLICY_SCOPE_TEXTS = {
   [RolePolicyScope.Update]: '수정',
   [RolePolicyScope.Delete]: '삭제',
   [RolePolicyScope.Entire]: '전체',
-  [RolePolicyScope.Developer]: '개발자',
   [RolePolicyScope.Admin]: '관리자',
+  [RolePolicyScope.Developer]: '개발자',
 };
