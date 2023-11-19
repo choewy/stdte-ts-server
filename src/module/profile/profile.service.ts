@@ -24,7 +24,7 @@ export class ProfileService {
       birthday: body.birthday,
       genderCode: body.genderCode,
       scienceCode: body.scienceCode,
-      degree: body.degreeValue,
+      degree: body.degree,
       school: body.school,
       major: body.major,
       carType: body.carType,

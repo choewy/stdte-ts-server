@@ -1,5 +1,6 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { ApiResponseProperty } from '@nestjs/swagger';
+import { getEnumValuesOnlyNumber } from '@server/common';
 
 export class ExceptionResponseDetailsDto {
   @ApiResponseProperty({ type: String })
@@ -20,7 +21,7 @@ export class ExceptionResponseDto {
   @ApiResponseProperty({ type: String })
   message: string;
 
-  @ApiResponseProperty({ type: Number, enum: HttpStatus })
+  @ApiResponseProperty({ type: Number, example: getEnumValuesOnlyNumber(HttpStatus).join(' | ') })
   statusCode: HttpStatus;
 
   @ApiResponseProperty({ type: String })

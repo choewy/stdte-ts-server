@@ -1,6 +1,15 @@
 import { ApiResponseProperty } from '@nestjs/swagger';
 
-import { AuthStatus, Degree, EmploymentStatus, GenderCode, Role, Team, User, toEnumValues } from '@server/common';
+import {
+  AuthStatus,
+  Degree,
+  EmploymentStatus,
+  GenderCode,
+  Role,
+  Team,
+  User,
+  getEnumValuesOnlyNumber,
+} from '@server/common';
 
 import { ProfileRoleResponseDto } from './profile-role.response.dto';
 import { ProfileTeamResponseDto } from './profile-team.response.dto';
@@ -20,8 +29,7 @@ export class ProfileResponseDto {
 
   @ApiResponseProperty({
     type: Number,
-    enum: GenderCode,
-    example: toEnumValues(GenderCode, Number).join(' | '),
+    example: getEnumValuesOnlyNumber(GenderCode).join(' | '),
   })
   genderCode: GenderCode | null;
 

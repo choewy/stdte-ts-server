@@ -2,30 +2,30 @@ import { IsEnum, IsInt, IsOptional } from 'class-validator';
 
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
-import { RolePolicyScope, toEnumValues } from '@server/common';
+import { RolePolicyScope, getEnumValuesOnlyNumber } from '@server/common';
 
 export class UpdateRolePolicyBodyDto {
-  @ApiPropertyOptional({ type: Number, enum: toEnumValues(RolePolicyScope, Number) })
+  @ApiPropertyOptional({ type: Number, enum: getEnumValuesOnlyNumber(RolePolicyScope) })
   @IsOptional()
   @IsInt()
   @IsEnum(RolePolicyScope)
-  accessRoleValue?: RolePolicyScope;
+  accessRole?: RolePolicyScope;
 
-  @ApiPropertyOptional({ type: Number, enum: toEnumValues(RolePolicyScope, Number) })
+  @ApiPropertyOptional({ type: Number, enum: getEnumValuesOnlyNumber(RolePolicyScope) })
   @IsOptional()
   @IsInt()
   @IsEnum(RolePolicyScope)
-  accessTeamValue?: RolePolicyScope;
+  accessTeam?: RolePolicyScope;
 
-  @ApiPropertyOptional({ type: Number, enum: toEnumValues(RolePolicyScope, Number) })
+  @ApiPropertyOptional({ type: Number, enum: getEnumValuesOnlyNumber(RolePolicyScope) })
   @IsOptional()
   @IsInt()
   @IsEnum(RolePolicyScope)
-  accessUserValue?: RolePolicyScope;
+  accessUser?: RolePolicyScope;
 
-  @ApiPropertyOptional({ type: Number, enum: toEnumValues(RolePolicyScope, Number) })
+  @ApiPropertyOptional({ type: Number, enum: getEnumValuesOnlyNumber(RolePolicyScope) })
   @IsOptional()
   @IsInt()
   @IsEnum(RolePolicyScope)
-  accessProjectValue?: RolePolicyScope;
+  accessProject?: RolePolicyScope;
 }

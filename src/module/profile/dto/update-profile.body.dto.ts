@@ -2,7 +2,7 @@ import { IsDate, IsEnum, IsOptional, IsString, Length, MaxLength, MinLength } fr
 
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
-import { Degree, GenderCode, toEnumValues } from '@server/common';
+import { Degree, GenderCode, getEnumValuesOnlyNumber, getEnumValuesOnlyString } from '@server/common';
 
 export class UpdateProfileBodyDto {
   @ApiPropertyOptional({ type: String })
@@ -22,7 +22,7 @@ export class UpdateProfileBodyDto {
   @IsDate()
   birthday?: Date;
 
-  @ApiPropertyOptional({ type: Number, enum: toEnumValues(GenderCode, Number) })
+  @ApiPropertyOptional({ type: Number, enum: getEnumValuesOnlyNumber(GenderCode) })
   @IsOptional()
   @IsEnum(GenderCode)
   genderCode?: GenderCode;
@@ -33,10 +33,10 @@ export class UpdateProfileBodyDto {
   @Length(8, 8)
   scienceCode?: string;
 
-  @ApiPropertyOptional({ type: Number, enum: toEnumValues(Degree, Number) })
+  @ApiPropertyOptional({ type: Number, enum: getEnumValuesOnlyString(Degree) })
   @IsOptional()
   @IsEnum(Degree)
-  degreeValue?: Degree;
+  degree?: Degree;
 
   @ApiPropertyOptional({ type: String })
   @IsOptional()

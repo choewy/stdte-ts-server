@@ -53,10 +53,10 @@ export class RoleService {
     await RoleQuery.of(this.writerDataSource).saveRole({
       name: body.name,
       rolePolicy: {
-        accessRole: body.rolePolicy.accessRoleValue,
-        accessTeam: body.rolePolicy.accessTeamValue,
-        accessUser: body.rolePolicy.accessUserValue,
-        accessProject: body.rolePolicy.accessProjectValue,
+        accessRole: body.rolePolicy.accessRole,
+        accessTeam: body.rolePolicy.accessTeam,
+        accessUser: body.rolePolicy.accessUser,
+        accessProject: body.rolePolicy.accessProject,
       },
       users,
     });
@@ -65,8 +65,8 @@ export class RoleService {
   async updateRole(user: User, updateRoleId: number, body: UpdateRoleBodyDto): Promise<void> {
     if (
       user?.role?.id === updateRoleId &&
-      body.rolePolicy?.accessRoleValue &&
-      user?.role?.rolePolicy?.accessRole > body.rolePolicy.accessRoleValue
+      body.rolePolicy?.accessRole &&
+      user?.role?.rolePolicy?.accessRole > body.rolePolicy.accessRole
     ) {
       throw new CannotUpdateYourRoleException();
     }
@@ -92,10 +92,10 @@ export class RoleService {
 
       if (body.rolePolicy) {
         await RolePolicyQuery.of(em).updateRolePolicy(updateRoleId, {
-          accessRole: body.rolePolicy.accessRoleValue,
-          accessTeam: body.rolePolicy.accessTeamValue,
-          accessUser: body.rolePolicy.accessUserValue,
-          accessProject: body.rolePolicy.accessProjectValue,
+          accessRole: body.rolePolicy.accessRole,
+          accessTeam: body.rolePolicy.accessTeam,
+          accessUser: body.rolePolicy.accessUser,
+          accessProject: body.rolePolicy.accessProject,
         });
       }
 

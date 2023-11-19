@@ -2,6 +2,8 @@ import { Request } from 'express';
 
 import { HttpRequestLog, User } from '../entities';
 
+export type EnumType = string[] | number[] | (string | number)[] | Record<number, string>;
+
 export type HttpRequest = Request & {
   httpRequestLog: HttpRequestLog;
   user?: User;
