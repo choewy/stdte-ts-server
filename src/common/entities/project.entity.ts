@@ -102,15 +102,15 @@ export class Project extends Relations {
   income: bigint;
 
   @Column({
-    type: 'tinyint',
-    unsigned: true,
+    type: 'varchar',
+    length: 20,
     default: ProjectScope.Team,
   })
   scope: ProjectScope;
 
   @Column({
-    type: 'tinyint',
-    unsigned: true,
+    type: 'varchar',
+    length: 20,
     default: ProjectStatus.Wating,
   })
   status: ProjectStatus;

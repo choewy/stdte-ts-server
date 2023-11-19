@@ -141,7 +141,8 @@ export class User extends Relations {
   scienceCode: string | null;
 
   @Column({
-    type: 'tinyint',
+    type: 'varchar',
+    length: 20,
     nullable: true,
     default: Degree.Null,
   })
@@ -180,14 +181,15 @@ export class User extends Relations {
   carNumber: string | null;
 
   @Column({
-    type: 'tinyint',
-    nullable: true,
+    type: 'varchar',
+    length: 20,
     default: AuthStatus.Wating,
   })
   authStatus: AuthStatus;
 
   @Column({
-    type: 'tinyint',
+    type: 'varchar',
+    length: 20,
     nullable: true,
     default: EmploymentStatus.Null,
   })

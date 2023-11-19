@@ -57,8 +57,8 @@ export class ProjectType extends Relations {
   readonly id: number;
 
   @Column({
-    type: 'tinyint',
-    unsigned: true,
+    type: 'varchar',
+    length: 20,
     default: ProjectScope.Team,
   })
   scope: ProjectScope;
