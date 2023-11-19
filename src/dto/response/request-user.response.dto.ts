@@ -1,16 +1,6 @@
 import { ApiResponseProperty } from '@nestjs/swagger';
 
-import {
-  AUTH_STATUS_TEXTS,
-  EMPLOYMENT_STATUS_TEXTS,
-  ROLE_POLICY_SCOPE_TEXTS,
-  Role,
-  RolePolicy,
-  Team,
-  User,
-} from '@server/common';
-
-import { EnumMapResponseDto } from './enum-map.response.dto';
+import { AuthStatus, EmploymentStatus, Role, RolePolicy, RolePolicyScope, Team, User } from '@server/common';
 
 export class RequestUserTeamResponseDto {
   @ApiResponseProperty({ type: Number })
@@ -29,24 +19,24 @@ export class RequestUserRolePolicyResponseDto {
   @ApiResponseProperty({ type: Number })
   id: number;
 
-  @ApiResponseProperty({ type: EnumMapResponseDto })
-  accessRole: EnumMapResponseDto;
+  @ApiResponseProperty({ type: Number, example: Object.values(RolePolicyScope).join(' | ') })
+  accessRole: RolePolicyScope;
 
-  @ApiResponseProperty({ type: EnumMapResponseDto })
-  accessTeam: EnumMapResponseDto;
+  @ApiResponseProperty({ type: Number, example: Object.values(RolePolicyScope).join(' | ') })
+  accessTeam: RolePolicyScope;
 
-  @ApiResponseProperty({ type: EnumMapResponseDto })
-  accessUser: EnumMapResponseDto;
+  @ApiResponseProperty({ type: Number, example: Object.values(RolePolicyScope).join(' | ') })
+  accessUser: RolePolicyScope;
 
-  @ApiResponseProperty({ type: EnumMapResponseDto })
-  accessProject: EnumMapResponseDto;
+  @ApiResponseProperty({ type: Number, example: Object.values(RolePolicyScope).join(' | ') })
+  accessProject: RolePolicyScope;
 
   constructor(rolePolicy: RolePolicy) {
     this.id = rolePolicy.id;
-    this.accessRole = new EnumMapResponseDto(rolePolicy.accessRole, ROLE_POLICY_SCOPE_TEXTS);
-    this.accessTeam = new EnumMapResponseDto(rolePolicy.accessTeam, ROLE_POLICY_SCOPE_TEXTS);
-    this.accessUser = new EnumMapResponseDto(rolePolicy.accessUser, ROLE_POLICY_SCOPE_TEXTS);
-    this.accessProject = new EnumMapResponseDto(rolePolicy.accessProject, ROLE_POLICY_SCOPE_TEXTS);
+    this.accessRole = rolePolicy.accessRole;
+    this.accessTeam = rolePolicy.accessTeam;
+    this.accessUser = rolePolicy.accessUser;
+    this.accessProject = rolePolicy.accessProject;
   }
 }
 
@@ -77,11 +67,11 @@ export class RequestUserResponseDto {
   @ApiResponseProperty({ type: String })
   name: string;
 
-  @ApiResponseProperty({ type: EnumMapResponseDto })
-  authStatus: EnumMapResponseDto;
+  @ApiResponseProperty({ type: String, example: Object.values(AuthStatus).join(' | ') })
+  authStatus: AuthStatus;
 
-  @ApiResponseProperty({ type: EnumMapResponseDto })
-  employmentStatus: EnumMapResponseDto;
+  @ApiResponseProperty({ type: String, example: Object.values(EmploymentStatus).join(' | ') })
+  employmentStatus: EmploymentStatus;
 
   @ApiResponseProperty({ type: RequestUserRoleResponseDto })
   role: RequestUserRoleResponseDto = null;
@@ -93,8 +83,8 @@ export class RequestUserResponseDto {
     this.id = user.id;
     this.name = user.name;
     this.email = user.email;
-    this.authStatus = new EnumMapResponseDto(user.authStatus, AUTH_STATUS_TEXTS);
-    this.employmentStatus = new EnumMapResponseDto(user.employmentStatus, EMPLOYMENT_STATUS_TEXTS);
+    this.authStatus = user.authStatus;
+    this.employmentStatus = user.employmentStatus;
 
     if (user.role) {
       this.role = new RequestUserRoleResponseDto(user.role);

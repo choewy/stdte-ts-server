@@ -1,25 +1,24 @@
 import { ApiResponseProperty } from '@nestjs/swagger';
 
-import { ROLE_POLICY_SCOPE_TEXTS, RolePolicy } from '@server/common';
-import { EnumMapResponseDto } from '@server/dto';
+import { RolePolicy, RolePolicyScope } from '@server/common';
 
 export class RolePolicyResponseDto {
-  @ApiResponseProperty({ type: EnumMapResponseDto })
-  accessRole: EnumMapResponseDto;
+  @ApiResponseProperty({ type: Number, example: Object.values(RolePolicyScope).join(' | ') })
+  accessRole: RolePolicyScope;
 
-  @ApiResponseProperty({ type: EnumMapResponseDto })
-  accessTeam: EnumMapResponseDto;
+  @ApiResponseProperty({ type: Number, example: Object.values(RolePolicyScope).join(' | ') })
+  accessTeam: RolePolicyScope;
 
-  @ApiResponseProperty({ type: EnumMapResponseDto })
-  accessUser: EnumMapResponseDto;
+  @ApiResponseProperty({ type: Number, example: Object.values(RolePolicyScope).join(' | ') })
+  accessUser: RolePolicyScope;
 
-  @ApiResponseProperty({ type: EnumMapResponseDto })
-  accessProject: EnumMapResponseDto;
+  @ApiResponseProperty({ type: Number, example: Object.values(RolePolicyScope).join(' | ') })
+  accessProject: RolePolicyScope;
 
   constructor(rolePolicy: RolePolicy) {
-    this.accessRole = new EnumMapResponseDto(rolePolicy.accessRole, ROLE_POLICY_SCOPE_TEXTS);
-    this.accessTeam = new EnumMapResponseDto(rolePolicy.accessTeam, ROLE_POLICY_SCOPE_TEXTS);
-    this.accessUser = new EnumMapResponseDto(rolePolicy.accessUser, ROLE_POLICY_SCOPE_TEXTS);
-    this.accessProject = new EnumMapResponseDto(rolePolicy.accessProject, ROLE_POLICY_SCOPE_TEXTS);
+    this.accessRole = rolePolicy.accessRole;
+    this.accessTeam = rolePolicy.accessTeam;
+    this.accessUser = rolePolicy.accessUser;
+    this.accessProject = rolePolicy.accessProject;
   }
 }
