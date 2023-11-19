@@ -1,6 +1,6 @@
 import { ApiResponseProperty } from '@nestjs/swagger';
 
-import { HttpRequestLog } from '@server/common';
+import { HttpRequestLog, User } from '@server/common';
 import { ListResponseType } from '@server/dto';
 
 import { GetLogListBodyDto } from './get-log-list.body.dto';
@@ -48,6 +48,19 @@ export class LogErrorResponseDto {
   }
 }
 
+export class HttpRequestLogUserResponseDto {
+  @ApiResponseProperty({ type: Number })
+  id: number;
+
+  @ApiResponseProperty({ type: String })
+  name: string;
+
+  constructor(user: User) {
+    this.id = user.id;
+    this.name = user.name;
+  }
+}
+
 export class HttpRequestLogResponseDto {
   @ApiResponseProperty({ type: String })
   id: string;
@@ -78,6 +91,9 @@ export class HttpRequestLogResponseDto {
 
   @ApiResponseProperty({ type: LogErrorResponseDto })
   error: LogErrorResponseDto = null;
+
+  @ApiResponseProperty({ type: HttpRequestLogUserResponseDto })
+  user: HttpRequestLogUserResponseDto = null;
 
   @ApiResponseProperty({ type: Date })
   requestAt: Date;
@@ -117,6 +133,10 @@ export class HttpRequestLogResponseDto {
         httpRequestLog.errorMessage,
         httpRequestLog.errorStack,
       );
+    }
+
+    if (httpRequestLog.user) {
+      this.user = new HttpRequestLogUserResponseDto(httpRequestLog.user);
     }
 
     this.requestAt = httpRequestLog.createdAt;

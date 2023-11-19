@@ -1,7 +1,7 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 
-import { RolePolicyScope } from '@server/common';
+import { RequestUser, RolePolicyScope, User } from '@server/common';
 import { UseRoleGuard, AuthGuard } from '@server/core';
 
 import { GetLogListBodyDto, HttpRequestLogListResponseDto } from './dto';
@@ -24,7 +24,10 @@ export class LogController {
   @Post()
   @ApiOperation({ summary: 'get log list' })
   @ApiOkResponse({ type: HttpRequestLogListResponseDto })
-  async getHttpRequestLogList(@Body() body: GetLogListBodyDto): Promise<HttpRequestLogListResponseDto> {
-    return this.logService.getHttpRequestLogList(body);
+  async getHttpRequestLogList(
+    @RequestUser() user: User,
+    @Body() body: GetLogListBodyDto,
+  ): Promise<HttpRequestLogListResponseDto> {
+    return this.logService.getHttpRequestLogList(user, body);
   }
 }

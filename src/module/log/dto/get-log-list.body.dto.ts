@@ -31,7 +31,6 @@ export class GetLogListBodyDto {
 
   @ApiPropertyOptional({ type: Number, enum: Order })
   @IsOptional()
-  @IsInt()
   @IsEnum(Order)
   order?: Order;
 }

@@ -29,7 +29,6 @@ export class MySqlConfig {
       database: this.MYSQL_DB,
       synchronize: toBoolean(this.MYSQL_SYNC),
       logging: this.NODE_ENV === NodeEnv.Local ? toBoolean(this.MYSQL_LOGGING, false) : ['error', 'warn'],
-      timezone: '+09:00',
       autoLoadEntities: true,
       entities,
     };
@@ -46,7 +45,6 @@ export class MySqlConfig {
       database: this.MYSQL_DB,
       synchronize: false,
       logging: this.NODE_ENV === NodeEnv.Local ? toBoolean(this.MYSQL_LOGGING, false) : ['error', 'warn'],
-      timezone: '+09:00',
       autoLoadEntities: true,
       entities,
     };
