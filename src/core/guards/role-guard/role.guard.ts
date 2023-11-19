@@ -1,8 +1,7 @@
 import { Reflector } from '@nestjs/core';
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 
-import { AccessDeninedException, HttpRequest, ROLE_POLICY_SCOPE_TEXTS } from '@server/common';
-import { EnumMapResponseDto } from '@server/dto';
+import { AccessDeninedException, HttpRequest } from '@server/common';
 
 import { SetRoleGuardMetadataArgs, SetRoleGuardMetadataKeys } from './types';
 
@@ -44,8 +43,8 @@ export class RoleGuard implements CanActivate {
       if (userRoleScope < guardRoleScope) {
         throw new AccessDeninedException({
           key,
-          user: new EnumMapResponseDto(userRoleScope, ROLE_POLICY_SCOPE_TEXTS),
-          metadata: new EnumMapResponseDto(guardRoleScope, ROLE_POLICY_SCOPE_TEXTS),
+          user: userRoleScope,
+          metadata: guardRoleScope,
         });
       }
     }
