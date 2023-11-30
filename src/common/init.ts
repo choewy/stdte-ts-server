@@ -1,12 +1,12 @@
 import { Role, User } from './entities';
-import { ROLE_POLICY_SCOPE_TEXTS, RolePolicyScope, AuthStatus, EmploymentStatus } from './constants';
+import { RolePolicyScope, AuthStatus, EmploymentStatus } from './constants';
 
 export class InitEntity {
   public get roles(): Role[] {
     return [
       new Role({
         id: 1,
-        name: ROLE_POLICY_SCOPE_TEXTS[RolePolicyScope.Developer],
+        name: '개발자',
         rolePolicy: {
           id: 1,
           accessRole: RolePolicyScope.Developer,
@@ -18,7 +18,7 @@ export class InitEntity {
       }),
       new Role({
         id: 2,
-        name: ROLE_POLICY_SCOPE_TEXTS[RolePolicyScope.Admin],
+        name: '관리자',
         rolePolicy: {
           id: 2,
           accessRole: RolePolicyScope.Admin,

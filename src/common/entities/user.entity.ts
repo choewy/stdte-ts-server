@@ -191,7 +191,7 @@ export class User extends Relations {
     type: 'varchar',
     length: 20,
     nullable: true,
-    default: EmploymentStatus.Null,
+    default: EmploymentStatus.Wating,
   })
   employmentStatus: EmploymentStatus;
 

@@ -47,7 +47,7 @@ export enum AuthStatus {
 }
 
 export enum EmploymentStatus {
-  Null = 'null',
+  Wating = 'wating',
   Active = 'active',
   Vacate = 'vacate',
   Retire = 'retire',
