@@ -3,6 +3,15 @@
   "collection": "@nestjs/schematics",
   "sourceRoot": "src",
   "compilerOptions": {
-    "deleteOutDir": true
+    "deleteOutDir": true,
+    "webpack": true,
+    "assets": [
+      {
+        "include": "stdte-ts-entity/src/**/*",
+        "exclude": "stdte-ts-entity/src/{main,config}.ts",
+        "outDir": "dist/stdte-ts-entity",
+        "watchAssets": true
+      }
+    ]
   }
 }
