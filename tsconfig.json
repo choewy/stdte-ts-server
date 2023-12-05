@@ -19,8 +19,8 @@
     "noFallthroughCasesInSwitch": false,
     "esModuleInterop": true,
     "paths": {
-      "@stdte-ts-entity": ["stdte-ts-entity/src"],
-      "@stdte-ts-server/*": ["src/*"]
+      "@entity": ["sub_modules/entity/src"],
+      "@server/*": ["src/*"]
     }
   }
 }

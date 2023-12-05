@@ -1,7 +1,7 @@
 import { ConfigService } from '@nestjs/config';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 
-import { entityTargets } from '@stdte-ts-entity';
+import { entityTargets } from '@entity';
 
 export class MySQLConfig {
   private readonly configService = new ConfigService();

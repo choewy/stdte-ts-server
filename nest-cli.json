@@ -7,9 +7,9 @@
     "webpack": true,
     "assets": [
       {
-        "include": "stdte-ts-entity/src/**/*",
-        "exclude": "stdte-ts-entity/src/{main,config}.ts",
-        "outDir": "dist/stdte-ts-entity",
+        "include": "sub_modules/entity/src/**/*",
+        "exclude": "sub_modules/src/{main,config}.ts",
+        "outDir": "dist/sub_modules/entity",
         "watchAssets": true
       }
     ]
