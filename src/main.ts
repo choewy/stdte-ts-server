@@ -1,5 +1,6 @@
 import cookieParser from 'cookie-parser';
 
+import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 
 import { AppModule } from './app.module';
@@ -13,6 +14,15 @@ async function bootstrap() {
 
   app.enableCors(new CorsConfig().getCorsOptions());
   app.useGlobalFilters(app.get(HttpExceptionFilter));
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      transformOptions: {
+        enableCircularCheck: true,
+        enableImplicitConversion: true,
+      },
+    }),
+  );
 
   await app.listen(3000);
 }

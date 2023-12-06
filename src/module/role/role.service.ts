@@ -11,7 +11,7 @@ import {
   UserQuery,
 } from '@server/common';
 
-import { CreateRoleBodyDto, RoleListQueryDto, RoleParamDto, UpdateRoleBodyDto, UpdateRoleUserBodyDto } from './dto';
+import { CreateRoleBodyDto, RoleListQueryDto, RoleParamDto, UpdateRoleBodyDto, UpdateRoleUsersBodyDto } from './dto';
 
 @Injectable()
 export class RoleService {
@@ -73,7 +73,7 @@ export class RoleService {
     return new ResponseDto();
   }
 
-  async updateRoleUsers(param: RoleParamDto, body: UpdateRoleUserBodyDto) {
+  async updateRoleUsers(param: RoleParamDto, body: UpdateRoleUsersBodyDto) {
     const has = await new RoleQuery(this.dataSource).hasRoleById(param.id);
 
     if (has === false) {

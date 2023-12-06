@@ -1,7 +1,7 @@
 import { DataSource, EntityManager } from 'typeorm';
 import { hashSync } from 'bcrypt';
 
-import { PolicyLevel, Role, RolePolicy, User, UserCredentials } from '@entity';
+import { CredentialStatus, PolicyLevel, Role, RolePolicy, User, UserCredentials } from '@entity';
 
 export class InitMap {
   constructor(private readonly connection: DataSource | EntityManager) {}
@@ -51,8 +51,20 @@ export class InitMap {
     const userCredentialsRepository = this.connection.getRepository(UserCredentials);
 
     return [
-      userCredentialsRepository.create({ id: 1, email: 'developer@stdte.co.kr', password: hashSync('standard', 10) }),
-      userCredentialsRepository.create({ id: 2, email: 'admin@stdte.co.kr', password: hashSync('standard', 10) }),
+      userCredentialsRepository.create({
+        id: 1,
+        user: { id: 1 },
+        email: 'developer@stdte.co.kr',
+        password: hashSync('standard', 10),
+        status: CredentialStatus.Active,
+      }),
+      userCredentialsRepository.create({
+        id: 2,
+        user: { id: 2 },
+        email: 'admin@stdte.co.kr',
+        password: hashSync('standard', 10),
+        status: CredentialStatus.Active,
+      }),
     ];
   }
 }

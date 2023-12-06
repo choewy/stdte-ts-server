@@ -3,3 +3,5 @@ export * from './user-credential.query';
 
 export * from './role.query';
 export * from './role-policy.query';
+
+export * from './team.query';

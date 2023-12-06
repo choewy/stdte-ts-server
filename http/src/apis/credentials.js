@@ -9,8 +9,8 @@ export class Credentials {
     await api('/credentials/signin', {
       method: 'post',
       data: {
-        email: 'choewy@stdte.co.kr',
-        password: 'testtest',
+        email: 'developer@stdte.co.kr',
+        password: 'standard',
       },
     });
   }

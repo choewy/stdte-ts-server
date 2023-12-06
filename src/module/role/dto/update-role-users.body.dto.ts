@@ -1,6 +1,6 @@
 import { IsArray, IsInt, IsNotEmpty } from 'class-validator';
 
-export class UpdateRoleUserBodyDto {
+export class UpdateRoleUsersBodyDto {
   @IsNotEmpty()
   @IsArray()
   @IsInt({ each: true })

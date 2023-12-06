@@ -5,7 +5,7 @@ import { SetPolicyLevel } from '@server/common';
 import { CredentialsGuard, JwtGuard, RoleGuard } from '@server/core';
 
 import { RoleService } from './role.service';
-import { CreateRoleBodyDto, RoleListQueryDto, RoleParamDto, UpdateRoleBodyDto, UpdateRoleUserBodyDto } from './dto';
+import { CreateRoleBodyDto, RoleListQueryDto, RoleParamDto, UpdateRoleBodyDto, UpdateRoleUsersBodyDto } from './dto';
 
 @UseGuards(JwtGuard, CredentialsGuard, RoleGuard)
 @Controller('roles')
@@ -32,7 +32,7 @@ export class RoleController {
 
   @Put(':id(\\d+)')
   @SetPolicyLevel({ accessRoleLevel: PolicyLevel.Update })
-  async updateRoleUsers(@Param() param: RoleParamDto, @Body() body: UpdateRoleUserBodyDto) {
+  async updateRoleUsers(@Param() param: RoleParamDto, @Body() body: UpdateRoleUsersBodyDto) {
     return this.roleService.updateRoleUsers(param, body);
   }
 
