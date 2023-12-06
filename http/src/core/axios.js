@@ -20,7 +20,7 @@ api.interceptors.response.use(
     console.log({
       url: response.config.url,
       status: response.status,
-      data: response.data,
+      response: response.data,
     });
 
     return response;
@@ -31,7 +31,7 @@ api.interceptors.response.use(
     console.log({
       url: response.config.url,
       status: response.status,
-      data: response.data,
+      exception: response.data,
     });
 
     return e;

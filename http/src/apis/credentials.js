@@ -1,6 +1,10 @@
 import { api } from '../core/axios.js';
 
 export class Credentials {
+  static async getMyCredentials() {
+    await api('/credentials', { method: 'get' });
+  }
+
   static async signin() {
     await api('/credentials/signin', {
       method: 'post',

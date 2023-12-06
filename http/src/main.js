@@ -1,10 +1,8 @@
-import { Credentials } from './apis/credentials.js';
+import { Profile } from './apis/profile.js';
 
 const main = async () => {
-  await Credentials.signout();
-  await Credentials.signup();
-  await Credentials.signin();
-  await Credentials.updatePassword();
+  await Profile.updateMyProfile();
+  await Profile.getMyProfile();
 };
 
 main();
