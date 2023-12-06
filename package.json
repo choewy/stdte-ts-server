@@ -6,7 +6,7 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "preload": "git submodule foreach git pull origin master",
+    "preload": "git submodule update --init && git submodule foreach git pull origin master",
     "build": "npm run preload && nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
