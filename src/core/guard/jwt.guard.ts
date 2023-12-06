@@ -41,8 +41,6 @@ export class JwtGuard implements CanActivate {
     const http = context.switchToHttp();
     const req = http.getRequest<Request>();
 
-    console.log(req.headers);
-
     const res = http.getResponse<Response>();
 
     if (this.validateAccessToken(req) === false) {

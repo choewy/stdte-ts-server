@@ -1,6 +1,6 @@
 import { Response } from 'express';
 
-import { Body, Controller, Patch, Post, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Patch, Post, Res, UseGuards } from '@nestjs/common';
 
 import { ReqUserID } from '@server/common';
 import { JwtGuard } from '@server/core';
@@ -11,6 +11,12 @@ import { SigninBodyDto, SignupBodyDto, UpdatePasswordBodyDto } from './dto';
 @Controller('credentials')
 export class CredentialsController {
   constructor(private readonly credentialsService: CredentialsService) {}
+
+  @UseGuards(JwtGuard)
+  @Get()
+  async getMyCredentials(@ReqUserID() userId: number) {
+    return this.credentialsService.getMyCredentials(userId);
+  }
 
   @Post('signup')
   async signup(@Res() res: Response, @Body() body: SignupBodyDto) {

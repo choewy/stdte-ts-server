@@ -24,7 +24,6 @@ export class CookieService {
   }
 
   get(req: Request, key: CookieKey) {
-    console.log(req.cookies);
     return req.cookies?.[key] ?? null;
   }
 

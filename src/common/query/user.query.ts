@@ -9,7 +9,32 @@ export class UserQuery extends EntityQuery<User> {
     super(connection, User);
   }
 
-  saveUser(deepPartial: Pick<User, 'name'>) {
-    return this.repository.save(this.repository.create(deepPartial));
+  async findUserById(userId: number) {
+    return this.repository.findOne({ where: { id: userId } });
+  }
+
+  async updateUserProfile(
+    userId: number,
+    partial: Partial<
+      Pick<
+        User,
+        | 'name'
+        | 'phone'
+        | 'birthday'
+        | 'genderCode'
+        | 'scienceCode'
+        | 'degree'
+        | 'school'
+        | 'major'
+        | 'carType'
+        | 'carNumber'
+      >
+    >,
+  ) {
+    await this.repository.update(userId, partial);
+  }
+
+  saveUser(pick: Pick<User, 'name'>) {
+    return this.repository.save(this.repository.create(pick));
   }
 }

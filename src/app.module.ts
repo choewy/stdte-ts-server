@@ -7,13 +7,14 @@ import { AppService } from './app.service';
 
 import { MySQLConfig } from './config';
 import { HttpExceptionFilter } from './core';
-import { CredentialsModule } from './module';
+import { CredentialsModule, ProfileModule } from './module';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
     TypeOrmModule.forRoot(new MySQLConfig().getTypeOrmModuleOptions()),
     CredentialsModule,
+    ProfileModule,
   ],
   controllers: [AppController],
   providers: [AppService, HttpExceptionFilter],

@@ -39,6 +39,20 @@ export class CredentialsService {
     res.send(new ResponseDto());
   }
 
+  async getMyCredentials(userId: number) {
+    const credentials = await new UserCredentialsQuery(this.dataSource).findUserCredentialsByUserId(userId);
+
+    if (credentials == null) {
+      throw new InvalidCredentialsException();
+    }
+
+    return new ResponseDto({
+      email: credentials.email,
+      status: credentials.status,
+      createdAt: credentials.createdAt,
+    });
+  }
+
   async signup(res: Response, body: SignupBodyDto) {
     const has = await new UserCredentialsQuery(this.dataSource).hasUserCredentialsByEmail(body.email);
 
