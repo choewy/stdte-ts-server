@@ -20,6 +20,7 @@
     "esModuleInterop": true,
     "paths": {
       "@entity": ["sub_modules/entity/src"],
+      "@entity/*": ["sub_modules/entity/src/*"],
       "@server/*": ["src/*"]
     }
   }
