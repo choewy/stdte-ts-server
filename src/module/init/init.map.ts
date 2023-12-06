@@ -2,6 +2,7 @@ import { DataSource, EntityManager } from 'typeorm';
 import { hashSync } from 'bcrypt';
 
 import { CredentialStatus, PolicyLevel, Role, RolePolicy, User, UserCredentials } from '@entity';
+import { PolicyLevelMap } from '@server/common';
 
 export class InitMap {
   constructor(private readonly connection: DataSource | EntityManager) {}
@@ -22,19 +23,21 @@ export class InitMap {
       rolePolicyRepository.create({
         id: 1,
         role: { id: 1 },
+        accessCredentials: PolicyLevel.Developer,
         accessRoleLevel: PolicyLevel.Developer,
         accessTeamLevel: PolicyLevel.Developer,
         accessUserLevel: PolicyLevel.Developer,
         accessProjectLevel: PolicyLevel.Developer,
-      }),
+      } as PolicyLevelMap),
       rolePolicyRepository.create({
         id: 2,
         role: { id: 2 },
+        accessCredentials: PolicyLevel.Admin,
         accessRoleLevel: PolicyLevel.Admin,
         accessTeamLevel: PolicyLevel.Admin,
         accessUserLevel: PolicyLevel.Admin,
         accessProjectLevel: PolicyLevel.Admin,
-      }),
+      } as PolicyLevelMap),
     ];
   }
 
