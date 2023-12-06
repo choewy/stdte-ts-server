@@ -1,4 +1,4 @@
-import { DataSource, EntityManager } from 'typeorm';
+import { DataSource, DeepPartial, EntityManager } from 'typeorm';
 
 import { UserCredentials } from '@entity';
 
@@ -11,6 +11,10 @@ export class UserCredentialsQuery extends EntityQuery<UserCredentials> {
 
   async hasUserCredentialsByEmail(email: string) {
     return this.repository.exist({ where: { email } });
+  }
+
+  async hasUserCredentialsById(id: number) {
+    return this.repository.exist({ where: { id } });
   }
 
   async findUserCredentialsByEmail(email: string) {
@@ -36,5 +40,9 @@ export class UserCredentialsQuery extends EntityQuery<UserCredentials> {
 
   async updateUserCredentialsPassword(userId: number, password: string) {
     await this.repository.update({ user: { id: userId } }, { password });
+  }
+
+  async insertUserCredentialsWithBulk(deepPartials: DeepPartial<UserCredentials>[]) {
+    await this.repository.insert(deepPartials);
   }
 }

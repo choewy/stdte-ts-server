@@ -1,4 +1,4 @@
-import { DataSource, EntityManager, In } from 'typeorm';
+import { DataSource, DeepPartial, EntityManager, In } from 'typeorm';
 
 import { User } from '@entity';
 
@@ -7,6 +7,10 @@ import { EntityQuery } from '../class';
 export class UserQuery extends EntityQuery<User> {
   constructor(connection: DataSource | EntityManager) {
     super(connection, User);
+  }
+
+  async hasUserByIdAndOnInit(id: number) {
+    return this.repository.exist({ where: { id, onInit: true } });
   }
 
   async findUserById(userId: number) {
@@ -48,5 +52,9 @@ export class UserQuery extends EntityQuery<User> {
 
   saveUser(pick: Pick<User, 'name'>) {
     return this.repository.save(this.repository.create(pick));
+  }
+
+  insertUsersWithBulk(deepPartials: DeepPartial<User>[]) {
+    return this.repository.insert(deepPartials);
   }
 }

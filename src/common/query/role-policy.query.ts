@@ -1,4 +1,4 @@
-import { DataSource, EntityManager } from 'typeorm';
+import { DataSource, DeepPartial, EntityManager } from 'typeorm';
 
 import { RolePolicy } from '@entity';
 
@@ -7,6 +7,10 @@ import { EntityQuery } from '../class';
 export class RolePolicyQuery extends EntityQuery<RolePolicy> {
   constructor(connection: DataSource | EntityManager) {
     super(connection, RolePolicy);
+  }
+
+  async hasRolePolicyById(id: number) {
+    return this.repository.exist({ where: { id } });
   }
 
   async insertRolePolicy(
@@ -25,6 +29,10 @@ export class RolePolicyQuery extends EntityQuery<RolePolicy> {
     await this.repository.insert(rolePolicy);
 
     return rolePolicy;
+  }
+
+  async insertRolePoliciesWithBulk(deepPartials: DeepPartial<RolePolicy>[]) {
+    await this.repository.insert(deepPartials);
   }
 
   async updateRolePolicy(

@@ -1,4 +1,4 @@
-import { DataSource, EntityManager } from 'typeorm';
+import { DataSource, DeepPartial, EntityManager } from 'typeorm';
 
 import { Role } from '@entity';
 
@@ -11,6 +11,10 @@ export class RoleQuery extends EntityQuery<Role> {
 
   async hasRoleById(id: number) {
     return this.repository.exist({ where: { id } });
+  }
+
+  async hasRoleByIdAndOnInit(id: number) {
+    return this.repository.exist({ where: { id, onInit: true } });
   }
 
   async hasRoleByName(name: string) {
@@ -33,6 +37,10 @@ export class RoleQuery extends EntityQuery<Role> {
 
   async saveRole(pick: Pick<Role, 'name'>) {
     return this.repository.save(this.repository.create(pick));
+  }
+
+  async insertRolesWithBulk(deepPartials: DeepPartial<Role>[]) {
+    await this.repository.insert(deepPartials);
   }
 
   async deleteRole(id: number) {
