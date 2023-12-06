@@ -1,42 +1,36 @@
 import { api } from '../core/axios.js';
 
 export class Team {
-  static async getTeams() {
+  static async getTeams(take, skip) {
     await api('/teams', {
       method: 'get',
-      params: {
-        take: 10,
-        skip: 0,
-      },
+      params: { take, skip },
     });
   }
 
-  static async createTeam() {
+  static async createTeam(name, leader) {
     await api('/teams', {
       method: 'post',
-      data: {
-        name: 'test',
-        leader: 3,
-      },
+      data: { name, leader },
     });
   }
 
-  static async updateTeam(id) {
+  static async updateTeam(id, name, leader) {
     await api(`/teams/${id}`, {
       method: 'patch',
-      data: { name: 'test', leader: 3 },
+      data: { name, leader },
     });
   }
 
-  static async updateTeamUsers(id, users) {
-    await api(`/roles/${id}`, {
+  static async updateTeamMembers(id, members) {
+    await api(`/teams/${id}`, {
       method: 'put',
-      data: { users },
+      data: { members },
     });
   }
 
-  static async deleteRole(id) {
-    await api(`/roles/${id}`, {
+  static async deleteTeam(id) {
+    await api(`/teams/${id}`, {
       method: 'delete',
     });
   }

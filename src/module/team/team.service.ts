@@ -60,9 +60,19 @@ export class TeamService {
       }
     }
 
-    await this.dataSource.transaction(async (em) =>
-      new TeamQuery(em).updateTeam(param.id, body.name, await new UserQuery(em).findUserIdById(body.leader)),
-    );
+    await this.dataSource.transaction(async (em) => {
+      const teamQuery = new TeamQuery(em);
+      const userQuery = new UserQuery(em);
+
+      const leaderId = await userQuery.findUserIdById(body.leader);
+      await teamQuery.updateTeam(param.id, body.name, leaderId);
+
+      if (leaderId == null) {
+        return;
+      }
+
+      await userQuery.updateUserTeamById(leaderId, param.id);
+    });
 
     return new ResponseDto();
   }
