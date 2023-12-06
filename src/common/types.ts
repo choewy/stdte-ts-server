@@ -6,7 +6,7 @@ export type Request = ExpressRequest & {
   userId?: number | null;
 };
 
-export type PolicyLevelMetadataValue = Pick<
+export type PolicyLevelMap = Pick<
   RolePolicy,
-  'accessRoleLevel' | 'accessTeamLevel' | 'accessUserLevel' | 'accessProjectLevel'
+  'accessCredentials' | 'accessRoleLevel' | 'accessTeamLevel' | 'accessUserLevel' | 'accessProjectLevel'
 >;

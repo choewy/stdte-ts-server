@@ -11,10 +11,17 @@ import {
   UserQuery,
   InvalidCredentialsException,
   ResponseDto,
+  NotFoundUserCredentialsException,
 } from '@server/common';
 import { CookieKey, CookieService, JwtService, JwtTokenType } from '@server/core';
 
-import { SigninBodyDto, SignupBodyDto, UpdatePasswordBodyDto } from './dto';
+import {
+  SigninBodyDto,
+  SignupBodyDto,
+  UpdateCredentialsPasswordBodyDto,
+  UpdateCredentialsStatusBodyDto,
+  UpdatePasswordBodyDto,
+} from './dto';
 
 @Injectable()
 export class CredentialsService {
@@ -93,7 +100,7 @@ export class CredentialsService {
     return this.removeTokensAtCookie(res);
   }
 
-  async updatePassword(userId: number, body: UpdatePasswordBodyDto) {
+  async updateMyPassword(userId: number, body: UpdatePasswordBodyDto) {
     const credentialsQuery = new UserCredentialsQuery(this.dataSource);
     const credentials = await credentialsQuery.findUserCredentialsByUserId(userId);
 
@@ -110,6 +117,38 @@ export class CredentialsService {
     }
 
     await credentialsQuery.updateUserCredentialsPassword(userId, hashSync(body.newPassword, 10));
+
+    return new ResponseDto();
+  }
+
+  async updateCredentialsStatus(id: number, body: UpdateCredentialsStatusBodyDto) {
+    const credentialsQuery = new UserCredentialsQuery(this.dataSource);
+
+    const has = await credentialsQuery.hasUserCredentialsById(id);
+
+    if (has === false) {
+      throw new NotFoundUserCredentialsException();
+    }
+
+    await credentialsQuery.updateUserCredentialsStatus(id, body.status);
+
+    return new ResponseDto();
+  }
+
+  async updateCredentialsPassword(id: number, body: UpdateCredentialsPasswordBodyDto) {
+    const credentialsQuery = new UserCredentialsQuery(this.dataSource);
+
+    const has = await credentialsQuery.hasUserCredentialsById(id);
+
+    if (has === false) {
+      throw new NotFoundUserCredentialsException();
+    }
+
+    if (body.newPassword !== body.confirmPassword) {
+      throw new InvalidPasswordException();
+    }
+
+    await credentialsQuery.updateUserCredentialsPassword(id, hashSync(body.newPassword, 10));
 
     return new ResponseDto();
   }

@@ -22,6 +22,7 @@ export class ValidationException extends BadRequestException {
 export class CannotAccessException extends ForbiddenException {}
 export class AlreadyUsedUserEmailException extends ConflictException {}
 export class InvalidPasswordException extends BadRequestException {}
+export class NotFoundUserCredentialsException extends NotFoundException {}
 
 export class InvalidCredentialsException extends UnauthorizedException {
   constructor(e?: Error | null) {

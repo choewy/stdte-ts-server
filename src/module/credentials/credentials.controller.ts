@@ -1,19 +1,27 @@
 import { Response } from 'express';
 
-import { Body, Controller, Get, Patch, Post, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Res, UseGuards } from '@nestjs/common';
 
-import { ReqUserID } from '@server/common';
-import { JwtGuard } from '@server/core';
+import { PolicyLevel } from '@entity';
+import { ReqUserID, SetPolicyLevel } from '@server/common';
+import { CredentialsGuard, JwtGuard, RoleGuard } from '@server/core';
 
 import { CredentialsService } from './credentials.service';
-import { SigninBodyDto, SignupBodyDto, UpdatePasswordBodyDto } from './dto';
+import {
+  CredentialsParamDto,
+  SigninBodyDto,
+  SignupBodyDto,
+  UpdateCredentialsPasswordBodyDto,
+  UpdateCredentialsStatusBodyDto,
+  UpdatePasswordBodyDto,
+} from './dto';
 
 @Controller('credentials')
 export class CredentialsController {
   constructor(private readonly credentialsService: CredentialsService) {}
 
-  @UseGuards(JwtGuard)
   @Get()
+  @UseGuards(JwtGuard)
   async getMyCredentials(@ReqUserID() userId: number) {
     return this.credentialsService.getMyCredentials(userId);
   }
@@ -33,9 +41,23 @@ export class CredentialsController {
     return this.credentialsService.signout(res);
   }
 
-  @UseGuards(JwtGuard)
   @Patch('password')
-  async updatePassword(@ReqUserID() userId: number, @Body() body: UpdatePasswordBodyDto) {
-    return this.credentialsService.updatePassword(userId, body);
+  @UseGuards(JwtGuard)
+  async updateMyPassword(@ReqUserID() userId: number, @Body() body: UpdatePasswordBodyDto) {
+    return this.credentialsService.updateMyPassword(userId, body);
+  }
+
+  @Patch(':id(\\d+)/status')
+  @SetPolicyLevel({ accessCredentials: PolicyLevel.Update })
+  @UseGuards(JwtGuard, CredentialsGuard, RoleGuard)
+  async updateCredentialsStatus(@Param() param: CredentialsParamDto, @Body() body: UpdateCredentialsStatusBodyDto) {
+    return this.credentialsService.updateCredentialsStatus(param.id, body);
+  }
+
+  @Patch(':id(\\d+)/password')
+  @SetPolicyLevel({ accessCredentials: PolicyLevel.Update })
+  @UseGuards(JwtGuard, CredentialsGuard, RoleGuard)
+  async updateCredentialsPassword(@Param() param: CredentialsParamDto, @Body() body: UpdateCredentialsPasswordBodyDto) {
+    return this.credentialsService.updateCredentialsPassword(param.id, body);
   }
 }

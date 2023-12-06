@@ -3,7 +3,7 @@ import { DataSource } from 'typeorm';
 import { CanActivate, ExecutionContext, Injectable, Scope } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 
-import { CannotAccessException, MetadataKey, PolicyLevelMetadataValue, Request, UserQuery } from '@server/common';
+import { CannotAccessException, MetadataKey, PolicyLevelMap, Request, UserQuery } from '@server/common';
 
 @Injectable({ scope: Scope.REQUEST })
 export class RoleGuard implements CanActivate {
@@ -34,7 +34,7 @@ export class RoleGuard implements CanActivate {
       throw new CannotAccessException();
     }
 
-    const policyLevelMap = this.reflector.getAllAndOverride<PolicyLevelMetadataValue>(MetadataKey.PolicyLevel, [
+    const policyLevelMap = this.reflector.getAllAndOverride<PolicyLevelMap>(MetadataKey.PolicyLevel, [
       context.getHandler(),
       context.getClass(),
     ]);
@@ -43,7 +43,7 @@ export class RoleGuard implements CanActivate {
       return true;
     }
 
-    const keys = Object.keys(policyLevelMap) as Array<keyof PolicyLevelMetadataValue>;
+    const keys = Object.keys(policyLevelMap) as Array<keyof PolicyLevelMap>;
 
     for (const key of keys) {
       if (user.role.policy[key] < policyLevelMap[key]) {

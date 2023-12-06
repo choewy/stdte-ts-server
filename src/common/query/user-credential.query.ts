@@ -1,6 +1,6 @@
 import { DataSource, DeepPartial, EntityManager } from 'typeorm';
 
-import { UserCredentials } from '@entity';
+import { CredentialStatus, UserCredentials } from '@entity';
 
 import { EntityQuery } from '../class';
 
@@ -36,6 +36,10 @@ export class UserCredentialsQuery extends EntityQuery<UserCredentials> {
     await this.repository.insert(credentials);
 
     return credentials;
+  }
+
+  async updateUserCredentialsStatus(id: number, status: CredentialStatus) {
+    await this.repository.update({ id }, { status });
   }
 
   async updateUserCredentialsPassword(userId: number, password: string) {
