@@ -1,8 +1,14 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query, UseGuards } from '@nestjs/common';
+
+import { PolicyLevel } from '@entity';
+import { SetPolicyLevel } from '@server/common';
+import { JwtGuard, RoleGuard } from '@server/core';
 
 import { RoleService } from './role.service';
 import { CreateRoleBodyDto, RoleListQueryDto, RoleParamDto, UpdateRoleBodyDto, UpdateRoleUserBodyDto } from './dto';
 
+@SetPolicyLevel({ accessRoleLevel: PolicyLevel.Admin })
+@UseGuards(JwtGuard, RoleGuard)
 @Controller('roles')
 export class RoleController {
   constructor(private readonly roleService: RoleService) {}

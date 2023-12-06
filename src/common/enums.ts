@@ -3,3 +3,7 @@ export enum NodeEnv {
   Develop = 'develop',
   Product = 'product',
 }
+
+export enum MetadataKey {
+  PolicyLevel = 'policy-level',
+}

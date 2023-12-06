@@ -17,6 +17,13 @@ export class UserQuery extends EntityQuery<User> {
     return this.repository.findOne({ where: { id: userId } });
   }
 
+  async findUserWithRoleById(id: number) {
+    return this.repository.findOne({
+      relations: { role: { policy: true } },
+      where: { id },
+    });
+  }
+
   async updateUserProfile(
     userId: number,
     partial: Partial<

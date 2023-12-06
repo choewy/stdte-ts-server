@@ -1,5 +1,12 @@
-import { BadRequestException, ConflictException, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  ForbiddenException,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 
+export class CannotAccessException extends ForbiddenException {}
 export class AlreadyUsedUserEmailException extends ConflictException {}
 export class InvalidPasswordException extends BadRequestException {}
 

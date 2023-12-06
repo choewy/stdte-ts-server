@@ -22,7 +22,7 @@ export class Credentials {
         email: 'choewy@stdte.co.kr',
         name: '최원영',
         password: 'testtest',
-        comfirmPassword: 'testtest',
+        confirmPassword: 'testtest',
       },
     });
   }
