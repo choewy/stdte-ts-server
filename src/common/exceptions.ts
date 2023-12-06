@@ -1,7 +1,8 @@
-import { BadRequestException, ConflictException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, ConflictException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 
 export class AlreadyUsedUserEmailException extends ConflictException {}
 export class InvalidPasswordException extends BadRequestException {}
+
 export class InvalidCredentialsException extends UnauthorizedException {
   constructor(e?: Error | null) {
     super();
@@ -9,3 +10,6 @@ export class InvalidCredentialsException extends UnauthorizedException {
     this.cause = e ?? null;
   }
 }
+
+export class AlreadyExistRoleException extends ConflictException {}
+export class NotFoundRoleException extends NotFoundException {}

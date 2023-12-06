@@ -64,13 +64,13 @@ export class CredentialsService {
       throw new InvalidPasswordException();
     }
 
-    const credentials = await this.dataSource.transaction(async (em) => {
-      return await new UserCredentialsQuery(em).insertUserCredentials({
+    const credentials = await this.dataSource.transaction(async (em) =>
+      new UserCredentialsQuery(em).insertUserCredentials({
         user: await new UserQuery(em).saveUser({ name: body.name }),
         email: body.email,
         password: hashSync(body.password, 10),
-      });
-    });
+      }),
+    );
 
     return this.setTokensInCookie(res, credentials.id);
   }

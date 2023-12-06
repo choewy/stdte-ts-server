@@ -1,4 +1,4 @@
-import { DataSource, EntityManager } from 'typeorm';
+import { DataSource, EntityManager, In } from 'typeorm';
 
 import { User } from '@entity';
 
@@ -32,6 +32,18 @@ export class UserQuery extends EntityQuery<User> {
     >,
   ) {
     await this.repository.update(userId, partial);
+  }
+
+  async updateUsersRoleInUserIds(roleId: number, userIds: number[]) {
+    if (userIds.length === 0) {
+      return;
+    }
+
+    await this.repository.update({ id: In(userIds) }, { role: { id: roleId } });
+  }
+
+  async deleteUsersRole(roleId: number) {
+    await this.repository.update({ role: { id: roleId } }, { role: null });
   }
 
   saveUser(pick: Pick<User, 'name'>) {

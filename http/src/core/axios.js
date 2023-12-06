@@ -17,22 +17,28 @@ api.interceptors.response.use(
   (response) => {
     Cookies.set(response.headers['set-cookie']);
 
-    console.log({
-      url: response.config.url,
-      status: response.status,
-      response: response.data,
-    });
+    console.dir(
+      {
+        url: response.config.url,
+        status: response.status,
+        response: response.data,
+      },
+      { depth: null },
+    );
 
     return response;
   },
   (e) => {
     const response = e.response;
 
-    console.log({
-      url: response.config.url,
-      status: response.status,
-      exception: response.data,
-    });
+    console.dir(
+      {
+        url: response.config.url,
+        status: response.status,
+        exception: response.data,
+      },
+      { depth: null },
+    );
 
     return e;
   },

@@ -21,12 +21,12 @@ export class UserCredentialsQuery extends EntityQuery<UserCredentials> {
     return this.repository.findOne({ where: { user: { id: userId } } });
   }
 
-  async insertUserCredentials(deepPartial: Pick<UserCredentials, 'user' | 'email' | 'password'>) {
+  async insertUserCredentials(pick: Pick<UserCredentials, 'user' | 'email' | 'password'>) {
     const credentials = this.repository.create({
-      id: deepPartial.user.id,
-      user: { id: deepPartial.user.id },
-      email: deepPartial.email,
-      password: deepPartial.password,
+      id: pick.user.id,
+      user: { id: pick.user.id },
+      email: pick.email,
+      password: pick.password,
     });
 
     await this.repository.insert(credentials);
