@@ -1,9 +1,9 @@
 import { IsEnum, IsNotEmpty } from 'class-validator';
 
-import { CredentialStatus } from '@entity';
+import { CredentialsStatus } from '@entity';
 
 export class UpdateCredentialsStatusBodyDto {
   @IsNotEmpty()
-  @IsEnum(CredentialStatus)
-  status: CredentialStatus;
+  @IsEnum(CredentialsStatus)
+  status: CredentialsStatus;
 }

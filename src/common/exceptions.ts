@@ -1,3 +1,4 @@
+import { CredentialsStatus } from '@entity';
 import {
   BadRequestException,
   ConflictException,
@@ -6,6 +7,8 @@ import {
   UnauthorizedException,
   ValidationError,
 } from '@nestjs/common';
+
+import { PolicyLevelMap } from './types';
 
 export class ValidationException extends BadRequestException {
   constructor(errors: ValidationError[]) {
@@ -19,10 +22,13 @@ export class ValidationException extends BadRequestException {
   }
 }
 
-export class CannotAccessException extends ForbiddenException {}
-export class AlreadyUsedUserEmailException extends ConflictException {}
-export class InvalidPasswordException extends BadRequestException {}
-export class NotFoundUserCredentialsException extends NotFoundException {}
+export class CannotAccessException extends ForbiddenException {
+  constructor(cause?: { credentials?: CredentialsStatus | null; policy?: PolicyLevelMap | null }) {
+    super();
+
+    this.cause = cause;
+  }
+}
 
 export class InvalidCredentialsException extends UnauthorizedException {
   constructor(e?: Error | null) {
@@ -32,7 +38,10 @@ export class InvalidCredentialsException extends UnauthorizedException {
   }
 }
 
+export class AlreadyUsedUserEmailException extends ConflictException {}
 export class AlreadyExistRoleException extends ConflictException {}
-export class NotFoundRoleException extends NotFoundException {}
 export class AlreadyExistTeamException extends ConflictException {}
+export class InvalidPasswordException extends BadRequestException {}
+export class NotFoundUserCredentialsException extends NotFoundException {}
+export class NotFoundRoleException extends NotFoundException {}
 export class NotFoundTeamException extends ConflictException {}

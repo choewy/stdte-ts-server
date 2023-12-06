@@ -27,27 +27,27 @@ export class RoleGuard implements CanActivate {
     const user = await this.userQuery.findUserWithRoleById(req.userId);
 
     if (user == null) {
-      throw new CannotAccessException();
+      throw new CannotAccessException({ policy: null });
     }
 
     if (user.role == null) {
-      throw new CannotAccessException();
+      throw new CannotAccessException({ policy: null });
     }
 
-    const policyLevelMap = this.reflector.getAllAndOverride<PolicyLevelMap>(MetadataKey.PolicyLevel, [
+    const policy = this.reflector.getAllAndOverride<PolicyLevelMap>(MetadataKey.PolicyLevel, [
       context.getHandler(),
       context.getClass(),
     ]);
 
-    if (policyLevelMap == null) {
+    if (policy == null) {
       return true;
     }
 
-    const keys = Object.keys(policyLevelMap) as Array<keyof PolicyLevelMap>;
+    const keys = Object.keys(policy) as Array<keyof PolicyLevelMap>;
 
     for (const key of keys) {
-      if (user.role.policy[key] < policyLevelMap[key]) {
-        throw new CannotAccessException();
+      if (user.role.policy[key] < policy[key]) {
+        throw new CannotAccessException({ policy });
       }
     }
 

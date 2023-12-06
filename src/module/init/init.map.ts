@@ -1,7 +1,7 @@
 import { DataSource, EntityManager } from 'typeorm';
 import { hashSync } from 'bcrypt';
 
-import { CredentialStatus, PolicyLevel, Role, RolePolicy, User, UserCredentials } from '@entity';
+import { CredentialsStatus, PolicyLevel, Role, RolePolicy, User, UserCredentials } from '@entity';
 import { PolicyLevelMap } from '@server/common';
 
 export class InitMap {
@@ -59,14 +59,14 @@ export class InitMap {
         user: { id: 1 },
         email: 'developer@stdte.co.kr',
         password: hashSync('standard', 10),
-        status: CredentialStatus.Active,
+        status: CredentialsStatus.Active,
       }),
       userCredentialsRepository.create({
         id: 2,
         user: { id: 2 },
         email: 'admin@stdte.co.kr',
         password: hashSync('standard', 10),
-        status: CredentialStatus.Active,
+        status: CredentialsStatus.Active,
       }),
     ];
   }

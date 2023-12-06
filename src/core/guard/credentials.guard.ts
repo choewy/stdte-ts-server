@@ -2,7 +2,7 @@ import { DataSource } from 'typeorm';
 
 import { CanActivate, ExecutionContext, Injectable, Scope } from '@nestjs/common';
 
-import { CredentialStatus } from '@entity';
+import { CredentialsStatus } from '@entity';
 import { CannotAccessException, Request, UserCredentialsQuery } from '@server/common';
 
 @Injectable({ scope: Scope.REQUEST })
@@ -18,17 +18,17 @@ export class CredentialsGuard implements CanActivate {
     const req = http.getRequest<Request>();
 
     if (req.userId == null) {
-      throw new CannotAccessException();
+      throw new CannotAccessException({ credentials: null });
     }
 
     const credentials = await this.userCredentialsQuery.findUserCredentialsByUserId(req.userId);
 
     if (credentials == null) {
-      throw new CannotAccessException();
+      throw new CannotAccessException({ credentials: null });
     }
 
-    if (credentials.status !== CredentialStatus.Active) {
-      throw new CannotAccessException();
+    if (credentials.status !== CredentialsStatus.Active) {
+      throw new CannotAccessException({ credentials: credentials.status });
     }
 
     return true;
