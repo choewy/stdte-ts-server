@@ -1,6 +1,8 @@
 import { DateTime } from 'luxon';
 import { CookieOptions, Response } from 'express';
 
+import { Request } from '@server/common';
+
 import { CookieKey } from './enums';
 
 export class CookieService {
@@ -21,7 +23,16 @@ export class CookieService {
     }
   }
 
+  get(req: Request, key: CookieKey) {
+    console.log(req.cookies);
+    return req.cookies?.[key] ?? null;
+  }
+
   set(res: Response, key: CookieKey, value: string) {
     res.cookie(key, value, { expires: this.getExpires(key), ...this.options });
+  }
+
+  del(res: Response, key: CookieKey) {
+    res.clearCookie(key, this.options);
   }
 }

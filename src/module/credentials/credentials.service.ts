@@ -9,12 +9,12 @@ import {
   AlreadyUsedUserEmailException,
   InvalidPasswordException,
   UserQuery,
-  InvalidUserCredentialsException,
+  InvalidCredentialsException,
   ResponseDto,
 } from '@server/common';
 import { CookieKey, CookieService, JwtService, JwtTokenType } from '@server/core';
 
-import { SigninBodyDto, SignupBodyDto } from './dto';
+import { SigninBodyDto, SignupBodyDto, UpdatePasswordBodyDto } from './dto';
 
 @Injectable()
 export class CredentialsService {
@@ -26,6 +26,15 @@ export class CredentialsService {
 
     cookieService.set(res, CookieKey.Access, jwtService.issue(JwtTokenType.Access, { id }));
     cookieService.set(res, CookieKey.Refresh, jwtService.issue(JwtTokenType.Access, { id }));
+
+    res.send(new ResponseDto());
+  }
+
+  private removeTokensAtCookie(res: Response) {
+    const cookieService = new CookieService();
+
+    cookieService.del(res, CookieKey.Access);
+    cookieService.del(res, CookieKey.Refresh);
 
     res.send(new ResponseDto());
   }
@@ -56,13 +65,38 @@ export class CredentialsService {
     const credentials = await new UserCredentialsQuery(this.dataSource).findUserCredentialsByEmail(body.email);
 
     if (credentials == null) {
-      throw new InvalidUserCredentialsException();
+      throw new InvalidCredentialsException();
     }
 
     if (compareSync(body.password, credentials.password) === false) {
-      throw new InvalidUserCredentialsException();
+      throw new InvalidCredentialsException();
     }
 
     return this.setTokensInCookie(res, credentials.id);
+  }
+
+  async signout(res: Response) {
+    return this.removeTokensAtCookie(res);
+  }
+
+  async updatePassword(userId: number, body: UpdatePasswordBodyDto) {
+    const credentialsQuery = new UserCredentialsQuery(this.dataSource);
+    const credentials = await credentialsQuery.findUserCredentialsByUserId(userId);
+
+    if (credentials == null) {
+      throw new InvalidCredentialsException();
+    }
+
+    if (compareSync(body.currentPassword, credentials.password) === false) {
+      throw new InvalidPasswordException();
+    }
+
+    if (body.newPassword !== body.confirmPassword) {
+      throw new InvalidPasswordException();
+    }
+
+    await credentialsQuery.updateUserCredentialsPassword(userId, hashSync(body.newPassword, 10));
+
+    return new ResponseDto();
   }
 }

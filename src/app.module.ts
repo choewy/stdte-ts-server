@@ -6,6 +6,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
 import { MySQLConfig } from './config';
+import { HttpExceptionFilter } from './core';
 import { CredentialsModule } from './module';
 
 @Module({
@@ -15,6 +16,6 @@ import { CredentialsModule } from './module';
     CredentialsModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, HttpExceptionFilter],
 })
 export class AppModule {}
