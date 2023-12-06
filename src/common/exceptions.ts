@@ -2,4 +2,10 @@ import { BadRequestException, ConflictException, UnauthorizedException } from '@
 
 export class AlreadyUsedUserEmailException extends ConflictException {}
 export class InvalidPasswordException extends BadRequestException {}
-export class InvalidUserCredentialsException extends UnauthorizedException {}
+export class InvalidCredentialsException extends UnauthorizedException {
+  constructor(e?: Error | null) {
+    super();
+
+    this.cause = e ?? null;
+  }
+}
