@@ -1,4 +1,4 @@
-import { DataSource, DeepPartial, EntityManager } from 'typeorm';
+import { DataSource, DeepPartial, EntityManager, Not } from 'typeorm';
 
 import { Role } from '@entity';
 
@@ -21,6 +21,10 @@ export class RoleQuery extends EntityQuery<Role> {
     return this.repository.exist({ where: { name } });
   }
 
+  async hasRoleByNameOmitId(id: number, name: string) {
+    return this.repository.exist({ where: { id: Not(id), name } });
+  }
+
   async findRolesAndUserCountAsList(take?: number, skip?: number) {
     return this.repository
       .createQueryBuilder('role')
@@ -31,7 +35,7 @@ export class RoleQuery extends EntityQuery<Role> {
       .getManyAndCount();
   }
 
-  async updateRoleName(id: number, name: string) {
+  async updateRoleName(id: number, name?: string) {
     await this.repository.update(id, { name });
   }
 

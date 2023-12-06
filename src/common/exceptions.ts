@@ -20,3 +20,5 @@ export class InvalidCredentialsException extends UnauthorizedException {
 
 export class AlreadyExistRoleException extends ConflictException {}
 export class NotFoundRoleException extends NotFoundException {}
+export class AlreadyExistTeamException extends ConflictException {}
+export class NotFoundTeamException extends ConflictException {}

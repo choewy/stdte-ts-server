@@ -44,30 +44,28 @@ export class RoleService {
   }
 
   async updateRole(param: RoleParamDto, body: UpdateRoleBodyDto) {
-    const has = await new RoleQuery(this.dataSource).hasRoleById(param.id);
+    const roleQuery = new RoleQuery(this.dataSource);
+
+    const has = await roleQuery.hasRoleById(param.id);
 
     if (has === false) {
       throw new NotFoundRoleException();
     }
 
-    await this.dataSource.transaction(async (em) => {
-      if (typeof body.name === 'string') {
-        await new RoleQuery(em).updateRoleName(param.id, body.name);
+    if (typeof body.name === 'string') {
+      if (await roleQuery.hasRoleByNameOmitId(param.id, body.name)) {
+        throw new AlreadyExistRoleException();
       }
+    }
 
-      if (
-        typeof body.accessRoleLevel === 'boolean' ||
-        typeof body.accessTeamLevel === 'boolean' ||
-        typeof body.accessUserLevel === 'boolean' ||
-        typeof body.accessProjectLevel === 'boolean'
-      ) {
-        await new RolePolicyQuery(em).updateRolePolicy(param.id, {
-          accessRoleLevel: body.accessRoleLevel,
-          accessTeamLevel: body.accessTeamLevel,
-          accessUserLevel: body.accessUserLevel,
-          accessProjectLevel: body.accessProjectLevel,
-        });
-      }
+    await this.dataSource.transaction(async (em) => {
+      await new RoleQuery(em).updateRoleName(param.id, body.name);
+      await new RolePolicyQuery(em).updateRolePolicy(param.id, {
+        accessRoleLevel: body.accessRoleLevel,
+        accessTeamLevel: body.accessTeamLevel,
+        accessUserLevel: body.accessUserLevel,
+        accessProjectLevel: body.accessProjectLevel,
+      });
     });
 
     return new ResponseDto();
@@ -90,13 +88,15 @@ export class RoleService {
   }
 
   async deleteRole(param: RoleParamDto) {
-    const has = await new RoleQuery(this.dataSource).hasRoleById(param.id);
+    const roleQuery = new RoleQuery(this.dataSource);
+
+    const has = await roleQuery.hasRoleById(param.id);
 
     if (has === false) {
       throw new NotFoundRoleException();
     }
 
-    await new RoleQuery(this.dataSource).deleteRole(param.id);
+    await roleQuery.deleteRole(param.id);
 
     return new ResponseDto();
   }

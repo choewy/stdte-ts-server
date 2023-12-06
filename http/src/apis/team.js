@@ -11,38 +11,24 @@ export class Team {
     });
   }
 
-  static async createRole() {
-    await api('/roles', {
+  static async createTeam() {
+    await api('/teams', {
       method: 'post',
       data: {
         name: 'test',
-        accessRoleLevel: 0,
+        leader: 3,
       },
     });
   }
 
-  static async updateRoleName(id) {
-    await api(`/roles/${id}`, {
+  static async updateTeam(id) {
+    await api(`/teams/${id}`, {
       method: 'patch',
-      data: { name: 'test' },
+      data: { name: 'test', leader: 3 },
     });
   }
 
-  static async updateRolePolicy(id) {
-    await api(`/roles/${id}`, {
-      method: 'patch',
-      data: { accessRoleLevel: 2, accessTeamLevel: 2 },
-    });
-  }
-
-  static async updateRole(id) {
-    await api(`/roles/${id}`, {
-      method: 'patch',
-      data: { name: 'test', accessRoleLevel: 2, accessTeamLevel: 2 },
-    });
-  }
-
-  static async updateRoleUsers(id, users) {
+  static async updateTeamUsers(id, users) {
     await api(`/roles/${id}`, {
       method: 'put',
       data: { users },

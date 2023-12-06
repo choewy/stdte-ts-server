@@ -13,8 +13,29 @@ export class UserQuery extends EntityQuery<User> {
     return this.repository.exist({ where: { id, onInit: true } });
   }
 
-  async findUserById(userId: number) {
-    return this.repository.findOne({ where: { id: userId } });
+  async findUserById(id: number) {
+    return this.repository.findOne({ where: { id } });
+  }
+
+  async findUserIdById(id?: number) {
+    if (id === undefined) {
+      return undefined;
+    }
+
+    if (id === null) {
+      return null;
+    }
+
+    const user = await this.repository.findOne({
+      select: { id: true },
+      where: { id, onInit: false },
+    });
+
+    if (user == null) {
+      return undefined;
+    }
+
+    return user.id;
   }
 
   async findUserWithRoleById(id: number) {
@@ -25,7 +46,7 @@ export class UserQuery extends EntityQuery<User> {
   }
 
   async updateUserProfile(
-    userId: number,
+    id: number,
     partial: Partial<
       Pick<
         User,
@@ -42,19 +63,35 @@ export class UserQuery extends EntityQuery<User> {
       >
     >,
   ) {
-    await this.repository.update(userId, partial);
+    await this.repository.update(id, partial);
   }
 
-  async updateUsersRoleInUserIds(roleId: number, userIds: number[]) {
-    if (userIds.length === 0) {
+  async updateUsersRoleInUserIds(roleId: number, ids: number[]) {
+    if (ids.length === 0) {
       return;
     }
 
-    await this.repository.update({ id: In(userIds) }, { role: { id: roleId } });
+    await this.repository.update({ id: In(ids), onInit: false }, { role: { id: roleId } });
   }
 
   async deleteUsersRole(roleId: number) {
-    await this.repository.update({ role: { id: roleId } }, { role: null });
+    await this.repository.update({ role: { id: roleId }, onInit: false }, { role: null });
+  }
+
+  async updateUserTeamById(id: number, teamId: number) {
+    await this.repository.update({ id, onInit: false }, { team: { id: teamId } });
+  }
+
+  async updateUsersTeamInUserIds(teamId: number, ids: number[]) {
+    if (ids.length === 0) {
+      return;
+    }
+
+    await this.repository.update({ id: In(ids), onInit: false }, { team: { id: teamId } });
+  }
+
+  async deleteUsersTeam(teamId: number) {
+    await this.repository.update({ team: { id: teamId }, onInit: false }, { team: null });
   }
 
   saveUser(pick: Pick<User, 'name'>) {

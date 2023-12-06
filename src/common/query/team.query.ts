@@ -1,12 +1,64 @@
-import { DataSource, EntityManager } from 'typeorm';
+import { DataSource, EntityManager, Not } from 'typeorm';
 
-import { Team } from '@entity';
+import { Team, User } from '@entity';
 
 import { EntityQuery } from '../class';
 
 export class TeamQuery extends EntityQuery<Team> {
   constructor(connection: DataSource | EntityManager) {
     super(connection, Team);
+  }
+
+  async hasTeamById(id: number) {
+    return this.repository.exist({ where: { id } });
+  }
+
+  async hasTeamByName(name: string) {
+    return this.repository.exist({ where: { name } });
+  }
+
+  async hasTeamByNameOmitId(id: number, name: string) {
+    return this.repository.exist({ where: { id: Not(id), name } });
+  }
+
+  async findTeamLeaderById(id: number) {
+    return this.repository.findOne({
+      relations: { leader: true },
+      select: { id: true, leader: { id: true } },
+      where: { id },
+    });
+  }
+
+  async updateTeam(id: number, name?: string, leaderId?: number | null) {
+    let leader: Pick<User, 'id'> | undefined | null;
+
+    if (leaderId === undefined) {
+      leader = undefined;
+    } else if (leaderId === null) {
+      leader = null;
+    } else {
+      leader = { id: leaderId };
+    }
+
+    await this.repository.update(id, { name, leader });
+  }
+
+  async saveTeam(name: string, leaderId?: number | null) {
+    let leader: Pick<User, 'id'> | undefined | null;
+
+    if (leaderId === undefined) {
+      leader = undefined;
+    } else if (leaderId === null) {
+      leader = null;
+    } else {
+      leader = { id: leaderId };
+    }
+
+    return this.repository.save(this.repository.create({ name, leader }));
+  }
+
+  async deleteTeam(id: number) {
+    await this.repository.delete(id);
   }
 
   async findTeamsAndUserCountAsList(take?: number, skip?: number) {
