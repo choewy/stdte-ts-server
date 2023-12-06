@@ -1,124 +1,103 @@
 import { DataSource } from 'typeorm';
 
 import { Injectable } from '@nestjs/common';
-
 import {
-  AlreadyExistRoleNameException,
-  CannotDeleteYourRoleException,
-  CannotUpdateYourRoleException,
-  InjectReaderDataSource,
-  InjectWriterDataSource,
+  AlreadyExistRoleException,
+  ListDto,
   NotFoundRoleException,
+  ResponseDto,
   RolePolicyQuery,
   RoleQuery,
-  User,
   UserQuery,
 } from '@server/common';
-import { ListQueryDto } from '@server/dto';
 
-import { CreateRoleBodyDto, RoleListResponseDto, RoleResponseDto, UpdateRoleBodyDto } from './dto';
+import { CreateRoleBodyDto, RoleListQueryDto, RoleParamDto, UpdateRoleBodyDto, UpdateRoleUsersBodyDto } from './dto';
 
 @Injectable()
 export class RoleService {
-  constructor(
-    @InjectWriterDataSource()
-    private readonly writerDataSource: DataSource,
-    @InjectReaderDataSource()
-    private readonly readerDataSource: DataSource,
-  ) {}
+  constructor(private readonly dataSource: DataSource) {}
 
-  async getRoleList(query: ListQueryDto): Promise<RoleListResponseDto> {
-    const [rows, total] = await RoleQuery.of(this.readerDataSource).findRolesAndCount(query.skip, query.take);
-
-    return new RoleListResponseDto(
-      total,
-      rows.map((row) => new RoleResponseDto(row)),
-      query,
+  async getRoles(query: RoleListQueryDto) {
+    return new ResponseDto(
+      new ListDto(query, await new RoleQuery(this.dataSource).findRolesAndUserCountAsList(query.take, query.skip)),
     );
   }
 
-  async createRole(body: CreateRoleBodyDto): Promise<void> {
-    const roleExist = await RoleQuery.of(this.readerDataSource).hasRoleByName(body.name);
+  async createRole(body: CreateRoleBodyDto) {
+    const has = await new RoleQuery(this.dataSource).hasRoleByName(body.name);
 
-    if (roleExist) {
-      throw new AlreadyExistRoleNameException();
+    if (has) {
+      throw new AlreadyExistRoleException();
     }
 
-    let users: User[] = [];
+    await this.dataSource.transaction(async (em) =>
+      new RolePolicyQuery(em).insertRolePolicy({
+        role: await new RoleQuery(em).saveRole({ name: body.name }),
+        accessRoleLevel: body.accessRoleLevel,
+        accessTeamLevel: body.accessTeamLevel,
+        accessUserLevel: body.accessUserLevel,
+        accessProjectLevel: body.accessProjectLevel,
+      }),
+    );
 
-    if (body.users.length > 0) {
-      users = await UserQuery.of(this.readerDataSource).findUserIdInIds(body.users);
-    }
-
-    await RoleQuery.of(this.writerDataSource).saveRole({
-      name: body.name,
-      rolePolicy: {
-        accessRole: body.rolePolicy.accessRole,
-        accessTeam: body.rolePolicy.accessTeam,
-        accessUser: body.rolePolicy.accessUser,
-        accessProject: body.rolePolicy.accessProject,
-      },
-      users,
-    });
+    return new ResponseDto();
   }
 
-  async updateRole(user: User, updateRoleId: number, body: UpdateRoleBodyDto): Promise<void> {
-    if (
-      user?.role?.id === updateRoleId &&
-      body.rolePolicy?.accessRole &&
-      user?.role?.rolePolicy?.accessRole > body.rolePolicy.accessRole
-    ) {
-      throw new CannotUpdateYourRoleException();
-    }
+  async updateRole(param: RoleParamDto, body: UpdateRoleBodyDto) {
+    const roleQuery = new RoleQuery(this.dataSource);
 
-    const roleExist = await RoleQuery.of(this.readerDataSource).hasRoleById(updateRoleId);
+    const has = await roleQuery.hasRoleById(param.id);
 
-    if (!roleExist) {
+    if (has === false) {
       throw new NotFoundRoleException();
     }
 
-    let users: User[] = [];
-
-    if (body.users.length > 0) {
-      users = await UserQuery.of(this.readerDataSource).findUserIdInIds(body.users);
+    if (typeof body.name === 'string') {
+      if (await roleQuery.hasRoleByNameOmitId(param.id, body.name)) {
+        throw new AlreadyExistRoleException();
+      }
     }
 
-    await this.writerDataSource.transaction<void>(async (em) => {
-      if (body.name) {
-        await RoleQuery.of(em).updateRole(updateRoleId, {
-          name: body.name,
-        });
-      }
-
-      if (body.rolePolicy) {
-        await RolePolicyQuery.of(em).updateRolePolicy(updateRoleId, {
-          accessRole: body.rolePolicy.accessRole,
-          accessTeam: body.rolePolicy.accessTeam,
-          accessUser: body.rolePolicy.accessUser,
-          accessProject: body.rolePolicy.accessProject,
-        });
-      }
-
-      if (users.length > 0) {
-        await UserQuery.of(em).updateUser(
-          users.map(({ id }) => id),
-          { role: { id: updateRoleId } },
-        );
-      }
+    await this.dataSource.transaction(async (em) => {
+      await new RoleQuery(em).updateRoleName(param.id, body.name);
+      await new RolePolicyQuery(em).updateRolePolicy(param.id, {
+        accessRoleLevel: body.accessRoleLevel,
+        accessTeamLevel: body.accessTeamLevel,
+        accessUserLevel: body.accessUserLevel,
+        accessProjectLevel: body.accessProjectLevel,
+      });
     });
+
+    return new ResponseDto();
   }
 
-  async deleteRole(user: User, deleteRoleId: number): Promise<void> {
-    if (user?.role?.id === deleteRoleId) {
-      throw new CannotDeleteYourRoleException();
-    }
+  async updateRoleUsers(param: RoleParamDto, body: UpdateRoleUsersBodyDto) {
+    const has = await new RoleQuery(this.dataSource).hasRoleById(param.id);
 
-    const roleExist = await RoleQuery.of(this.readerDataSource).hasRoleById(deleteRoleId);
-
-    if (!roleExist) {
+    if (has === false) {
       throw new NotFoundRoleException();
     }
 
-    await RoleQuery.of(this.writerDataSource).deleteRole(deleteRoleId);
+    await this.dataSource.transaction(async (em) => {
+      const userQuery = new UserQuery(em);
+      await userQuery.deleteUsersRole(param.id);
+      await userQuery.updateUsersRoleInUserIds(param.id, body.users);
+    });
+
+    return new ResponseDto();
+  }
+
+  async deleteRole(param: RoleParamDto) {
+    const roleQuery = new RoleQuery(this.dataSource);
+
+    const has = await roleQuery.hasRoleById(param.id);
+
+    if (has === false) {
+      throw new NotFoundRoleException();
+    }
+
+    await roleQuery.deleteRole(param.id);
+
+    return new ResponseDto();
   }
 }

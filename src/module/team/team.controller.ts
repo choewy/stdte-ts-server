@@ -1,51 +1,44 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query, UseGuards } from '@nestjs/common';
 
-import { UseAuthGuard } from '@server/core';
-import { ListQueryDto } from '@server/dto';
+import { PolicyLevel } from '@entity';
+import { CredentialsGuard, JwtGuard, RoleGuard } from '@server/core';
+import { SetPolicyLevel } from '@server/common';
 
 import { TeamService } from './team.service';
-import { GetTeamParamDto, CreateTeamBodyDto, UpdateTeamBodyDto } from './dto';
+import { CreateTeamBodyDto, TeamListQueryDto, TeamParamDto, UpdateTeamBodyDto, UpdateTeamMembersBodyDto } from './dto';
 
-@UseAuthGuard()
-@ApiTags('teams')
+@UseGuards(JwtGuard, CredentialsGuard, RoleGuard)
 @Controller('teams')
 export class TeamController {
   constructor(private readonly teamService: TeamService) {}
 
   @Get()
-  @ApiOperation({ summary: 'get team list' })
-  async getTeamList(@Query() query: ListQueryDto) {
-    return;
-  }
-
-  @Get(':id(\\d+)')
-  @ApiOperation({ summary: 'get team details' })
-  async getTeamById(@Param() param: GetTeamParamDto) {
-    return;
-  }
-
-  @Get(':id(\\d+)/members')
-  @ApiOperation({ summary: 'get team members' })
-  async getTeamMembersById(@Param() param: GetTeamParamDto) {
-    return;
+  @SetPolicyLevel({ accessTeamLevel: PolicyLevel.Read })
+  async getTeams(@Query() query: TeamListQueryDto) {
+    return this.teamService.getTeams(query);
   }
 
   @Post()
-  @ApiOperation({ summary: 'create team' })
+  @SetPolicyLevel({ accessTeamLevel: PolicyLevel.Write })
   async createTeam(@Body() body: CreateTeamBodyDto) {
-    return;
+    return this.teamService.createTeam(body);
   }
 
   @Patch(':id(\\d+)')
-  @ApiOperation({ summary: 'update team' })
-  async updateTeam(@Param() param: GetTeamParamDto, @Body() body: UpdateTeamBodyDto) {
-    return;
+  @SetPolicyLevel({ accessTeamLevel: PolicyLevel.Update })
+  async updateTeam(@Param() param: TeamParamDto, @Body() body: UpdateTeamBodyDto) {
+    return this.teamService.updateTeam(param, body);
+  }
+
+  @Put(':id(\\d+)')
+  @SetPolicyLevel({ accessTeamLevel: PolicyLevel.Update })
+  async updateTeamMembers(@Param() param: TeamParamDto, @Body() body: UpdateTeamMembersBodyDto) {
+    return this.teamService.updateTeamMembers(param, body);
   }
 
   @Delete(':id(\\d+)')
-  @ApiOperation({ summary: 'delete team' })
-  async deleteTeam(@Param() param: GetTeamParamDto) {
-    return;
+  @SetPolicyLevel({ accessTeamLevel: PolicyLevel.Delete })
+  async deleteTeam(@Param() param: TeamParamDto) {
+    return this.teamService.deleteTeam(param);
   }
 }

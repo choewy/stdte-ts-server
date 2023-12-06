@@ -1,25 +1,28 @@
-import { IsArray, IsInstance, IsInt, IsNotEmpty, IsString, Min, MinLength } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
-import { ApiProperty } from '@nestjs/swagger';
+import { PolicyLevel, RolePolicy } from '@entity';
 
-import { CreateRolePolicyBodyDto } from './create-role-policy.body.dto';
-
-export class CreateRoleBodyDto {
-  @ApiProperty({ type: String })
+export class CreateRoleBodyDto
+  implements
+    Partial<Pick<RolePolicy, 'accessRoleLevel' | 'accessTeamLevel' | 'accessUserLevel' | 'accessProjectLevel'>>
+{
   @IsNotEmpty()
   @IsString()
-  @MinLength(1)
   name: string;
 
-  @ApiProperty({ type: CreateRolePolicyBodyDto })
-  @IsNotEmpty()
-  @IsInstance(CreateRolePolicyBodyDto)
-  rolePolicy: CreateRolePolicyBodyDto;
+  @IsOptional()
+  @IsEnum(PolicyLevel)
+  accessRoleLevel?: PolicyLevel;
 
-  @ApiProperty({ type: Number, isArray: true, example: [] })
-  @IsNotEmpty()
-  @IsArray()
-  @IsInt({ each: true })
-  @Min(1, { each: true })
-  users: number[];
+  @IsOptional()
+  @IsEnum(PolicyLevel)
+  accessTeamLevel?: PolicyLevel;
+
+  @IsOptional()
+  @IsEnum(PolicyLevel)
+  accessUserLevel?: PolicyLevel;
+
+  @IsOptional()
+  @IsEnum(PolicyLevel)
+  accessProjectLevel?: PolicyLevel;
 }

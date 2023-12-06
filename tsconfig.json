@@ -12,23 +12,15 @@
     "baseUrl": "./",
     "incremental": true,
     "skipLibCheck": true,
-    "strictNullChecks": false,
+    "strictNullChecks": true,
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "esModuleInterop": true,
     "paths": {
-      "@entity/*": ["stdte-ts-entity/*"],
-      "@dto/*": ["stdte-ts-dto/*"],
-      "@server/common": ["src/common"],
-      "@server/common/*": ["src/common/*"],
-      "@server/core": ["src/core"],
-      "@server/core/*": ["src/core/*"],
-      "@server/dto": ["src/dto"],
-      "@server/dto/*": ["src/dto/*"],
-      "@server/module": ["src/module"],
-      "@server/module/*": ["src/module/*"],
+      "@entity": ["sub_modules/entity/src"],
+      "@entity/*": ["sub_modules/entity/src/*"],
       "@server/*": ["src/*"]
     }
   }

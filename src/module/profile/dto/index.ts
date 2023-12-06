@@ -1,2 +1,1 @@
-export * from './profile.response.dto';
-export * from './update-profile.body.dto';
+export * from './update-my-profile.body.dto';

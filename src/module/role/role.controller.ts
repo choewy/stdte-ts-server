@@ -1,53 +1,44 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
-import { ApiConflictResponse, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query, UseGuards } from '@nestjs/common';
 
-import { RequestUser, RolePolicyScope, User } from '@server/common';
-import { UseAuthGuard, UseRoleGuard } from '@server/core';
-import { ExceptionResponseDto, ListQueryDto } from '@server/dto';
+import { PolicyLevel } from '@entity';
+import { SetPolicyLevel } from '@server/common';
+import { CredentialsGuard, JwtGuard, RoleGuard } from '@server/core';
 
-import { CreateRoleBodyDto, GetRoleParamDto, RoleListResponseDto, UpdateRoleBodyDto } from './dto';
 import { RoleService } from './role.service';
+import { CreateRoleBodyDto, RoleListQueryDto, RoleParamDto, UpdateRoleBodyDto, UpdateRoleUsersBodyDto } from './dto';
 
-@UseAuthGuard()
-@ApiTags('roles')
+@UseGuards(JwtGuard, CredentialsGuard, RoleGuard)
 @Controller('roles')
 export class RoleController {
   constructor(private readonly roleService: RoleService) {}
 
   @Get()
-  @UseRoleGuard({ accessRole: RolePolicyScope.Read })
-  @ApiOperation({ summary: 'get role list' })
-  @ApiOkResponse({ type: RoleListResponseDto })
-  async getRoleList(@Query() query: ListQueryDto): Promise<RoleListResponseDto> {
-    return this.roleService.getRoleList(query);
+  @SetPolicyLevel({ accessRoleLevel: PolicyLevel.Read })
+  async getRoles(@Query() query: RoleListQueryDto) {
+    return this.roleService.getRoles(query);
   }
 
   @Post()
-  @UseRoleGuard({ accessRole: RolePolicyScope.Write })
-  @ApiOperation({ summary: 'create role' })
-  @ApiConflictResponse({ type: ExceptionResponseDto })
-  async createRole(@Body() body: CreateRoleBodyDto): Promise<void> {
+  @SetPolicyLevel({ accessRoleLevel: PolicyLevel.Write })
+  async createRole(@Body() body: CreateRoleBodyDto) {
     return this.roleService.createRole(body);
   }
 
   @Patch(':id(\\d+)')
-  @UseRoleGuard({ accessRole: RolePolicyScope.Update })
-  @ApiOperation({ summary: 'update role' })
-  @ApiConflictResponse({ type: ExceptionResponseDto })
-  @ApiNotFoundResponse({ type: ExceptionResponseDto })
-  async updateRole(
-    @RequestUser() user: User,
-    @Param() param: GetRoleParamDto,
-    @Body() body: UpdateRoleBodyDto,
-  ): Promise<void> {
-    return this.roleService.updateRole(user, param.id, body);
+  @SetPolicyLevel({ accessRoleLevel: PolicyLevel.Update })
+  async updateRole(@Param() param: RoleParamDto, @Body() body: UpdateRoleBodyDto) {
+    return this.roleService.updateRole(param, body);
+  }
+
+  @Put(':id(\\d+)')
+  @SetPolicyLevel({ accessRoleLevel: PolicyLevel.Update })
+  async updateRoleUsers(@Param() param: RoleParamDto, @Body() body: UpdateRoleUsersBodyDto) {
+    return this.roleService.updateRoleUsers(param, body);
   }
 
   @Delete(':id(\\d+)')
-  @UseRoleGuard({ accessRole: RolePolicyScope.Delete })
-  @ApiOperation({ summary: 'delete role' })
-  @ApiNotFoundResponse({ type: ExceptionResponseDto })
-  async deleteRole(@RequestUser() user: User, @Param() param: GetRoleParamDto): Promise<void> {
-    return this.roleService.deleteRole(user, param.id);
+  @SetPolicyLevel({ accessRoleLevel: PolicyLevel.Delete })
+  async deleteRole(@Param() param: RoleParamDto) {
+    return this.roleService.deleteRole(param);
   }
 }

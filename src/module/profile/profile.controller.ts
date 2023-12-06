@@ -1,32 +1,23 @@
-import { Body, Controller, Get, Patch } from '@nestjs/common';
-import { ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Get, Patch, UseGuards } from '@nestjs/common';
 
-import { RequestUser, User } from '@server/common';
-import { UseAuthGuard } from '@server/core';
+import { ReqUserID } from '@server/common';
+import { JwtGuard } from '@server/core';
 
-import { ProfileResponseDto, UpdateProfileBodyDto } from './dto';
 import { ProfileService } from './profile.service';
-import { ExceptionResponseDto } from '@server/dto';
+import { UpdateMyProfileBodyDto } from './dto';
 
-@UseAuthGuard()
-@ApiTags('profile')
+@UseGuards(JwtGuard)
 @Controller('profile')
 export class ProfileController {
   constructor(private readonly profileService: ProfileService) {}
 
   @Get()
-  @ApiOperation({ summary: 'get my profile' })
-  @ApiOkResponse({ type: ProfileResponseDto })
-  @ApiNotFoundResponse({ type: ExceptionResponseDto })
-  async getMyProfile(@RequestUser() user: User): Promise<ProfileResponseDto> {
-    return this.profileService.getMyProfile(user);
+  async getMyProfile(@ReqUserID() userId: number) {
+    return this.profileService.getMyProfile(userId);
   }
 
   @Patch()
-  @ApiOperation({ summary: 'update my profile' })
-  @ApiOkResponse()
-  @ApiNotFoundResponse({ type: ExceptionResponseDto })
-  async updateMyProfile(@RequestUser() user: User, @Body() body: UpdateProfileBodyDto): Promise<void> {
-    return this.profileService.updateMyProfile(user, body);
+  async updateMyProfile(@ReqUserID() userId: number, @Body() body: UpdateMyProfileBodyDto) {
+    return this.profileService.updateMyProfile(userId, body);
   }
 }

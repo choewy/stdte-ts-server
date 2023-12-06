@@ -2,37 +2,37 @@ import { DataSource } from 'typeorm';
 
 import { Injectable } from '@nestjs/common';
 
-import { InjectWriterDataSource, NotFoundMyProfileException, User, UserQuery } from '@server/common';
-
-import { ProfileResponseDto, UpdateProfileBodyDto } from './dto';
+import { InvalidCredentialsException, ResponseDto, UserQuery } from '@server/common';
+import { UpdateMyProfileBodyDto } from './dto';
 
 @Injectable()
 export class ProfileService {
-  constructor(
-    @InjectWriterDataSource()
-    private readonly writerDataSource: DataSource,
-  ) {}
+  constructor(private readonly dataSource: DataSource) {}
 
-  async getMyProfile(user: User): Promise<ProfileResponseDto> {
-    return new ProfileResponseDto(user);
+  async getMyProfile(userId: number) {
+    const user = await new UserQuery(this.dataSource).findUserById(userId);
+
+    if (user == null) {
+      throw new InvalidCredentialsException();
+    }
+
+    return new ResponseDto({
+      name: user.name,
+      phone: user.phone,
+      birthday: user.birthday,
+      genderCode: user.genderCode,
+      scienceCode: user.scienceCode,
+      degree: user.degree,
+      school: user.school,
+      major: user.major,
+      carType: user.carType,
+      carNumber: user.carNumber,
+      status: user.status,
+      updatedAt: user.updatedAt,
+    });
   }
 
-  async updateMyProfile(user: User, body: UpdateProfileBodyDto): Promise<void> {
-    const updateResult = await UserQuery.of(this.writerDataSource).updateUser(user.id, {
-      name: body.name ?? undefined,
-      phone: body.phone,
-      birthday: body.birthday,
-      genderCode: body.genderCode,
-      scienceCode: body.scienceCode,
-      degree: body.degree,
-      school: body.school,
-      major: body.major,
-      carType: body.carType,
-      carNumber: body.carNumber,
-    });
-
-    if (updateResult.affected === 0) {
-      throw new NotFoundMyProfileException();
-    }
+  async updateMyProfile(userId: number, body: UpdateMyProfileBodyDto) {
+    return new ResponseDto(await new UserQuery(this.dataSource).updateUserProfile(userId, body));
   }
 }

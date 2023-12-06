@@ -1,24 +1,28 @@
-import { IsArray, IsInstance, IsInt, IsOptional, IsString, Min, MinLength } from 'class-validator';
+import { IsEnum, IsOptional, IsString } from 'class-validator';
 
-import { UpdateRolePolicyBodyDto } from './update-role-policy.body.dto';
-import { ApiPropertyOptional } from '@nestjs/swagger';
+import { PolicyLevel, RolePolicy } from '@entity';
 
-export class UpdateRoleBodyDto {
-  @ApiPropertyOptional({ type: String })
+export class UpdateRoleBodyDto
+  implements
+    Partial<Pick<RolePolicy, 'accessRoleLevel' | 'accessTeamLevel' | 'accessUserLevel' | 'accessProjectLevel'>>
+{
   @IsOptional()
   @IsString()
-  @MinLength(1)
   name?: string;
 
-  @ApiPropertyOptional({ type: UpdateRolePolicyBodyDto })
   @IsOptional()
-  @IsInstance(UpdateRolePolicyBodyDto)
-  rolePolicy?: UpdateRolePolicyBodyDto;
+  @IsEnum(PolicyLevel)
+  accessRoleLevel?: PolicyLevel;
 
-  @ApiPropertyOptional({ type: Number, isArray: true, example: [] })
   @IsOptional()
-  @IsArray()
-  @IsInt({ each: true })
-  @Min(1, { each: true })
-  users?: number[];
+  @IsEnum(PolicyLevel)
+  accessTeamLevel?: PolicyLevel;
+
+  @IsOptional()
+  @IsEnum(PolicyLevel)
+  accessUserLevel?: PolicyLevel;
+
+  @IsOptional()
+  @IsEnum(PolicyLevel)
+  accessProjectLevel?: PolicyLevel;
 }

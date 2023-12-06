@@ -1,32 +1,45 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { AppController } from '@server/app.controller';
-import { AppService } from '@server/app.service';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
 
-import { MySqlConfig, TypeOrmReaderModule, TypeOrmWriterModule, entireEntity } from '@server/common';
-import { AuthGuardModule, RoleGuardModule, HttpRequestModule, HttpRequestMiddleware } from '@server/core';
-import { AuthModule, LogModule, ProfileModule, RoleModule, TeamModule } from '@server/module';
+import { MySQLConfig } from './config';
+import { HttpExceptionFilter } from './core';
+import {
+  InitModule,
+  CredentialsModule,
+  ProfileModule,
+  RoleModule,
+  TeamModule,
+  UserModule,
+  ProjectModule,
+  ProjectTypeModule,
+  ProjectOptionModule,
+  TimeRecordModule,
+  TimeRecordMemoModule,
+  TimeRecordLogModule,
+} from './module';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    TypeOrmWriterModule.forRoot(new MySqlConfig().getTypeOrmModuleWriterOptions(entireEntity)),
-    TypeOrmReaderModule.forRoot(new MySqlConfig().getTypeOrmModuleReaderOptions(entireEntity)),
-    HttpRequestModule,
-    AuthGuardModule,
-    RoleGuardModule,
-    AuthModule,
+    TypeOrmModule.forRoot(new MySQLConfig().getTypeOrmModuleOptions()),
+    InitModule,
+    CredentialsModule,
     ProfileModule,
     RoleModule,
     TeamModule,
-    LogModule,
+    UserModule,
+    ProjectModule,
+    ProjectTypeModule,
+    ProjectOptionModule,
+    TimeRecordModule,
+    TimeRecordMemoModule,
+    TimeRecordLogModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, HttpExceptionFilter],
 })
-export class AppModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer.apply(HttpRequestMiddleware).exclude('/', '/api-docs(.*)').forRoutes('(.*)');
-  }
-}
+export class AppModule {}
