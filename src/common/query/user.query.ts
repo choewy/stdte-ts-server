@@ -13,6 +13,18 @@ export class UserQuery extends EntityQuery<User> {
     return this.repository.exist({ where: { id, onInit: true } });
   }
 
+  async findUsersAsList(take?: number, skip?: number) {
+    return this.repository
+      .createQueryBuilder('user')
+      .leftJoinAndMapOne('user.role', 'user.role', 'role')
+      .leftJoinAndMapOne('user.team', 'user.team', 'team')
+      .leftJoinAndMapMany('user.teamsByLeader', 'user.teamsByLeader', 'teamsByLeader')
+      .where('user.onInit = false')
+      .skip(skip)
+      .take(take)
+      .getManyAndCount();
+  }
+
   async findUserById(id: number) {
     return this.repository.findOne({ where: { id } });
   }

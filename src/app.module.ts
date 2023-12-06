@@ -7,7 +7,7 @@ import { AppService } from './app.service';
 
 import { MySQLConfig } from './config';
 import { HttpExceptionFilter } from './core';
-import { InitModule, CredentialsModule, ProfileModule, RoleModule, TeamModule } from './module';
+import { InitModule, CredentialsModule, ProfileModule, RoleModule, TeamModule, UserModule } from './module';
 
 @Module({
   imports: [
@@ -18,6 +18,7 @@ import { InitModule, CredentialsModule, ProfileModule, RoleModule, TeamModule } 
     ProfileModule,
     RoleModule,
     TeamModule,
+    UserModule,
   ],
   controllers: [AppController],
   providers: [AppService, HttpExceptionFilter],

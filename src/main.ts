@@ -12,7 +12,6 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.use(cookieParser());
-
   app.enableCors(new CorsConfig().getCorsOptions());
   app.useGlobalFilters(app.get(HttpExceptionFilter));
   app.useGlobalPipes(

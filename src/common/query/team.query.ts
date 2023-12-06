@@ -21,6 +21,16 @@ export class TeamQuery extends EntityQuery<Team> {
     return this.repository.exist({ where: { id: Not(id), name } });
   }
 
+  async findTeamsAndUserCountAsList(take?: number, skip?: number) {
+    return this.repository
+      .createQueryBuilder('team')
+      .leftJoinAndMapOne('team.leader', 'team.leader', 'leader')
+      .leftJoinAndMapMany('team.members', 'team.members', 'members')
+      .skip(skip)
+      .take(take)
+      .getManyAndCount();
+  }
+
   async findTeamLeaderById(id: number) {
     return this.repository.findOne({
       relations: { leader: true },
@@ -59,15 +69,5 @@ export class TeamQuery extends EntityQuery<Team> {
 
   async deleteTeam(id: number) {
     await this.repository.delete(id);
-  }
-
-  async findTeamsAndUserCountAsList(take?: number, skip?: number) {
-    return this.repository
-      .createQueryBuilder('team')
-      .leftJoinAndMapOne('team.leader', 'team.leader', 'leader')
-      .leftJoinAndMapMany('team.members', 'team.members', 'members')
-      .skip(skip)
-      .take(take)
-      .getManyAndCount();
   }
 }
