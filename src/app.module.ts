@@ -7,7 +7,20 @@ import { AppService } from './app.service';
 
 import { MySQLConfig } from './config';
 import { HttpExceptionFilter } from './core';
-import { InitModule, CredentialsModule, ProfileModule, RoleModule, TeamModule, UserModule } from './module';
+import {
+  InitModule,
+  CredentialsModule,
+  ProfileModule,
+  RoleModule,
+  TeamModule,
+  UserModule,
+  ProjectModule,
+  ProjectTypeModule,
+  ProjectOptionModule,
+  TimeRecordModule,
+  TimeRecordMemoModule,
+  TimeRecordLogModule,
+} from './module';
 
 @Module({
   imports: [
@@ -19,6 +32,12 @@ import { InitModule, CredentialsModule, ProfileModule, RoleModule, TeamModule, U
     RoleModule,
     TeamModule,
     UserModule,
+    ProjectModule,
+    ProjectTypeModule,
+    ProjectOptionModule,
+    TimeRecordModule,
+    TimeRecordMemoModule,
+    TimeRecordLogModule,
   ],
   controllers: [AppController],
   providers: [AppService, HttpExceptionFilter],
