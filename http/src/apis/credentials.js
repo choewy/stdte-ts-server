@@ -33,9 +33,9 @@ export class Credentials {
     await api('/credentials/password', {
       method: 'patch',
       data: {
-        currentPassword: '',
-        newPassword: '',
-        confirmPassword: '',
+        currentPassword: 'testtest',
+        newPassword: 'testtest',
+        confirmPassword: 'testtest',
       },
     });
   }
