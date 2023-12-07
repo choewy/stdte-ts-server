@@ -21,7 +21,7 @@ export class ProjectQuery extends EntityQuery<Project> {
     return this.repository.exist({ where: { id: Not(id), code } });
   }
 
-  async findProjectsAsList(teamId?: number, take?: number, skip?: number) {
+  async findProjectsAsList(skip?: number, take?: number) {
     const builder = this.repository
       .createQueryBuilder('project')
       .leftJoinAndMapOne('project.projectType', 'project.projectType', 'projectType')
@@ -34,12 +34,8 @@ export class ProjectQuery extends EntityQuery<Project> {
       .leftJoinAndMapMany('project.leaders', 'project.leaders', 'leaders')
       .leftJoinAndMapOne('leaders.user', 'leaders.user', 'leader')
       .where('1 = 1')
-      .take(take)
-      .skip(skip);
-
-    if (typeof teamId === 'number') {
-      builder.andWhere('teams.id = :teamId', { teamId });
-    }
+      .skip(skip)
+      .take(take);
 
     return builder.getManyAndCount();
   }

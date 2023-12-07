@@ -25,7 +25,7 @@ export class RoleQuery extends EntityQuery<Role> {
     return this.repository.exist({ where: { id: Not(id), name } });
   }
 
-  async findRolesAndUserCountAsList(take?: number, skip?: number) {
+  async findRolesAndUserCountAsList(skip?: number, take?: number) {
     return this.repository
       .createQueryBuilder('role')
       .innerJoinAndMapOne('role.policy', 'role.policy', 'policy')

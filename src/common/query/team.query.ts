@@ -21,7 +21,7 @@ export class TeamQuery extends EntityQuery<Team> {
     return this.repository.exist({ where: { id: Not(id), name } });
   }
 
-  async findTeamsAndUserCountAsList(take?: number, skip?: number) {
+  async findTeamsAndUserCountAsList(skip?: number, take?: number) {
     return this.repository
       .createQueryBuilder('team')
       .leftJoinAndMapOne('team.leader', 'team.leader', 'leader')

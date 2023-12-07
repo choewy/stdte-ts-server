@@ -47,3 +47,5 @@ export class NotFoundUserCredentialsException extends NotFoundException {}
 export class NotFoundRoleException extends NotFoundException {}
 export class NotFoundTeamException extends NotFoundException {}
 export class NotFoundProjectException extends NotFoundException {}
+export class NotFoundProjectTypeException extends NotFoundException {}
+export class NotFoundProjectOptionException extends NotFoundException {}
