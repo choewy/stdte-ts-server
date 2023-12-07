@@ -33,6 +33,8 @@ export class ProfileService {
   }
 
   async updateMyProfile(userId: number, body: UpdateMyProfileBodyDto) {
-    return new ResponseDto(await new UserQuery(this.dataSource).updateUserProfile(userId, body));
+    await new UserQuery(this.dataSource).updateUserProfile(userId, body);
+
+    return new ResponseDto();
   }
 }
