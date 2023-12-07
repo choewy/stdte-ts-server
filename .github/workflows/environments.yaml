@@ -1,0 +1,26 @@
+name: Environments
+
+on: workflow_dispatch
+
+env:
+  ENV_DEVELOP: ${{ secrets.ENV_DEVELOP }}
+  ENV_PRODUCT: ${{ secrets.ENV_PRODUCT }}
+
+jobs:
+  env:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: create .env.*
+        run: |
+          touch .env.develop
+          echo "$ENV_DEVELOP" >> .env
+          touch .env.product
+          echo "$ENV_PRODUCT" >> .env
+
+      - name: artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: stdte-ts-server-envs
+          path: .env.*
+          retention-days: 1
