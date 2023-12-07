@@ -1,0 +1,14 @@
+name: Actions Test
+
+on:
+  push:
+    branches:
+      - actions
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: print .env
+        run: echo $DEVELOP_ENVS
