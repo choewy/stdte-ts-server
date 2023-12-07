@@ -39,7 +39,7 @@ jobs:
         run: |
           cd sub_modules/entity
           npm ci
-          npm run start:sync
+          npm run sync:test
 
       - name: test application
         run: npm run test
