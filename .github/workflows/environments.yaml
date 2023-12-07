@@ -2,13 +2,13 @@ name: Environments
 
 on: workflow_dispatch
 
-env:
-  ENV_DEVELOP: ${{ secrets.ENV_DEVELOP }}
-  ENV_PRODUCT: ${{ secrets.ENV_PRODUCT }}
-
 jobs:
-  env:
+  export_envs:
     runs-on: ubuntu-22.04
+
+    env:
+      ENV_DEVELOP: ${{ secrets.ENV_DEVELOP }}
+      ENV_PRODUCT: ${{ secrets.ENV_PRODUCT }}
 
     steps:
       - name: create .env.*
