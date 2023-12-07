@@ -1,3 +1,5 @@
+import { LogLevel } from 'typeorm';
+
 import { ConfigService } from '@nestjs/config';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 
@@ -12,8 +14,19 @@ export class MySQLConfig {
   private readonly PASSWORD = this.configService.get<string>('MYSQL_PASSWORD');
   private readonly DATABASE = this.configService.get<string>('MYSQL_DATABASE');
   private readonly TIMEZONE = this.configService.get<string>('MYSQL_TIMEZONE');
+  private readonly LOGGING = this.configService.get<string>('MYSQL_LOGGING');
 
   getTypeOrmModuleOptions(): TypeOrmModuleOptions {
+    let logging: boolean | LogLevel[];
+
+    if (this.LOGGING == null) {
+      logging = false;
+    } else if (['true', 'false'].includes(this.LOGGING)) {
+      logging = this.LOGGING === 'true';
+    } else {
+      logging = this.LOGGING.split('|') as LogLevel[];
+    }
+
     return {
       type: 'mysql',
       host: this.HOST,
@@ -24,7 +37,7 @@ export class MySQLConfig {
       timezone: this.TIMEZONE,
       entities: entityTargets,
       autoLoadEntities: true,
-      logging: true,
+      logging,
     };
   }
 }
