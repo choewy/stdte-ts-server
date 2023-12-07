@@ -10,10 +10,7 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-      - name: remove .env
-        run: rm .env
-
-      - name: print .env
+      - name: create .env
         run: |
           touch .env
           echo "$DEVELOP_ENVS" >> .env
