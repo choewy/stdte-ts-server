@@ -1,4 +1,4 @@
-name: Environments
+name: Envs
 
 on: workflow_dispatch
 

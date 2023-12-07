@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  database:
+    build: .
+    container_name: database
+    ports:
+      - 33061:3306
+    command:
+      - --bind-address=0.0.0.0
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    restart: always
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: true

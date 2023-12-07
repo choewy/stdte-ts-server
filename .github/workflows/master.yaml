@@ -1,4 +1,4 @@
-name: Deploy
+name: Test
 
 on:
   push:
@@ -7,8 +7,8 @@ on:
 
     paths-ignore:
       - docs
-      - test
       - README.md
+      - .gitbub/workflows/envs.yaml
 
 jobs:
   build:
@@ -30,11 +30,25 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
 
-      - name: install packages
+      - name: install package
         run: npm ci
 
       - name: pull submodules
-        run: npm run submodule
+        run: |
+          npm run submodule
 
-      - name: build application
-        run: npm run build
+      - name: docker database
+        run: |
+          cd docker/database
+          docker-compose up --build -d
+
+      - name: sync database
+        run: |
+          rm sub_modules/entity/.env
+          cp .env.test sub_modules/entity/.env
+          cd sub_modules/entity
+          npm ci
+          npm run start:sync
+
+      - name: test application
+        run: npm run test
