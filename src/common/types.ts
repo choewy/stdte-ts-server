@@ -1,9 +1,10 @@
 import { Request as ExpressRequest } from 'express';
 
-import { RolePolicy } from '@entity';
+import { RolePolicy, User } from '@entity';
 
 export type Request = ExpressRequest & {
   userId?: number | null;
+  user?: User | null;
 };
 
 export type PolicyLevelMap = Pick<
