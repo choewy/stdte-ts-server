@@ -20,6 +20,7 @@ import {
   TimeRecordModule,
   TimeRecordMemoModule,
   TimeRecordLogModule,
+  SearchModule,
 } from './module';
 
 @Module({
@@ -38,6 +39,7 @@ import {
     TimeRecordModule,
     TimeRecordMemoModule,
     TimeRecordLogModule,
+    SearchModule,
   ],
   controllers: [AppController],
   providers: [AppService, HttpExceptionFilter],

@@ -14,3 +14,5 @@ export * from './project-option';
 export * from './time-record';
 export * from './time-record-memo';
 export * from './time-record-log';
+
+export * from './search';
