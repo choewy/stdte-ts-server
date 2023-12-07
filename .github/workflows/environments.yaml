@@ -14,9 +14,9 @@ jobs:
       - name: create .env.*
         run: |
           touch .env.develop
-          echo "$ENV_DEVELOP" >> .env
+          echo "$ENV_DEVELOP" >> .env.develop
           touch .env.product
-          echo "$ENV_PRODUCT" >> .env
+          echo "$ENV_PRODUCT" >> .env.product
 
       - name: artifacts
         uses: actions/upload-artifact@v3
