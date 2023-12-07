@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 
-import { AppConfig } from './config';
 import { ResponseDto } from './common';
+import { AppConfig } from './config';
 
 @Injectable()
 export class AppService {
