@@ -6,7 +6,7 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "env": "sh .env.sh",
+    "env": "sh env.sh",
     "submodule": "git submodule update --init && git submodule foreach git pull origin master",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
@@ -15,11 +15,11 @@
     "start:debug": "npm run submodule && npm run env && env-cmd -f .env.local nest start --debug --watch",
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-    "test": "jest --config ./jest.json",
-    "test:watch": "jest --config ./jest.json --watch",
-    "test:cov": "jest --config ./jest.json --coverage",
-    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --config ./jest.json --runInBand",
-    "test:e2e": "jest --config ./jest-e2e.json --coverage"
+    "test": "env-cmd -f .env.test jest --config ./jest.json",
+    "test:watch": "env-cmd -f .env.test jest --config ./jest.json --watch",
+    "test:cov": "env-cmd -f .env.test jest --config ./jest.json --coverage",
+    "test:debug": "env-cmd -f .env.test node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --config ./jest.json --runInBand",
+    "test:e2e": "env-cmd -f .env.test jest --config ./jest-e2e.json --coverage"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
