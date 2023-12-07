@@ -6,9 +6,20 @@ on:
       - actions
 
 jobs:
-  build:
+  env:
     runs-on: ubuntu-22.04
 
     steps:
+      - name: remove .env
+        run: rm .env
+
       - name: print .env
-        run: echo $DEVELOP_ENVS
+        run: |
+          touch .env
+          echo "$DEVELOP_ENVS" >> .env
+
+      - name: upload .env
+        uses: actions/upload-artifact@v3
+        with:
+          name: .env
+          path: .env
