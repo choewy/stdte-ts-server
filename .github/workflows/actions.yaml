@@ -8,12 +8,14 @@ on:
 jobs:
   env:
     runs-on: ubuntu-22.04
-
+    env:
+      ENV: ${{ secrets.ENV_DEVELOP }}
     steps:
       - name: create .env
+
         run: |
           touch .env
-          echo "$DEVELOP_ENVS" >> .env
+          echo "$ENV" >> .env
 
       - name: upload .env
         uses: actions/upload-artifact@v3
