@@ -41,5 +41,8 @@ jobs:
           npm ci
           npm run sync:test
 
-      - name: Test application
+      - name: Unit test
         run: npm run test
+
+      - name: E2E test
+        run: npm run test:e2e
