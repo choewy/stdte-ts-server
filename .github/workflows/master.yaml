@@ -34,9 +34,6 @@ jobs:
         run: |
           cd docker/database
           docker compose up --build -d
-          cd sub_modules/entity
-          npm ci
-          npm run start:sync
 
       - name: init database
         run: |
