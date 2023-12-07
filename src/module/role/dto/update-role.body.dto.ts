@@ -1,14 +1,23 @@
-import { IsEnum, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsEnum, IsInt, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 import { PolicyLevel, RolePolicy } from '@entity';
 
 export class UpdateRoleBodyDto
   implements
-    Partial<Pick<RolePolicy, 'accessRoleLevel' | 'accessTeamLevel' | 'accessUserLevel' | 'accessProjectLevel'>>
+    Partial<
+      Pick<
+        RolePolicy,
+        'accessCredentials' | 'accessRoleLevel' | 'accessTeamLevel' | 'accessUserLevel' | 'accessProjectLevel'
+      >
+    >
 {
   @IsOptional()
   @IsString()
   name?: string;
+
+  @IsOptional()
+  @IsEnum(PolicyLevel)
+  accessCredentials?: PolicyLevel;
 
   @IsOptional()
   @IsEnum(PolicyLevel)
@@ -25,4 +34,9 @@ export class UpdateRoleBodyDto
   @IsOptional()
   @IsEnum(PolicyLevel)
   accessProjectLevel?: PolicyLevel;
+
+  @IsNotEmpty()
+  @IsArray()
+  @IsInt({ each: true })
+  users?: number[];
 }

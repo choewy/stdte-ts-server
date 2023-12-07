@@ -11,7 +11,7 @@ import {
   UserQuery,
 } from '@server/common';
 
-import { CreateRoleBodyDto, RoleListQueryDto, RoleParamDto, UpdateRoleBodyDto, UpdateRoleUsersBodyDto } from './dto';
+import { CreateRoleBodyDto, RoleListQueryDto, RoleParamDto, UpdateRoleBodyDto } from './dto';
 
 @Injectable()
 export class RoleService {
@@ -19,7 +19,7 @@ export class RoleService {
 
   async getRoles(query: RoleListQueryDto) {
     return new ResponseDto(
-      new ListDto(query, await new RoleQuery(this.dataSource).findRolesAndUserCountAsList(query.take, query.skip)),
+      new ListDto(query, await new RoleQuery(this.dataSource).findRolesAndUserCountAsList(query.skip, query.take)),
     );
   }
 
@@ -33,6 +33,7 @@ export class RoleService {
     await this.dataSource.transaction(async (em) =>
       new RolePolicyQuery(em).insertRolePolicy({
         role: await new RoleQuery(em).saveRole({ name: body.name }),
+        accessCredentials: body.accessCredentials,
         accessRoleLevel: body.accessRoleLevel,
         accessTeamLevel: body.accessTeamLevel,
         accessUserLevel: body.accessUserLevel,
@@ -59,29 +60,31 @@ export class RoleService {
     }
 
     await this.dataSource.transaction(async (em) => {
-      await new RoleQuery(em).updateRoleName(param.id, body.name);
-      await new RolePolicyQuery(em).updateRolePolicy(param.id, {
-        accessRoleLevel: body.accessRoleLevel,
-        accessTeamLevel: body.accessTeamLevel,
-        accessUserLevel: body.accessUserLevel,
-        accessProjectLevel: body.accessProjectLevel,
-      });
-    });
+      if (typeof body.name === 'string') {
+        await new RoleQuery(em).updateRoleName(param.id, body.name);
+      }
 
-    return new ResponseDto();
-  }
+      if (
+        typeof body.accessCredentials === 'boolean' ||
+        typeof body.accessRoleLevel === 'boolean' ||
+        typeof body.accessTeamLevel === 'boolean' ||
+        typeof body.accessUserLevel === 'boolean' ||
+        typeof body.accessProjectLevel === 'boolean'
+      ) {
+        await new RolePolicyQuery(em).updateRolePolicy(param.id, {
+          accessCredentials: body.accessCredentials,
+          accessRoleLevel: body.accessRoleLevel,
+          accessTeamLevel: body.accessTeamLevel,
+          accessUserLevel: body.accessUserLevel,
+          accessProjectLevel: body.accessProjectLevel,
+        });
+      }
 
-  async updateRoleUsers(param: RoleParamDto, body: UpdateRoleUsersBodyDto) {
-    const has = await new RoleQuery(this.dataSource).hasRoleById(param.id);
-
-    if (has === false) {
-      throw new NotFoundRoleException();
-    }
-
-    await this.dataSource.transaction(async (em) => {
-      const userQuery = new UserQuery(em);
-      await userQuery.deleteUsersRole(param.id);
-      await userQuery.updateUsersRoleInUserIds(param.id, body.users);
+      if (Array.isArray(body.users)) {
+        const userQuery = new UserQuery(em);
+        await userQuery.deleteUsersRole(param.id);
+        await userQuery.updateUsersRoleInUserIds(param.id, body.users);
+      }
     });
 
     return new ResponseDto();
