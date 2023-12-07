@@ -1,11 +1,11 @@
 import request from 'supertest';
 
 import { Test } from '@nestjs/testing';
+import { INestApplication } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 
-import { AppService } from '@server/app.service';
 import { AppController } from '@server/app.controller';
-import { INestApplication } from '@nestjs/common';
+import { AppService } from '@server/app.service';
 
 describe('AppController', () => {
   let app: INestApplication;
@@ -30,7 +30,7 @@ describe('AppController', () => {
     return request(app.getHttpServer()).get('/health').expect(200);
   });
 
-  afterAll(() => {
-    app.close();
+  afterAll(async () => {
+    await app.close();
   });
 });
