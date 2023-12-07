@@ -2,13 +2,8 @@ name: Test
 
 on:
   push:
-    branches:
-      - master
-
-    paths-ignore:
-      - docs
-      - README.md
-      - .gitbub/workflows/envs.yaml
+    branches: ['master']
+    paths-ignore: ['*.md', 'docs', '.github/workflows/envs.yaml']
 
 jobs:
   build:
@@ -37,15 +32,10 @@ jobs:
         run: |
           npm run submodule
 
-      - name: docker database
+      - name: init database
         run: |
           cd docker/database
           docker compose up --build -d
-
-      - name: sync database
-        run: |
-          rm sub_modules/entity/.env
-          cp .env.test sub_modules/entity/.env
           cd sub_modules/entity
           npm ci
           npm run start:sync
