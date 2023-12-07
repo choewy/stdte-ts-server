@@ -3,6 +3,7 @@ import { hashSync } from 'bcrypt';
 
 import { CredentialsStatus, PolicyLevel, Role, RolePolicy, User, UserCredentials } from '@entity';
 import { PolicyLevelMap } from '@server/common';
+import { CredentialsConfig } from '@server/config';
 
 export class InitMap {
   constructor(private readonly connection: DataSource | EntityManager) {}
@@ -53,19 +54,23 @@ export class InitMap {
   get userCredentials() {
     const userCredentialsRepository = this.connection.getRepository(UserCredentials);
 
+    const credentialsConfig = new CredentialsConfig();
+    const developerCredentials = credentialsConfig.getDeveloperCredentials();
+    const adminCredentials = credentialsConfig.getAdminCredentials();
+
     return [
       userCredentialsRepository.create({
         id: 1,
         user: { id: 1 },
-        email: 'developer@stdte.co.kr',
-        password: hashSync('standard', 10),
+        email: developerCredentials.email,
+        password: hashSync(developerCredentials.password, 10),
         status: CredentialsStatus.Active,
       }),
       userCredentialsRepository.create({
         id: 2,
         user: { id: 2 },
-        email: 'admin@stdte.co.kr',
-        password: hashSync('standard', 10),
+        email: adminCredentials.email,
+        password: hashSync(adminCredentials.password, 10),
         status: CredentialsStatus.Active,
       }),
     ];
