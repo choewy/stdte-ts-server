@@ -28,13 +28,13 @@ jobs:
       - name: setup node.js
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ matrix.node }}
-
-      - name: import submodules
-        run: npm run submodule
+          node-version: ${{ matrix.node }}\
 
       - name: install packages
-        run: npm run ci
+        run: npm ci
+
+      - name: pull submodules
+        run: npm run submodule
 
       - name: build application
         run: npm run build
