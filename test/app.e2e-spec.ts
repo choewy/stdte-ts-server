@@ -8,12 +8,13 @@ import { AppModule } from '@server/app.module';
 describe('AppController (e2e)', () => {
   let app: INestApplication;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const module = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
 
     app = module.createNestApplication();
+    app.enableShutdownHooks();
 
     await app.init();
   });
@@ -26,7 +27,7 @@ describe('AppController (e2e)', () => {
     return request(app.getHttpServer()).get('/health').expect(200);
   });
 
-  afterAll(() => {
-    app.close();
+  afterAll(async () => {
+    await app.close();
   });
 });

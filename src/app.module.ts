@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { BeforeApplicationShutdown, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
@@ -22,6 +22,7 @@ import {
   TimeRecordLogModule,
   SearchModule,
 } from './module';
+import { DataSource } from 'typeorm';
 
 @Module({
   imports: [
@@ -44,4 +45,10 @@ import {
   controllers: [AppController],
   providers: [AppService, HttpExceptionFilter],
 })
-export class AppModule {}
+export class AppModule implements BeforeApplicationShutdown {
+  constructor(private readonly dataSource: DataSource) {}
+
+  async beforeApplicationShutdown() {
+    await this.dataSource.destroy();
+  }
+}
