@@ -24,10 +24,7 @@ export class ProjectService {
 
   async getProjects(query: ProjectListQueryDto) {
     return new ResponseDto(
-      new ListDto(
-        query,
-        await new ProjectQuery(this.dataSource).findProjectsAsList(query.teamId, query.take, query.skip),
-      ),
+      new ListDto(query, await new ProjectQuery(this.dataSource).findProjectsAsList(query.skip, query.take)),
     );
   }
 
