@@ -14,7 +14,7 @@ export class MySQLConfig {
   private readonly PASSWORD = this.configService.get<string>('MYSQL_PASSWORD');
   private readonly DATABASE = this.configService.get<string>('MYSQL_DATABASE');
   private readonly TIMEZONE = this.configService.get<string>('MYSQL_TIMEZONE');
-  private readonly LOGGING = this.configService.get<string>('LOGGING');
+  private readonly LOGGING = this.configService.get<string>('MYSQL_LOGGING');
 
   getTypeOrmModuleOptions(): TypeOrmModuleOptions {
     let logging: boolean | LogLevel[];
