@@ -25,17 +25,21 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
 
-      - name: install package
-        run: npm ci
-
-      - name: pull submodules
+      - name: install dependencies
         run: |
+          npm ci
           npm run submodule
 
-      - name: init database
+      - name: docker database
         run: |
           cd docker/database
           docker compose up --build -d
+          cd sub_modules/entity
+          npm ci
+          npm run start:sync
+
+      - name: init database
+        run: |
           cd sub_modules/entity
           npm ci
           npm run start:sync
