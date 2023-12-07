@@ -1,4 +1,4 @@
-import { IsDate, IsEnum, IsOptional, IsString, MinLength } from 'class-validator';
+import { IsDateString, IsEnum, IsOptional, IsString, MinLength } from 'class-validator';
 
 import { Degree, GenderCode } from '@entity';
 
@@ -13,7 +13,7 @@ export class UpdateMyProfileBodyDto {
   phone?: string | null;
 
   @IsOptional()
-  @IsDate()
+  @IsDateString()
   birthday?: Date | null;
 
   @IsOptional()

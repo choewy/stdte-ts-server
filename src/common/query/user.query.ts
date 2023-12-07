@@ -57,6 +57,19 @@ export class UserQuery extends EntityQuery<User> {
     });
   }
 
+  async findUserIdsByids(ids: number[]) {
+    if (ids.length === 0) {
+      return [];
+    }
+
+    const users = await this.repository.find({
+      select: { id: true, onInit: true },
+      where: { id: In(ids), onInit: false },
+    });
+
+    return users.map(({ id }) => id);
+  }
+
   async updateUserProfile(
     id: number,
     partial: Partial<
@@ -106,11 +119,11 @@ export class UserQuery extends EntityQuery<User> {
     await this.repository.update({ team: { id: teamId }, onInit: false }, { team: null });
   }
 
-  saveUser(pick: Pick<User, 'name'>) {
+  async saveUser(pick: Pick<User, 'name'>) {
     return this.repository.save(this.repository.create(pick));
   }
 
-  insertUsersWithBulk(deepPartials: DeepPartial<User>[]) {
+  async insertUsersWithBulk(deepPartials: DeepPartial<User>[]) {
     return this.repository.insert(deepPartials);
   }
 }

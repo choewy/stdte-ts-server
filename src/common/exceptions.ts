@@ -41,7 +41,9 @@ export class InvalidCredentialsException extends UnauthorizedException {
 export class AlreadyUsedUserEmailException extends ConflictException {}
 export class AlreadyExistRoleException extends ConflictException {}
 export class AlreadyExistTeamException extends ConflictException {}
+export class AlreadyExistProjectCodeException extends ConflictException {}
 export class InvalidPasswordException extends BadRequestException {}
 export class NotFoundUserCredentialsException extends NotFoundException {}
 export class NotFoundRoleException extends NotFoundException {}
-export class NotFoundTeamException extends ConflictException {}
+export class NotFoundTeamException extends NotFoundException {}
+export class NotFoundProjectException extends NotFoundException {}

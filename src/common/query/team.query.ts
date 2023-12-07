@@ -1,4 +1,4 @@
-import { DataSource, EntityManager, Not } from 'typeorm';
+import { DataSource, EntityManager, In, Not } from 'typeorm';
 
 import { Team, User } from '@entity';
 
@@ -29,6 +29,19 @@ export class TeamQuery extends EntityQuery<Team> {
       .skip(skip)
       .take(take)
       .getManyAndCount();
+  }
+
+  async findTeamIdsByids(ids: number[]) {
+    if (ids.length === 0) {
+      return [];
+    }
+
+    const teams = await this.repository.find({
+      select: { id: true },
+      where: { id: In(ids) },
+    });
+
+    return teams.map(({ id }) => id);
   }
 
   async findTeamLeaderById(id: number) {
