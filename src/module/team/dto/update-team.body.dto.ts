@@ -1,4 +1,4 @@
-import { IsInt, IsOptional, IsString, Min } from 'class-validator';
+import { IsArray, IsInt, IsNotEmpty, IsOptional, IsString, Min } from 'class-validator';
 
 export class UpdateTeamBodyDto {
   @IsOptional()
@@ -9,4 +9,9 @@ export class UpdateTeamBodyDto {
   @IsInt()
   @Min(1)
   leader?: number;
+
+  @IsNotEmpty()
+  @IsArray()
+  @IsInt({ each: true })
+  members?: number[];
 }

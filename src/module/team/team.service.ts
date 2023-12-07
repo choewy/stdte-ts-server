@@ -10,7 +10,7 @@ import {
   UserQuery,
 } from '@server/common';
 
-import { CreateTeamBodyDto, TeamListQueryDto, TeamParamDto, UpdateTeamBodyDto, UpdateTeamMembersBodyDto } from './dto';
+import { CreateTeamBodyDto, TeamListQueryDto, TeamParamDto, UpdateTeamBodyDto } from './dto';
 
 @Injectable()
 export class TeamService {
@@ -18,7 +18,7 @@ export class TeamService {
 
   async getTeams(query: TeamListQueryDto) {
     return new ResponseDto(
-      new ListDto(query, await new TeamQuery(this.dataSource).findTeamsAndUserCountAsList(query.take, query.skip)),
+      new ListDto(query, await new TeamQuery(this.dataSource).findTeamsAndUserCountAsList(query.skip, query.take)),
     );
   }
 
@@ -47,10 +47,9 @@ export class TeamService {
 
   async updateTeam(param: TeamParamDto, body: UpdateTeamBodyDto) {
     const teamQuery = new TeamQuery(this.dataSource);
+    const team = await teamQuery.findTeamLeaderById(param.id);
 
-    const has = await teamQuery.hasTeamById(param.id);
-
-    if (has === false) {
+    if (team === null) {
       throw new NotFoundTeamException();
     }
 
@@ -61,44 +60,21 @@ export class TeamService {
     }
 
     await this.dataSource.transaction(async (em) => {
-      const teamQuery = new TeamQuery(em);
       const userQuery = new UserQuery(em);
+      const teamQuery = new TeamQuery(em);
+
+      if (Array.isArray(body.members)) {
+        await userQuery.deleteUsersTeam(param.id);
+        await userQuery.updateUsersTeamInUserIds(param.id, body.members);
+      }
 
       const leaderId = await userQuery.findUserIdById(body.leader);
+
+      if (leaderId) {
+        await userQuery.updateUserTeamById(leaderId, param.id);
+      }
+
       await teamQuery.updateTeam(param.id, body.name, leaderId);
-
-      if (leaderId == null) {
-        return;
-      }
-
-      await userQuery.updateUserTeamById(leaderId, param.id);
-    });
-
-    return new ResponseDto();
-  }
-
-  async updateTeamMembers(param: TeamParamDto, body: UpdateTeamMembersBodyDto) {
-    const teamQuery = new TeamQuery(this.dataSource);
-    const team = await teamQuery.findTeamLeaderById(param.id);
-
-    if (team == null) {
-      throw new NotFoundTeamException();
-    }
-
-    await this.dataSource.transaction(async (em) => {
-      const userQuery = new UserQuery(em);
-      await userQuery.deleteUsersTeam(team.id);
-      await userQuery.updateUsersTeamInUserIds(team.id, body.members);
-
-      if (team.leader == null) {
-        return;
-      }
-
-      if (body.members.includes(team.leader.id)) {
-        return;
-      }
-
-      await new TeamQuery(em).updateTeam(param.id, undefined, null);
     });
 
     return new ResponseDto();

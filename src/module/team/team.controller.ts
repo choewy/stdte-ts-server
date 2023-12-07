@@ -1,11 +1,11 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
 
 import { PolicyLevel } from '@entity';
 import { CredentialsGuard, JwtGuard, RoleGuard } from '@server/core';
 import { SetPolicyLevel } from '@server/common';
 
 import { TeamService } from './team.service';
-import { CreateTeamBodyDto, TeamListQueryDto, TeamParamDto, UpdateTeamBodyDto, UpdateTeamMembersBodyDto } from './dto';
+import { CreateTeamBodyDto, TeamListQueryDto, TeamParamDto, UpdateTeamBodyDto } from './dto';
 
 @UseGuards(JwtGuard, CredentialsGuard, RoleGuard)
 @Controller('teams')
@@ -28,12 +28,6 @@ export class TeamController {
   @SetPolicyLevel({ accessTeamLevel: PolicyLevel.Update })
   async updateTeam(@Param() param: TeamParamDto, @Body() body: UpdateTeamBodyDto) {
     return this.teamService.updateTeam(param, body);
-  }
-
-  @Put(':id(\\d+)')
-  @SetPolicyLevel({ accessTeamLevel: PolicyLevel.Update })
-  async updateTeamMembers(@Param() param: TeamParamDto, @Body() body: UpdateTeamMembersBodyDto) {
-    return this.teamService.updateTeamMembers(param, body);
   }
 
   @Delete(':id(\\d+)')
