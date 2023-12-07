@@ -46,3 +46,10 @@ jobs:
 
       - name: E2E test
         run: npm run test:e2e
+
+      - name: Upload coverages to artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage
+          path: coverage
+          retention-days: 7
