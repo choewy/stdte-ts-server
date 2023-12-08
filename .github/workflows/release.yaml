@@ -113,8 +113,9 @@ jobs:
       - name: Zip files
         run: |
           source profile
-          mv appspec/release release
-          zip -r $ZIP_NAME.zip profile release
+          mv appspec/release/appspec.yml
+          mv appspec/release/hooks hooks
+          zip -r $ZIP_NAME.zip appspec.yml profile hooks
 
       - name: Upload to S3
         run: |
