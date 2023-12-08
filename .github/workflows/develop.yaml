@@ -113,8 +113,8 @@ jobs:
       - name: Zip files
         run: |
           source profile
-          mv appspec/develop develop
-          zip -r $ZIP_NAME.zip profile develop
+          mv appspec/develop/* .
+          zip -r $ZIP_NAME.zip profile hooks
 
       - name: Upload to S3
         run: |
