@@ -94,7 +94,8 @@ jobs:
           REGISTRY: ${{ steps.ecr.outputs.registry }}
           REPOSITORY: ${{ secrets.AWS_ECR_REPOSITORY_PRODUCT }}
         run: |
-          ZIP_NAME="product_$IMAGE_TAG_$GITHUB_SHA"
+          echo $IMAGE_TAG
+          ZIP_NAME="product-$IMAGE_TAG-$GITHUB_SHA"
           IMAGE_NAME="$REPOSITORY:$IMAGE_TAG"
           IMAGE_PATH="$REGISTRY/$IMAGE_NAME"
           touch profile
@@ -107,10 +108,10 @@ jobs:
         id: ecr
         uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Push deploy to S3
+      - name: Upload to S3
         run: |
           source profile
-          unzip $ZIP_NAME.zip $ZIP_NAME
+          unzip $ZIP_NAME.zip -d $ZIP_NAME
           aws deploy push \
             --application-name stdte-ts-server \
             --s3-location s3://$BUCKET/$ZIP_NAME.zip \
