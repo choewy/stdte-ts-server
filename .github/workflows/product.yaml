@@ -2,14 +2,13 @@ name: Product
 
 on:
   push:
-    branches: [docker]
     tags: ['v*']
 
 env:
   TAG: ${{ github.ref_name }}
 
 jobs:
-  deploy:
+  deploy-to-product:
     runs-on: ubuntu-22.04
 
     strategy:
@@ -64,7 +63,7 @@ jobs:
           REGISTRY: ${{ steps.ecr.outputs.registry }}
           REPOSITORY: ${{ secrets.AWS_ECR_REPOSITORY_PRODUCT }}
         run: |
-          IMAGE_NAME="$REGISTRY/$REPOSITORY:IMAGE_TAG"
+          IMAGE_NAME="$REGISTRY/$REPOSITORY:$IMAGE_TAG"
           cd docker/server
           sh scripts/build.sh $IMAGE_NAME
           sh scripts/push.sh $IMAGE_NAME
