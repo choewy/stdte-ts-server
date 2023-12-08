@@ -65,6 +65,8 @@ jobs:
           sh scripts/push.sh $IMAGE_NAME
 
   deploy:
+    needs: build
+
     runs-on: ubuntu-22.04
 
     env:
@@ -99,15 +101,16 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
-      - name: Upload to S3
+      - name: Push deploy to S3
         run: |
           source profile
+          unzip $ZIP_NAME.zip $ZIP_NAME
           aws deploy push \
             --application-name stdte-ts-server \
             --s3-location s3://$BUCKET/$ZIP_NAME.zip \
             --source $ZIP_NAME
 
-      - name: Deploy
+      - name: Create Deployment
         run: |
           source profile
           aws deploy create-deployment \
