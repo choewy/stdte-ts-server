@@ -25,8 +25,6 @@ export class ProjectQuery extends EntityQuery<Project> {
     const builder = this.repository
       .createQueryBuilder('project')
       .leftJoinAndMapOne('project.projectType', 'project.projectType', 'projectType')
-      .leftJoinAndMapMany('project.teams', 'project.teams', 'teams')
-      .leftJoinAndMapOne('teams.team', 'teams.team', 'team')
       .leftJoinAndMapMany('project.owners', 'project.owners', 'owners')
       .leftJoinAndMapOne('owners.user', 'owners.user', 'owner')
       .leftJoinAndMapMany('project.managers', 'project.managers', 'managers')
@@ -43,16 +41,7 @@ export class ProjectQuery extends EntityQuery<Project> {
   async insertProject(
     pick: Pick<
       Project,
-      | 'name'
-      | 'code'
-      | 'scope'
-      | 'status'
-      | 'orderer'
-      | 'summary'
-      | 'income'
-      | 'startDate'
-      | 'deadlineDate'
-      | 'maintenanceDate'
+      'name' | 'code' | 'status' | 'orderer' | 'summary' | 'income' | 'startDate' | 'deadlineDate' | 'maintenanceDate'
     > & {
       projectType: ProjectType | null | undefined;
     },
@@ -61,7 +50,6 @@ export class ProjectQuery extends EntityQuery<Project> {
       this.repository.create({
         name: pick.name,
         code: pick.code,
-        scope: pick.scope,
         status: pick.status,
         orderer: pick.orderer,
         summary: pick.summary,
@@ -79,16 +67,7 @@ export class ProjectQuery extends EntityQuery<Project> {
     partial: Partial<
       Pick<
         Project,
-        | 'name'
-        | 'code'
-        | 'scope'
-        | 'status'
-        | 'orderer'
-        | 'summary'
-        | 'income'
-        | 'startDate'
-        | 'deadlineDate'
-        | 'maintenanceDate'
+        'name' | 'code' | 'status' | 'orderer' | 'summary' | 'income' | 'startDate' | 'deadlineDate' | 'maintenanceDate'
       > & {
         projectType: ProjectType | null;
       }
@@ -99,7 +78,6 @@ export class ProjectQuery extends EntityQuery<Project> {
       this.repository.create({
         name: partial.name,
         code: partial.code,
-        scope: partial.scope,
         status: partial.status,
         orderer: partial.orderer,
         summary: partial.summary,

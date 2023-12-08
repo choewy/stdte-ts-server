@@ -4,12 +4,7 @@ import { PolicyLevel, RolePolicy } from '@entity';
 
 export class UpdateRoleBodyDto
   implements
-    Partial<
-      Pick<
-        RolePolicy,
-        'accessCredentials' | 'accessRoleLevel' | 'accessTeamLevel' | 'accessUserLevel' | 'accessProjectLevel'
-      >
-    >
+    Partial<Pick<RolePolicy, 'accessCredentials' | 'accessRoleLevel' | 'accessUserLevel' | 'accessProjectLevel'>>
 {
   @IsOptional()
   @IsString()
@@ -22,10 +17,6 @@ export class UpdateRoleBodyDto
   @IsOptional()
   @IsEnum(PolicyLevel)
   accessRoleLevel?: PolicyLevel;
-
-  @IsOptional()
-  @IsEnum(PolicyLevel)
-  accessTeamLevel?: PolicyLevel;
 
   @IsOptional()
   @IsEnum(PolicyLevel)

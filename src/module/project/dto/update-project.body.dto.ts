@@ -1,7 +1,7 @@
 import { IsArray, IsDateString, IsEnum, IsInt, IsNumberString, IsOptional, IsString } from 'class-validator';
 import { Transform } from 'class-transformer';
 
-import { ProjectScope, ProjectStatus } from '@entity';
+import { ProjectStatus } from '@entity';
 
 export class UpdateProjectBodyDto {
   @IsOptional()
@@ -11,10 +11,6 @@ export class UpdateProjectBodyDto {
   @IsOptional()
   @IsString()
   code?: string;
-
-  @IsOptional()
-  @IsEnum(ProjectScope)
-  scope?: ProjectScope;
 
   @IsOptional()
   @IsEnum(ProjectStatus)
@@ -58,11 +54,6 @@ export class UpdateProjectBodyDto {
   @IsOptional()
   @IsInt()
   projectType?: number | null;
-
-  @IsOptional()
-  @IsArray()
-  @IsInt({ each: true })
-  teams?: number[];
 
   @IsOptional()
   @IsArray()

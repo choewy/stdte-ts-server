@@ -35,7 +35,6 @@ export class RoleService {
         role: await new RoleQuery(em).saveRole({ name: body.name }),
         accessCredentials: body.accessCredentials,
         accessRoleLevel: body.accessRoleLevel,
-        accessTeamLevel: body.accessTeamLevel,
         accessUserLevel: body.accessUserLevel,
         accessProjectLevel: body.accessProjectLevel,
       }),
@@ -67,14 +66,12 @@ export class RoleService {
       if (
         typeof body.accessCredentials === 'boolean' ||
         typeof body.accessRoleLevel === 'boolean' ||
-        typeof body.accessTeamLevel === 'boolean' ||
         typeof body.accessUserLevel === 'boolean' ||
         typeof body.accessProjectLevel === 'boolean'
       ) {
         await new RolePolicyQuery(em).updateRolePolicy(param.id, {
           accessCredentials: body.accessCredentials,
           accessRoleLevel: body.accessRoleLevel,
-          accessTeamLevel: body.accessTeamLevel,
           accessUserLevel: body.accessUserLevel,
           accessProjectLevel: body.accessProjectLevel,
         });

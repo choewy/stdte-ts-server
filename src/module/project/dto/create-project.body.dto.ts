@@ -10,7 +10,7 @@ import {
 } from 'class-validator';
 import { Transform } from 'class-transformer';
 
-import { ProjectScope, ProjectStatus } from '@entity';
+import { ProjectStatus } from '@entity';
 
 export class CreateProjectBodyDto {
   @IsNotEmpty()
@@ -20,10 +20,6 @@ export class CreateProjectBodyDto {
   @IsNotEmpty()
   @IsString()
   code: string;
-
-  @IsNotEmpty()
-  @IsEnum(ProjectScope)
-  scope: ProjectScope;
 
   @IsNotEmpty()
   @IsEnum(ProjectStatus)
@@ -67,11 +63,6 @@ export class CreateProjectBodyDto {
   @IsOptional()
   @IsInt()
   projectType: number | null;
-
-  @IsNotEmpty()
-  @IsArray()
-  @IsInt({ each: true })
-  teams: number[];
 
   @IsNotEmpty()
   @IsArray()

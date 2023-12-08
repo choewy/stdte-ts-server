@@ -7,7 +7,7 @@ export class TimeRecordLogController {
   constructor(private readonly timeRecordLogService: TimeRecordLogService) {}
 
   @Get()
-  async getTimeLogsByMyTeam() {
+  async getTimeLogs() {
     return;
   }
 }

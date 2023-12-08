@@ -14,10 +14,6 @@ export class SearchService {
     return;
   }
 
-  async searchTeams() {
-    return;
-  }
-
   async searchProjectTypes() {
     return;
   }

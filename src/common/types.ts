@@ -9,5 +9,5 @@ export type Request = ExpressRequest & {
 
 export type PolicyLevelMap = Pick<
   RolePolicy,
-  'accessCredentials' | 'accessRoleLevel' | 'accessTeamLevel' | 'accessUserLevel' | 'accessProjectLevel'
+  'accessCredentials' | 'accessRoleLevel' | 'accessUserLevel' | 'accessProjectLevel'
 >;

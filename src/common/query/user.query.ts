@@ -17,8 +17,6 @@ export class UserQuery extends EntityQuery<User> {
     return this.repository
       .createQueryBuilder('user')
       .leftJoinAndMapOne('user.role', 'user.role', 'role')
-      .leftJoinAndMapOne('user.team', 'user.team', 'team')
-      .leftJoinAndMapMany('user.teamsByLeader', 'user.teamsByLeader', 'teamsByLeader')
       .where('user.onInit = false')
       .skip(skip)
       .take(take)
@@ -31,7 +29,6 @@ export class UserQuery extends EntityQuery<User> {
 
   async findUserByIdAtInterceptor(id: number) {
     return this.repository.findOne({
-      relations: { team: true },
       where: { id },
     });
   }
@@ -108,22 +105,6 @@ export class UserQuery extends EntityQuery<User> {
 
   async deleteUsersRole(roleId: number) {
     await this.repository.update({ role: { id: roleId }, onInit: false }, { role: null });
-  }
-
-  async updateUserTeamById(id: number, teamId: number) {
-    await this.repository.update({ id, onInit: false }, { team: { id: teamId } });
-  }
-
-  async updateUsersTeamInUserIds(teamId: number, ids: number[]) {
-    if (ids.length === 0) {
-      return;
-    }
-
-    await this.repository.update({ id: In(ids), onInit: false }, { team: { id: teamId } });
-  }
-
-  async deleteUsersTeam(teamId: number) {
-    await this.repository.update({ team: { id: teamId }, onInit: false }, { team: null });
   }
 
   async saveUser(pick: Pick<User, 'name'>) {

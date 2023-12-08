@@ -39,7 +39,6 @@ export class ProjectTypeQuery extends EntityQuery<ProjectType> {
       .createQueryBuilder('projectType')
       .leftJoinAndMapMany('projectType.projectOptions', 'projectType.projectOptions', 'projectOptions')
       .leftJoinAndMapMany('projectType.projects', 'projectType.projects', 'projects')
-      .leftJoinAndMapOne('projectType.team', 'projectType.team', 'team')
       .where('1 = 1')
       .skip(skip)
       .take(take);

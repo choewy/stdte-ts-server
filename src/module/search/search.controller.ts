@@ -16,11 +16,6 @@ export class SearchController {
     return this.searchService.searchRoles;
   }
 
-  @Post('teams')
-  async searchTeams() {
-    return this.searchService.searchTeams;
-  }
-
   @Post('projects/types')
   async searchProjectTypes() {
     return this.searchService.searchProjectTypes;
