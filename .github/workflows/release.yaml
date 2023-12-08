@@ -4,9 +4,6 @@ on:
   push:
     tags: ['v*']
 
-env:
-  TAG: ${{ github.ref_name }}
-
 jobs:
   build:
     runs-on: ubuntu-22.04
@@ -39,11 +36,12 @@ jobs:
       - name: Create environments
         env:
           ENV: ${{ secrets.ENV_PRODUCT }}
+          IMAGE_TAG: ${{ github.ref_name }}
         run: |
           rm .env
           touch .env
           echo "$ENV" >> .env
-          echo "VERSION=$TAG" >> .env
+          echo "VERSION=$IMAGE_TAG" >> .env
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -96,7 +94,7 @@ jobs:
           REGISTRY: ${{ steps.ecr.outputs.registry }}
           REPOSITORY: ${{ secrets.AWS_ECR_REPOSITORY_PRODUCT }}
         run: |
-          ZIP_NAME="product_$TAG_$GITHUB_SHA"
+          ZIP_NAME="product_$IMAGE_TAG_$GITHUB_SHA"
           IMAGE_NAME="$REPOSITORY:$IMAGE_TAG"
           IMAGE_PATH="$REGISTRY/$IMAGE_NAME"
           touch profile
