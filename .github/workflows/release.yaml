@@ -88,6 +88,10 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
+      - name: Login to ECR
+        id: ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
       - name: Create profile and zip files
         env:
           IMAGE_TAG: ${{ github.ref_name }}
@@ -103,10 +107,6 @@ jobs:
           echo "IMAGE_NAME=$IMAGE_NAME" >> profile
           echo "IMAGE_PATH=$IMAGE_PATH" >> profile
           zip -r $ZIP_NAME.zip profile appspec*
-
-      - name: Login to ECR
-        id: ecr
-        uses: aws-actions/amazon-ecr-login@v1
 
       - name: Upload to S3
         run: |
