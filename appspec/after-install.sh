@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source profile
+source /home/ubuntu/deployment/profile
 
 sudo docker pull $IMAGE_PATH
 

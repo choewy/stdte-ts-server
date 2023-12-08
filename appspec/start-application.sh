@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source profile
+source /home/ubuntu/deployment/profile
 
 BLUE=stdte-ts-server-blue
 GREEN=stdte-ts-server-green

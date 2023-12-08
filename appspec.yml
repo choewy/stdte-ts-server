@@ -4,7 +4,7 @@ os: linux
 
 files:
   - source: /
-    destination: /home/ubuntu/appspec
+    destination: /home/ubuntu/deployment
     runas: ubuntu
     overwrite: yes
 
