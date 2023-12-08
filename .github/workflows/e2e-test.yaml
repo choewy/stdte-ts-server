@@ -3,11 +3,11 @@ name: E2E Test
 on:
   push:
     branches: ['master']
-    paths-ignore: ['*.md', 'docs', '.github/workflows/envs.yaml']
+    paths-ignore: ['*.md', 'docs', '!.github/workflows/*-test.yaml', '!docker/database']
 
   pull_request:
     branches: ['master']
-    paths-ignore: ['*.md', 'docs', '.github/workflows/envs.yaml']
+    paths-ignore: ['*.md', 'docs', '!.github/workflows/*-test.yaml', '!docker/database']
 
 jobs:
   e2e_test:
