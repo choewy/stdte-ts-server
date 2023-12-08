@@ -34,9 +34,9 @@ export class RoleService {
       new RolePolicyQuery(em).insertRolePolicy({
         role: await new RoleQuery(em).saveRole({ name: body.name }),
         accessCredentials: body.accessCredentials,
-        accessRoleLevel: body.accessRoleLevel,
-        accessUserLevel: body.accessUserLevel,
-        accessProjectLevel: body.accessProjectLevel,
+        accessRole: body.accessRole,
+        accessUser: body.accessUser,
+        accessProject: body.accessProject,
       }),
     );
 
@@ -65,15 +65,15 @@ export class RoleService {
 
       if (
         typeof body.accessCredentials === 'boolean' ||
-        typeof body.accessRoleLevel === 'boolean' ||
-        typeof body.accessUserLevel === 'boolean' ||
-        typeof body.accessProjectLevel === 'boolean'
+        typeof body.accessRole === 'boolean' ||
+        typeof body.accessUser === 'boolean' ||
+        typeof body.accessProject === 'boolean'
       ) {
         await new RolePolicyQuery(em).updateRolePolicy(param.id, {
           accessCredentials: body.accessCredentials,
-          accessRoleLevel: body.accessRoleLevel,
-          accessUserLevel: body.accessUserLevel,
-          accessProjectLevel: body.accessProjectLevel,
+          accessRole: body.accessRole,
+          accessUser: body.accessUser,
+          accessProject: body.accessProject,
         });
       }
 

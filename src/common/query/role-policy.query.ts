@@ -15,15 +15,15 @@ export class RolePolicyQuery extends EntityQuery<RolePolicy> {
 
   async insertRolePolicy(
     pickAndPartial: Pick<RolePolicy, 'role'> &
-      Partial<Pick<RolePolicy, 'accessCredentials' | 'accessRoleLevel' | 'accessUserLevel' | 'accessProjectLevel'>>,
+      Partial<Pick<RolePolicy, 'accessCredentials' | 'accessRole' | 'accessUser' | 'accessProject'>>,
   ) {
     const rolePolicy = this.repository.create({
       id: pickAndPartial.role.id,
       role: { id: pickAndPartial.role.id },
       accessCredentials: pickAndPartial.accessCredentials,
-      accessRoleLevel: pickAndPartial.accessRoleLevel,
-      accessUserLevel: pickAndPartial.accessUserLevel,
-      accessProjectLevel: pickAndPartial.accessProjectLevel,
+      accessRole: pickAndPartial.accessRole,
+      accessUser: pickAndPartial.accessUser,
+      accessProject: pickAndPartial.accessProject,
     });
 
     await this.repository.insert(rolePolicy);
@@ -37,9 +37,7 @@ export class RolePolicyQuery extends EntityQuery<RolePolicy> {
 
   async updateRolePolicy(
     roleId: number,
-    partial: Partial<
-      Pick<RolePolicy, 'accessCredentials' | 'accessRoleLevel' | 'accessUserLevel' | 'accessProjectLevel'>
-    >,
+    partial: Partial<Pick<RolePolicy, 'accessCredentials' | 'accessRole' | 'accessUser' | 'accessProject'>>,
   ) {
     await this.repository.update(roleId, partial);
   }

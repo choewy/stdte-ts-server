@@ -3,8 +3,7 @@ import { IsArray, IsEnum, IsInt, IsNotEmpty, IsOptional, IsString } from 'class-
 import { PolicyLevel, RolePolicy } from '@entity';
 
 export class UpdateRoleBodyDto
-  implements
-    Partial<Pick<RolePolicy, 'accessCredentials' | 'accessRoleLevel' | 'accessUserLevel' | 'accessProjectLevel'>>
+  implements Partial<Pick<RolePolicy, 'accessCredentials' | 'accessRole' | 'accessUser' | 'accessProject'>>
 {
   @IsOptional()
   @IsString()
@@ -16,15 +15,15 @@ export class UpdateRoleBodyDto
 
   @IsOptional()
   @IsEnum(PolicyLevel)
-  accessRoleLevel?: PolicyLevel;
+  accessRole?: PolicyLevel;
 
   @IsOptional()
   @IsEnum(PolicyLevel)
-  accessUserLevel?: PolicyLevel;
+  accessUser?: PolicyLevel;
 
   @IsOptional()
   @IsEnum(PolicyLevel)
-  accessProjectLevel?: PolicyLevel;
+  accessProject?: PolicyLevel;
 
   @IsNotEmpty()
   @IsArray()

@@ -18,25 +18,25 @@ export class ProjectTypeController {
   constructor(private readonly projectTypeService: ProjectTypeService) {}
 
   @Get()
-  @SetPolicyLevel({ accessProjectLevel: PolicyLevel.Read })
+  @SetPolicyLevel({ accessProject: PolicyLevel.Read })
   async getProjectTypes(@Query() query: ProjectTypeListQueryDto) {
     return this.projectTypeService.getProjectTypes(query);
   }
 
   @Post()
-  @SetPolicyLevel({ accessProjectLevel: PolicyLevel.Write })
+  @SetPolicyLevel({ accessProject: PolicyLevel.Write })
   async createProjectType(@Body() body: CreateProjectTypeBodyDto) {
     return this.projectTypeService.createProjectType(body);
   }
 
   @Patch(':id(\\d+)')
-  @SetPolicyLevel({ accessProjectLevel: PolicyLevel.Update })
+  @SetPolicyLevel({ accessProject: PolicyLevel.Update })
   async updateProjectType(@Param() param: ProjectTypeParamDto, @Body() body: UpdateProjectTypeBodyDto) {
     return this.projectTypeService.updateProjectType(param, body);
   }
 
   @Delete(':id(\\d+)')
-  @SetPolicyLevel({ accessProjectLevel: PolicyLevel.Delete })
+  @SetPolicyLevel({ accessProject: PolicyLevel.Delete })
   async deleteProjectType(@Param() param: ProjectTypeParamDto) {
     return this.projectTypeService.deleteProjectType(param);
   }

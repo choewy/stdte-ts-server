@@ -25,17 +25,17 @@ export class InitMap {
         id: 1,
         role: { id: 1 },
         accessCredentials: PolicyLevel.Developer,
-        accessRoleLevel: PolicyLevel.Developer,
-        accessUserLevel: PolicyLevel.Developer,
-        accessProjectLevel: PolicyLevel.Developer,
+        accessRole: PolicyLevel.Developer,
+        accessUser: PolicyLevel.Developer,
+        accessProject: PolicyLevel.Developer,
       } as PolicyLevelMap),
       rolePolicyRepository.create({
         id: 2,
         role: { id: 2 },
         accessCredentials: PolicyLevel.Admin,
-        accessRoleLevel: PolicyLevel.Admin,
-        accessUserLevel: PolicyLevel.Admin,
-        accessProjectLevel: PolicyLevel.Admin,
+        accessRole: PolicyLevel.Admin,
+        accessUser: PolicyLevel.Admin,
+        accessProject: PolicyLevel.Admin,
       } as PolicyLevelMap),
     ];
   }

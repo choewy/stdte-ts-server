@@ -13,25 +13,25 @@ export class ProjectController {
   constructor(private readonly projectService: ProjectService) {}
 
   @Get()
-  @SetPolicyLevel({ accessProjectLevel: PolicyLevel.Read })
+  @SetPolicyLevel({ accessProject: PolicyLevel.Read })
   async getProjects(@Query() query: ProjectListQueryDto) {
     return this.projectService.getProjects(query);
   }
 
   @Post()
-  @SetPolicyLevel({ accessProjectLevel: PolicyLevel.Write })
+  @SetPolicyLevel({ accessProject: PolicyLevel.Write })
   async createProject(@Body() body: CreateProjectBodyDto) {
     return this.projectService.createProject(body);
   }
 
   @Patch(':id(\\d+)')
-  @SetPolicyLevel({ accessProjectLevel: PolicyLevel.Update })
+  @SetPolicyLevel({ accessProject: PolicyLevel.Update })
   async updateProject(@Param() param: ProjectParamDto, @Body() body: UpdateProjectBodyDto) {
     return this.projectService.updateProject(param, body);
   }
 
   @Delete(':id(\\d+)')
-  @SetPolicyLevel({ accessProjectLevel: PolicyLevel.Delete })
+  @SetPolicyLevel({ accessProject: PolicyLevel.Delete })
   async deleteProject(@Param() param: ProjectParamDto) {
     return this.projectService.deleteProject(param);
   }

@@ -13,25 +13,25 @@ export class RoleController {
   constructor(private readonly roleService: RoleService) {}
 
   @Get()
-  @SetPolicyLevel({ accessRoleLevel: PolicyLevel.Read })
+  @SetPolicyLevel({ accessRole: PolicyLevel.Read })
   async getRoles(@Query() query: RoleListQueryDto) {
     return this.roleService.getRoles(query);
   }
 
   @Post()
-  @SetPolicyLevel({ accessRoleLevel: PolicyLevel.Write })
+  @SetPolicyLevel({ accessRole: PolicyLevel.Write })
   async createRole(@Body() body: CreateRoleBodyDto) {
     return this.roleService.createRole(body);
   }
 
   @Patch(':id(\\d+)')
-  @SetPolicyLevel({ accessRoleLevel: PolicyLevel.Update })
+  @SetPolicyLevel({ accessRole: PolicyLevel.Update })
   async updateRole(@Param() param: RoleParamDto, @Body() body: UpdateRoleBodyDto) {
     return this.roleService.updateRole(param, body);
   }
 
   @Delete(':id(\\d+)')
-  @SetPolicyLevel({ accessRoleLevel: PolicyLevel.Delete })
+  @SetPolicyLevel({ accessRole: PolicyLevel.Delete })
   async deleteRole(@Param() param: RoleParamDto) {
     return this.roleService.deleteRole(param);
   }

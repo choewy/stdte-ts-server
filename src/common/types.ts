@@ -7,7 +7,4 @@ export type Request = ExpressRequest & {
   user?: User | null;
 };
 
-export type PolicyLevelMap = Pick<
-  RolePolicy,
-  'accessCredentials' | 'accessRoleLevel' | 'accessUserLevel' | 'accessProjectLevel'
->;
+export type PolicyLevelMap = Pick<RolePolicy, 'accessCredentials' | 'accessRole' | 'accessUser' | 'accessProject'>;

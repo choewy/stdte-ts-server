@@ -13,19 +13,19 @@ export class ProjectOptionController {
   constructor(private readonly projectOptionService: ProjectOptionService) {}
 
   @Post()
-  @SetPolicyLevel({ accessProjectLevel: PolicyLevel.Write })
+  @SetPolicyLevel({ accessProject: PolicyLevel.Write })
   async createProjectOption(@Body() body: CreateProjectOptionBodyDto) {
     return this.projectOptionService.createProjectOption(body);
   }
 
   @Patch(':id(\\d+)')
-  @SetPolicyLevel({ accessProjectLevel: PolicyLevel.Update })
+  @SetPolicyLevel({ accessProject: PolicyLevel.Update })
   async updateProjectOption(@Param() param: ProjectOptionParamDto, @Body() body: UpdateProjectOptionBodyDto) {
     return this.projectOptionService.updateProjectOption(param, body);
   }
 
   @Delete(':id(\\d+)')
-  @SetPolicyLevel({ accessProjectLevel: PolicyLevel.Delete })
+  @SetPolicyLevel({ accessProject: PolicyLevel.Delete })
   async deleteProjectOption(@Param() param: ProjectOptionParamDto) {
     return this.projectOptionService.deleteProjectOption(param);
   }

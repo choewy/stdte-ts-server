@@ -3,8 +3,7 @@ import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { PolicyLevel, RolePolicy } from '@entity';
 
 export class CreateRoleBodyDto
-  implements
-    Partial<Pick<RolePolicy, 'accessCredentials' | 'accessRoleLevel' | 'accessUserLevel' | 'accessProjectLevel'>>
+  implements Partial<Pick<RolePolicy, 'accessCredentials' | 'accessRole' | 'accessUser' | 'accessProject'>>
 {
   @IsNotEmpty()
   @IsString()
@@ -16,13 +15,13 @@ export class CreateRoleBodyDto
 
   @IsOptional()
   @IsEnum(PolicyLevel)
-  accessRoleLevel?: PolicyLevel;
+  accessRole?: PolicyLevel;
 
   @IsOptional()
   @IsEnum(PolicyLevel)
-  accessUserLevel?: PolicyLevel;
+  accessUser?: PolicyLevel;
 
   @IsOptional()
   @IsEnum(PolicyLevel)
-  accessProjectLevel?: PolicyLevel;
+  accessProject?: PolicyLevel;
 }

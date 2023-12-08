@@ -13,7 +13,7 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get()
-  @SetPolicyLevel({ accessUserLevel: PolicyLevel.Read })
+  @SetPolicyLevel({ accessUser: PolicyLevel.Read })
   async getUsers(@Query() query: UserListQueryDto) {
     return this.userService.getUsers(query);
   }
