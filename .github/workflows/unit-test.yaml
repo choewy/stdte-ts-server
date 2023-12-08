@@ -1,13 +1,9 @@
 name: Unit Test
 
 on:
-  push:
-    branches: ['master']
-    paths-ignore: ['*.md', 'docs', '.github/workflows/envs.yaml']
-
   pull_request:
     branches: ['master']
-    paths-ignore: ['*.md', 'docs', '.github/workflows/envs.yaml']
+    paths-ignore: ['*.md', 'docs', '!.github/workflows/*-test.yaml', '!docker/database']
 
 jobs:
   unit_test:
