@@ -14,6 +14,10 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
+      - name: Print Tag
+        run: |
+          echo $TAG
+
       - name: Checkout
         uses: actions/checkout@v3
         with:
@@ -33,7 +37,7 @@ jobs:
           echo "ZIP_NAME=$ZIP_NAME" >> profile
           echo "IMAGE_NAME=$IMAGE_NAME" >> profile
           echo "IMAGE_PATH=$IMAGE_PATH" >> profile
-          zip -r $ZIP_NAME profile appspec appspec.yaml
+          zip -r $ZIP_NAME profile appspec appspec.yml
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
