@@ -1,6 +1,6 @@
 #!/bin/bash
 
-IMAGE_NAME="$1"
+IMAGE_PATH="$1"
 
 if [ -d "build" ]; then
   rm -rf build
@@ -12,6 +12,6 @@ cp -r ../../package* build
 cp -r ../../dist build
 cp ../../.env build
 
-docker build -t $IMAGE_NAME . 
+docker build -t $IMAGE_PATH . 
 
 exit 0
