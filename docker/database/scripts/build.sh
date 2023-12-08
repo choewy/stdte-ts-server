@@ -1,5 +1,5 @@
 #/bin/bash
 
-docker build . -t database
+docker build -t database . 
 
 exit 0
