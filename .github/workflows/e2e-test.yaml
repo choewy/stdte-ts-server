@@ -37,7 +37,7 @@ jobs:
       - name: Docker run database
         run: |
           cd docker/database
-          docker compose up --build -d
+          sh run.sh
 
       - name: Synchronize database
         run: |
