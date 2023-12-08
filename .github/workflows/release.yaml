@@ -100,7 +100,6 @@ jobs:
           ACCOUNT_ID: ${{ secrets.AWS_ECR_ACCOUNT_ID }}
           REPOSITORY: ${{ secrets.AWS_ECR_REPOSITORY_PRODUCT }}
         run: |
-          echo $IMAGE_TAG
           ZIP_NAME="product-$IMAGE_TAG-$GITHUB_SHA"
           IMAGE_NAME="$REPOSITORY:$IMAGE_TAG"
           IMAGE_PATH="$REGISTRY/$IMAGE_NAME"
@@ -110,7 +109,12 @@ jobs:
           echo "IMAGE_PATH=$IMAGE_PATH" >> profile
           echo "REGION=$REGION" >> profile
           echo "ACCOUNT_ID=$ACCOUNT_ID" >> profile
-          zip -r $ZIP_NAME.zip profile appspec*
+
+      - name: Zip files
+        run: |
+          source profile
+          mv appspec/release release
+          zip -r $ZIP_NAME.zip profile release
 
       - name: Upload to S3
         run: |
