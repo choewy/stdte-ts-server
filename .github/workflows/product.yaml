@@ -1,0 +1,70 @@
+name: Product
+
+on:
+  push:
+    tags: ['v*']
+
+env:
+  TAG: ${{ github.ref_name }}
+
+jobs:
+  deploy-to-product:
+    runs-on: ubuntu-22.04
+
+    strategy:
+      matrix:
+        node: [20]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.ACTION_TOKEN }}
+          submodules: true
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Install dependencies
+        run: |
+          npm ci
+          npm run submodule
+
+      - name: Build application
+        run: |
+          npm run build
+
+      - name: Create environments
+        env:
+          ENV: ${{ secrets.ENV_PRODUCT }}
+        run: |
+          rm .env
+          touch .env
+          echo "$ENV" >> .env
+          echo "VERSION=$TAG" >> .env
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-region: ${{ secrets.AWS_REGION }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: Login to ECR
+        id: ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Image Build and push to ECR
+        id: docker-build
+        env:
+          IMAGE_TAG: ${{ github.ref_name }}
+          REGISTRY: ${{ steps.ecr.outputs.registry }}
+          REPOSITORY: ${{ secrets.AWS_ECR_REPOSITORY_PRODUCT }}
+        run: |
+          IMAGE_NAME="$REGISTRY/$REPOSITORY:$IMAGE_TAG"
+          cd docker/server
+          sh scripts/build.sh $IMAGE_NAME
+          sh scripts/push.sh $IMAGE_NAME
+          echo "::set-output name=image::$IMAGE_NAME"
