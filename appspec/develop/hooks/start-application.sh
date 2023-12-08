@@ -12,7 +12,7 @@ fi
 
 sudo docker run \
   --name $DEVELOP -d \
-  -p 3001:3000 \
+  -p 3000:3000 \
   -v /home/ubuntu/logs:/var/server/logs \
   --restart=always \
   $IMAGE_ID
