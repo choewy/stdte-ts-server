@@ -61,10 +61,11 @@ jobs:
           REGISTRY: ${{ steps.ecr.outputs.registry }}
           REPOSITORY: ${{ secrets.AWS_ECR_REPOSITORY_PRODUCT }}
         run: |
-          IMAGE_NAME="$REGISTRY/$REPOSITORY:$IMAGE_TAG"
+          IMAGE_NAME="$REPOSITORY:$IMAGE_TAG"
+          IMAGE_PATH="$REGISTRY/$IMAGE_NAME"
           cd docker/server
           sh scripts/build.sh $IMAGE_NAME
-          sh scripts/push.sh $IMAGE_NAME
+          sh scripts/push.sh $IMAGE_PATH
 
   deploy:
     needs: build
