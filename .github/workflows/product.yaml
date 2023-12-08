@@ -66,6 +66,6 @@ jobs:
         run: |
           IMAGE_NAME="$REGISTRY/$REPOSITORY:IMAGE_TAG"
           cd docker/server
-          sh script/build.sh $IMAGE_NAME
-          sh script/push.sh $IMAGE_NAME
+          sh scripts/build.sh $IMAGE_NAME
+          sh scripts/push.sh $IMAGE_NAME
           echo "::set-output name=image::$IMAGE_NAME"
