@@ -15,17 +15,22 @@ permissions:
     group: ubuntu
 
 hooks:
+  BeforeInstall:
+    - location: appspec/before-install.sh
+      timeout: 100
+      runas: ubuntu
+
   AfterInstall:
-    - location: after-install.sh
+    - location: appspec/after-install.sh
       timeout: 1000
       runas: ubuntu
 
   ApplicationStart:
-    - location: start-application.sh
+    - location: appspec/start-application.sh
       timeout: 300
       runas: ubuntu
 
   ValidateService:
-    - location: validate-service.sh
+    - location: appspec/validate-service.sh
       timeout: 100
       runas: ubuntu
