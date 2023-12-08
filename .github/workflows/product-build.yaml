@@ -1,4 +1,4 @@
-name: Product
+name: Product Build
 
 on:
   push:
@@ -8,7 +8,7 @@ env:
   TAG: ${{ github.ref_name }}
 
 jobs:
-  deploy-to-product:
+  build:
     runs-on: ubuntu-22.04
 
     strategy:
@@ -52,15 +52,11 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
-      - name: Login to ECR
-        id: ecr
-        uses: aws-actions/amazon-ecr-login@v1
-
       - name: Image Build and push to ECR
         id: docker-build
         env:
           IMAGE_TAG: ${{ github.ref_name }}
-          REGISTRY: ${{ steps.ecr.outputs.registry }}
+          REGISTRY: ${{ secrets.AWS_ECR_REGISTRY_PRODUCT }}
           REPOSITORY: ${{ secrets.AWS_ECR_REPOSITORY_PRODUCT }}
         run: |
           IMAGE_NAME="$REGISTRY/$REPOSITORY:$IMAGE_TAG"

@@ -1,0 +1,60 @@
+name: Product Deploy
+
+on:
+  workflow_run:
+    workflows: ['Product Build']
+    types: ['completed']
+
+env:
+  TAG: ${{ github.ref_name }}
+  BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.ACTION_TOKEN }}
+          submodules: true
+
+      - name: Create profile and zip files
+        env:
+          IMAGE_TAG: ${{ github.ref_name }}
+          REGISTRY: ${{ secrets.AWS_ECR_REGISTRY_PRODUCT }}
+          REPOSITORY: ${{ secrets.AWS_ECR_REPOSITORY_PRODUCT }}
+        run: |
+          ZIP_NAME="product_$TAG_$GITHUB_SHA"
+          IMAGE_NAME="$REPOSITORY:$IMAGE_TAG"
+          IMAGE_PATH="$REGISTRY/$IMAGE_NAME"
+          touch profile
+          echo "ZIP_NAME=$ZIP_NAME" >> profile
+          echo "IMAGE_NAME=$IMAGE_NAME" >> profile
+          echo "IMAGE_PATH=$IMAGE_PATH" >> profile
+          zip -r $ZIP_NAME profile appspec appspec.yaml
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-region: ${{ secrets.AWS_REGION }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: Upload to S3
+        run: |
+          source profile
+          aws deploy push \
+            --application-name stdte-ts-server \
+            --s3-location s3://$BUCKET/$ZIP_NAME.zip \
+            --source $ZIP_NAME
+
+      - name: Deploy
+        run: |
+          source profile
+          aws deploy create-deployment \
+            --application-name stdte-ts-server \
+            --deployment-group-name product \
+            --deployment-config-name CodeDeployDefault.AllAtOnce \
+            --s3-location bucket=$BUCKET,bundleType=zip,key=$ZIP_NAME.zip
