@@ -1,7 +1,5 @@
 #/bin/bash
 
-docker build . -t database
-
 docker run\
   -d\
   -p 33063:3306\
