@@ -1,0 +1,56 @@
+name: Unit Test
+
+on:
+  push:
+    branches: ['master']
+    paths-ignore: ['*.md', 'docs', '.github/workflows/envs.yaml']
+
+  pull_request:
+    branches: ['master']
+    paths-ignore: ['*.md', 'docs', '.github/workflows/envs.yaml']
+
+jobs:
+  unit_test:
+    runs-on: ubuntu-22.04
+
+    strategy:
+      matrix:
+        node: [20]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.ACTION_TOKEN }}
+          submodules: true
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Install dependencies
+        run: |
+          npm ci
+          npm run submodule
+
+      - name: Docker run database
+        run: |
+          cd docker/database
+          docker compose up --build -d
+
+      - name: Synchronize database
+        run: |
+          cd sub_modules/entity
+          npm ci
+          npm run sync:test
+
+      - name: Run test
+        run: npm run test
+
+      - name: Upload coverages to artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage_unit
+          path: coverage/unit
+          retention-days: 7

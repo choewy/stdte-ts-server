@@ -1,12 +1,16 @@
-name: Test
+name: E2E Test
 
 on:
+  push:
+    branches: ['master']
+    paths-ignore: ['*.md', 'docs', '.github/workflows/envs.yaml']
+
   pull_request:
     branches: ['master']
     paths-ignore: ['*.md', 'docs', '.github/workflows/envs.yaml']
 
 jobs:
-  build:
+  e2e_test:
     runs-on: ubuntu-22.04
 
     strategy:
@@ -41,15 +45,12 @@ jobs:
           npm ci
           npm run sync:test
 
-      - name: Unit test
-        run: npm run test
-
-      - name: E2E test
+      - name: Run test
         run: npm run test:e2e
 
       - name: Upload coverages to artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: coverage
-          path: coverage
+          name: coverage_e2e
+          path: coverage/e2e
           retention-days: 7

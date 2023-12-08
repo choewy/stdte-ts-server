@@ -1,0 +1,54 @@
+name: Test
+
+on:
+  push:
+    branches: ['docker']
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+
+    strategy:
+      matrix:
+        node: [20]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.ACTION_TOKEN }}
+          submodules: true
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Install dependencies
+        run: |
+          npm ci
+          npm run submodule
+
+      - name: Docker run database
+        run: |
+          cd docker/database
+          docker compose up --build -d
+
+      - name: Synchronize database
+        run: |
+          cd sub_modules/entity
+          npm ci
+          npm run sync:test
+
+      - name: Unit test
+        run: npm run test
+
+      - name: E2E test
+        run: npm run test:e2e
+
+      - name: Upload coverages to artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage
+          path: coverage
+          retention-days: 7
