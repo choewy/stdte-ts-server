@@ -41,7 +41,7 @@ jobs:
           rm .env
           touch .env
           echo "$ENV" >> .env
-          echo "VERSION=$IMAGE_TAG" >> .env
+          echo "VERSION=$IMAGE_TAG_$(date +'%Y-%m-%d %H:%M:%S')" >> .env
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -75,6 +75,11 @@ jobs:
       BUCKET: ${{ secrets.AWS_S3_BUCKET }}
 
     steps:
+      - name: Set Timezone
+        uses: szenius/set-timezone@v1.2
+        with:
+          timezoneLinux: Asia/Seoul
+
       - name: Checkout
         uses: actions/checkout@v3
         with:
@@ -114,7 +119,7 @@ jobs:
         run: |
           source profile
           mv appspec/develop/* .
-          zip -r $ZIP_NAME.zip profile hooks
+          zip -r $ZIP_NAME.zip appspec.yml profile hooks
 
       - name: Upload to S3
         run: |
