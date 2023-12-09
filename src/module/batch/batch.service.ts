@@ -50,9 +50,7 @@ export class BatchService {
         continue;
       }
 
-      const prefix = filenames.pop();
-
-      if (prefix !== this.appConfig.getLogFilePrefix()) {
+      if (filenames.pop() !== this.appConfig.getName()) {
         continue;
       }
 

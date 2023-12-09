@@ -4,7 +4,7 @@ import { Readable } from 'stream';
 import { Logger } from '@nestjs/common';
 
 import { S3Bucket } from '@server/common';
-import { AwsConfig, SystemConfig } from '@server/config';
+import { AppConfig, AwsConfig, SystemConfig } from '@server/config';
 
 import { S3UploadFailError } from './errors';
 
@@ -20,7 +20,7 @@ export class S3Service {
   });
 
   getLogPath(filename: string) {
-    return [new SystemConfig().getNodeEnv(), filename].join('/');
+    return [new AppConfig().getName(), new SystemConfig().getNodeEnv(), filename].join('/');
   }
 
   async upload(

@@ -42,7 +42,7 @@ export class WinstonLogger {
 
   private getDailyTransportOptions(level: LogLevel): winstonDailyRotateFile.DailyRotateFileTransportOptions {
     const dirname = './logs';
-    const filename = [this.appConfig.getLogFilePrefix(), '%DATE%', level].join('.');
+    const filename = [this.appConfig.getName(), '%DATE%', level].join('.');
     const datePattern = 'YYYY-MM-DD';
     const maxSize = '250m';
     const maxFiles = '7d';

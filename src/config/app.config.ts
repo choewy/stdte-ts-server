@@ -3,12 +3,12 @@ export class AppConfig {
   private readonly LABEL = process.env.LABEL;
   private readonly VERSION = process.env.VERSION;
 
-  getLoggerName() {
-    return [this.NAME, this.LABEL].join('-');
+  getName() {
+    return this.NAME as string;
   }
 
-  getLogFilePrefix() {
-    return this.NAME as string;
+  getLoggerName() {
+    return [this.NAME, this.LABEL].join('-');
   }
 
   getVersion() {
