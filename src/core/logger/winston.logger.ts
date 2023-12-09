@@ -7,15 +7,12 @@ import { WinstonModule, WinstonModuleOptions, utilities } from 'nest-winston';
 
 import { LogLevel } from '@nestjs/common';
 
+import { AppConfig } from '@server/config';
+
 export class WinstonLogger {
   private readonly LEVEL = Symbol.for('level');
-  private readonly NAME?: string;
-  private readonly INDEX?: string;
 
-  constructor() {
-    this.NAME = process.env.NAME;
-    this.INDEX = process.env.INDEX;
-  }
+  private readonly appConfig = new AppConfig();
 
   create() {
     return WinstonModule.createLogger(this.getWinstonModuleOptions());
@@ -36,7 +33,7 @@ export class WinstonLogger {
   private getDefaultFormats() {
     return [
       winston.format.timestamp(),
-      utilities.format.nestLike([this.NAME, this.INDEX].join('-'), {
+      utilities.format.nestLike(this.appConfig.getLoggerName(), {
         prettyPrint: true,
         colors: true,
       }),
@@ -45,7 +42,7 @@ export class WinstonLogger {
 
   private getDailyTransportOptions(level: LogLevel): winstonDailyRotateFile.DailyRotateFileTransportOptions {
     const dirname = './logs';
-    const filename = [this.NAME, '%DATE%', level].join('.');
+    const filename = [this.appConfig.getLogFilePrefix(), '%DATE%', level].join('.');
     const datePattern = 'YYYY-MM-DD';
     const maxSize = '250m';
     const maxFiles = '7d';
