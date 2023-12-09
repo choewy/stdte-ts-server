@@ -3,10 +3,19 @@ import {
   BadRequestException,
   ConflictException,
   ForbiddenException,
+  InternalServerErrorException,
   NotFoundException,
   UnauthorizedException,
   ValidationError,
 } from '@nestjs/common';
+
+export class InternalServerException extends InternalServerErrorException {
+  constructor(e?: Error | null) {
+    super();
+
+    this.cause = e ?? null;
+  }
+}
 
 export class ValidationException extends BadRequestException {
   constructor(errors: ValidationError[]) {
@@ -36,11 +45,11 @@ export class InvalidCredentialsException extends UnauthorizedException {
   }
 }
 
-export class AlreadyUsedUserEmailException extends ConflictException {}
+export class AlreadyExistUserEmailException extends ConflictException {}
 export class AlreadyExistRoleException extends ConflictException {}
 export class AlreadyExistProjectCodeException extends ConflictException {}
 export class InvalidPasswordException extends BadRequestException {}
-export class NotFoundUserCredentialsException extends NotFoundException {}
+export class NotFoundCredentialsException extends NotFoundException {}
 export class NotFoundRoleException extends NotFoundException {}
 export class NotFoundProjectException extends NotFoundException {}
 export class NotFoundProjectTypeException extends NotFoundException {}

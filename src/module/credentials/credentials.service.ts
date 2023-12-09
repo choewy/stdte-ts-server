@@ -6,11 +6,11 @@ import { Injectable } from '@nestjs/common';
 
 import {
   CredentialsQuery,
-  AlreadyUsedUserEmailException,
+  AlreadyExistUserEmailException,
   InvalidPasswordException,
   UserQuery,
   InvalidCredentialsException,
-  NotFoundUserCredentialsException,
+  NotFoundCredentialsException,
 } from '@server/common';
 import { CookieKey, CookieService, JwtService, JwtTokenType } from '@server/core';
 
@@ -63,7 +63,7 @@ export class CredentialsService {
     const has = await new CredentialsQuery(this.dataSource).hasCredentialsByEmail(body.email);
 
     if (has === true) {
-      throw new AlreadyUsedUserEmailException();
+      throw new AlreadyExistUserEmailException();
     }
 
     if (body.password !== body.confirmPassword) {
@@ -124,7 +124,7 @@ export class CredentialsService {
     const has = await credentialsQuery.hasCredentialsById(id);
 
     if (has === false) {
-      throw new NotFoundUserCredentialsException();
+      throw new NotFoundCredentialsException();
     }
 
     await credentialsQuery.updateCredentialsStatus(id, body.status);
@@ -136,7 +136,7 @@ export class CredentialsService {
     const has = await credentialsQuery.hasCredentialsById(id);
 
     if (has === false) {
-      throw new NotFoundUserCredentialsException();
+      throw new NotFoundCredentialsException();
     }
 
     if (body.newPassword !== body.confirmPassword) {

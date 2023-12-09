@@ -1,17 +1,9 @@
 import { Observable, tap } from 'rxjs';
 import { Response } from 'express';
 
-import {
-  CallHandler,
-  ExecutionContext,
-  HttpException,
-  Injectable,
-  InternalServerErrorException,
-  Logger,
-  NestInterceptor,
-} from '@nestjs/common';
+import { CallHandler, ExecutionContext, HttpException, Injectable, Logger, NestInterceptor } from '@nestjs/common';
 
-import { Request } from '@server/common';
+import { InternalServerException, Request } from '@server/common';
 
 @Injectable()
 export class LogInterceptor implements NestInterceptor {
@@ -67,7 +59,7 @@ export class LogInterceptor implements NestInterceptor {
             const message = this.getExceptionMessage(request, e);
             this.logger.warn(message, classname);
           } else {
-            const message = this.getExceptionMessage(request, new InternalServerErrorException(e));
+            const message = this.getExceptionMessage(request, new InternalServerException(e));
             this.logger.error(message, { name: e.name, message: e.message, cause: e.cause }, classname);
           }
         },
