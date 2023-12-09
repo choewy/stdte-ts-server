@@ -105,6 +105,7 @@ jobs:
           ACCOUNT_ID: ${{ secrets.AWS_ECR_ACCOUNT_ID }}
           REPOSITORY: ${{ secrets.AWS_ECR_REPOSITORY_DEVELOP }}
         run: |
+          APP_NAME="stdte-ts-server"
           ZIP_NAME="develop-$GITHUB_SHA"
           IMAGE_NAME="$REPOSITORY:$IMAGE_TAG"
           IMAGE_PATH="$REGISTRY/$IMAGE_NAME"
