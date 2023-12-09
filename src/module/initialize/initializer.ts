@@ -12,7 +12,7 @@ import {
 
 import { InitializeMap } from './initialize.map';
 
-export class InitializeService {
+export class Initializer {
   async initSetting(initializeMap: InitializeMap, connection: DataSource | EntityManager) {
     const query = new SettingQuery(connection);
     const row = await query.findSetting();

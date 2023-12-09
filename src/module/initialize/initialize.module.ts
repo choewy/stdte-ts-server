@@ -2,26 +2,24 @@ import { DataSource } from 'typeorm';
 
 import { Module, OnApplicationBootstrap } from '@nestjs/common';
 
-import { InitializeService } from './initialize.service';
 import { InitializeMap } from './initialize.map';
+import { Initializer } from './initializer';
 
 @Module({})
 export class InitializeModule implements OnApplicationBootstrap {
-  onApplicationBootstrap: () => Promise<void>;
+  constructor(private readonly dataSource: DataSource) {}
 
-  constructor(dataSource: DataSource) {
-    this.onApplicationBootstrap = async () => {
-      const initializeService = new InitializeService();
+  async onApplicationBootstrap() {
+    const initializer = new Initializer();
 
-      await dataSource.transaction(async (em) => {
-        const initializeMap = new InitializeMap(em);
-        await initializeService.initSetting(initializeMap, em);
-        await initializeService.initUploadLogBatch(initializeMap, em);
-        await initializeService.initRoles(initializeMap, em);
-        await initializeService.initRolePolicies(initializeMap, em);
-        await initializeService.initUsers(initializeMap, em);
-        await initializeService.initCredentials(initializeMap, em);
-      });
-    };
+    await this.dataSource.transaction(async (em) => {
+      const initializeMap = new InitializeMap(em);
+      await initializer.initSetting(initializeMap, em);
+      await initializer.initUploadLogBatch(initializeMap, em);
+      await initializer.initRoles(initializeMap, em);
+      await initializer.initRolePolicies(initializeMap, em);
+      await initializer.initUsers(initializeMap, em);
+      await initializer.initCredentials(initializeMap, em);
+    });
   }
 }

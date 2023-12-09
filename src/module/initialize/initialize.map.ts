@@ -1,5 +1,5 @@
-import { DataSource, EntityManager, Repository } from 'typeorm';
 import { hashSync } from 'bcrypt';
+import { DataSource, EntityManager } from 'typeorm';
 
 import {
   CredentialsStatus,
