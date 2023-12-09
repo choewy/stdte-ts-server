@@ -8,7 +8,7 @@ import { AppController } from './app.controller';
 
 import { MySQLConfig } from './config';
 import { HttpExceptionFilter, LogInterceptor, RequestMiddleware, TransformInterceptor } from './core';
-import { BatchModule, CredentialsModule, InitializeModule, RoleModule, SettingModule } from './module';
+import { BatchModule, CategoryModule, CredentialsModule, InitializeModule, RoleModule, SettingModule } from './module';
 
 @Module({
   imports: [
@@ -19,6 +19,7 @@ import { BatchModule, CredentialsModule, InitializeModule, RoleModule, SettingMo
     CredentialsModule,
     BatchModule,
     RoleModule,
+    CategoryModule,
   ],
   controllers: [AppController],
   providers: [RequestMiddleware, HttpExceptionFilter, LogInterceptor, TransformInterceptor],
