@@ -1,13 +1,16 @@
-import { DataSource, DeepPartial, EntityManager, In } from 'typeorm';
+import { DataSource, DeepPartial, EntityManager, FindOptionsRelations, In } from 'typeorm';
 
 import { User } from '@entity';
 
 import { EntityQuery } from '../class';
-import { UserQueryFindWithRelationsArgs } from './types';
 
 export class UserQuery extends EntityQuery<User> {
   constructor(connection: DataSource | EntityManager) {
     super(connection, User);
+  }
+
+  async hasUserById(id: number) {
+    return this.repository.exist({ where: { id } });
   }
 
   async findUserList(skip?: number, take?: number) {
@@ -24,56 +27,8 @@ export class UserQuery extends EntityQuery<User> {
     return this.repository.find({ where: { onInit: true } });
   }
 
-  async findUserById(id: number) {
-    return this.repository.findOne({ where: { id } });
-  }
-
-  async findUserByIdWithRelations(id: number, args: UserQueryFindWithRelationsArgs) {
-    return this.repository.findOne({
-      relations: args,
-      where: { id },
-    });
-  }
-
-  async findUserIdById(id?: number) {
-    if (id === undefined) {
-      return undefined;
-    }
-
-    if (id === null) {
-      return null;
-    }
-
-    const user = await this.repository.findOne({
-      select: { id: true },
-      where: { id, onInit: false },
-    });
-
-    if (user == null) {
-      return undefined;
-    }
-
-    return user.id;
-  }
-
-  async findUserWithRoleById(id: number) {
-    return this.repository.findOne({
-      relations: { role: { policy: true } },
-      where: { id },
-    });
-  }
-
-  async findUserIdsByids(ids: number[]) {
-    if (ids.length === 0) {
-      return [];
-    }
-
-    const users = await this.repository.find({
-      select: { id: true, onInit: true },
-      where: { id: In(ids), onInit: false },
-    });
-
-    return users.map(({ id }) => id);
+  async findUserById(id: number, relations?: FindOptionsRelations<User>) {
+    return this.repository.findOne({ relations, where: { id } });
   }
 
   async updateUser(id: number, entity: DeepPartial<User>) {
@@ -84,41 +39,8 @@ export class UserQuery extends EntityQuery<User> {
     await this.repository.update({ id: In(ids) }, entity);
   }
 
-  async updateUserProfile(
-    id: number,
-    partial: Partial<
-      Pick<
-        User,
-        | 'name'
-        | 'phone'
-        | 'birthday'
-        | 'genderCode'
-        | 'scienceCode'
-        | 'degree'
-        | 'school'
-        | 'major'
-        | 'carType'
-        | 'carNumber'
-      >
-    >,
-  ) {
-    await this.repository.update(id, partial);
-  }
-
-  async updateUsersRoleInUserIds(roleId: number, ids: number[]) {
-    if (ids.length === 0) {
-      return;
-    }
-
-    await this.repository.update({ id: In(ids), onInit: false }, { role: { id: roleId } });
-  }
-
-  async deleteUsersRole(roleId: number) {
-    await this.repository.update({ role: { id: roleId }, onInit: false }, { role: null });
-  }
-
-  async saveUser(pick: Pick<User, 'name'>) {
-    return this.repository.save(this.repository.create(pick));
+  async createUser(entity: DeepPartial<User>) {
+    return this.repository.save(this.repository.create(entity));
   }
 
   async upsertUsers(entities: DeepPartial<User>[]) {

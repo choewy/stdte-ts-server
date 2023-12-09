@@ -13,21 +13,3 @@ export type AppendOrRemoveArgs = {
 
 export type RoleQueryFindListArgs = FindListArgs;
 export type UserQueryFindListArgs = FindListArgs;
-export type UserQueryFindWithRelationsArgs = Partial<
-  Record<
-    keyof Pick<
-      User,
-      | 'role'
-      | 'timeRecords'
-      | 'timeRecordLog'
-      | 'timeRecordMemos'
-      | 'internalOwnerProjects'
-      | 'internalManagerProjects'
-      | 'internalLeaderProjects'
-      | 'externalOwnerProjects'
-      | 'externalManagerProjects'
-      | 'externalLeaderProjects'
-    >,
-    boolean
-  >
->;

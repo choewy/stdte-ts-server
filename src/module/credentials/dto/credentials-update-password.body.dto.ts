@@ -1,10 +1,6 @@
 import { IsNotEmpty, IsString } from 'class-validator';
 
-export class UpdatePasswordBodyDto {
-  @IsNotEmpty()
-  @IsString()
-  currentPassword: string;
-
+export class CredentialsUpdatePasswordBodyDto {
   @IsNotEmpty()
   @IsString()
   newPassword: string;

@@ -3,8 +3,8 @@ import { DataSource } from 'typeorm';
 import { CanActivate, ExecutionContext, Injectable, Scope } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 
-import { CannotAccessException, MetadataKey, Request, UserQuery } from '@server/common';
 import { RolePolicyProperty } from '@entity';
+import { CannotAccessException, MetadataKey, Request, UserQuery } from '@server/common';
 
 @Injectable({ scope: Scope.REQUEST })
 export class RoleGuard implements CanActivate {
@@ -25,7 +25,7 @@ export class RoleGuard implements CanActivate {
       throw new CannotAccessException();
     }
 
-    const user = await this.userQuery.findUserWithRoleById(req.userId);
+    const user = await this.userQuery.findUserById(req.userId, { role: { policy: true } });
 
     if (user == null) {
       throw new CannotAccessException({ policy: null });

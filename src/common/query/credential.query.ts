@@ -1,6 +1,6 @@
 import { DataSource, DeepPartial, EntityManager } from 'typeorm';
 
-import { CredentialsStatus, Credentials } from '@entity';
+import { CredentialsStatus, Credentials, User } from '@entity';
 
 import { EntityQuery } from '../class';
 
@@ -29,17 +29,8 @@ export class CredentialsQuery extends EntityQuery<Credentials> {
     return this.repository.findOne({ where: { user: { id: userId } } });
   }
 
-  async insertCredentials(pick: Pick<Credentials, 'user' | 'email' | 'password'>) {
-    const credentials = this.repository.create({
-      id: pick.user.id,
-      user: { id: pick.user.id },
-      email: pick.email,
-      password: pick.password,
-    });
-
-    await this.repository.insert(credentials);
-
-    return credentials;
+  async createCredentials(user: User, entity: DeepPartial<Credentials>) {
+    return this.repository.save(this.repository.create({ ...entity, id: user.id, user }));
   }
 
   async updateCredentialsStatus(id: number, status: CredentialsStatus) {

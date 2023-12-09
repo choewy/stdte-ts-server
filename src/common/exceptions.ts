@@ -49,7 +49,7 @@ export class AlreadyExistUserEmailException extends ConflictException {}
 export class AlreadyExistRoleException extends ConflictException {}
 export class AlreadyExistProjectCodeException extends ConflictException {}
 export class InvalidPasswordException extends BadRequestException {}
-export class NotFoundCredentialsException extends NotFoundException {}
+export class NotFoundUserException extends NotFoundException {}
 export class NotFoundRoleException extends NotFoundException {}
 export class NotFoundProjectException extends NotFoundException {}
 export class NotFoundProjectTypeException extends NotFoundException {}
