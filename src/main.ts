@@ -1,15 +1,15 @@
 import cookieParser from 'cookie-parser';
 import { json, urlencoded } from 'express';
+import { Settings } from 'luxon';
 
-import { ValidationPipe } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 
 import { CorsConfig, SystemConfig } from './config';
-import { ValidationException } from './common';
+import { ErrorDto, ValidationException } from './common';
 import { HttpExceptionFilter, LogInterceptor, TransformInterceptor, WinstonLogger } from './core';
 
 import { AppModule } from './app.module';
-import { Settings } from 'luxon';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { logger: new WinstonLogger().create() });
@@ -19,6 +19,7 @@ async function bootstrap() {
   app.use(cookieParser());
   app.use(json());
   app.use(urlencoded({ extended: true }));
+  app.enableShutdownHooks();
   app.enableCors(new CorsConfig().getCorsOptions());
   app.useGlobalInterceptors(app.get(LogInterceptor), app.get(TransformInterceptor));
   app.useGlobalFilters(app.get(HttpExceptionFilter));
@@ -33,7 +34,17 @@ async function bootstrap() {
     }),
   );
 
-  app.enableShutdownHooks();
+  const logger = new Logger();
+
+  process.on('uncaughtException', (e, listener) => {
+    const error = new ErrorDto(e, listener);
+    logger.error('uncaughtException', error, bootstrap.name);
+  });
+
+  process.on('unhandledRejection', async (reason, promise) => {
+    const error = new ErrorDto(reason, await promise.catch((e) => new ErrorDto(e)));
+    logger.error('unhandledRejection', error, bootstrap.name);
+  });
 
   await app.listen(3000);
 }
