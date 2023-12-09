@@ -2,7 +2,7 @@ import { Transform } from 'class-transformer';
 import { IsDate, IsEnum, IsNotIn, IsOptional, IsString } from 'class-validator';
 
 import { GenderCode, Degree } from '@entity';
-import { toDate, toEmptyNull } from '@server/common';
+import { toDate, toEmptyNull, toTrim } from '@server/common';
 
 import { ProfileProperty } from './types';
 
@@ -10,10 +10,12 @@ export class ProfileUpdateBodyDto implements Partial<Omit<ProfileProperty, 'stat
   @IsOptional()
   @IsNotIn([null])
   @IsString()
+  @Transform(({ value }) => toTrim(value))
   name?: string;
 
   @IsOptional()
   @IsString()
+  @Transform(({ value }) => toTrim(value))
   @Transform(({ value }) => toEmptyNull(value))
   phone?: string | null;
 
@@ -28,6 +30,7 @@ export class ProfileUpdateBodyDto implements Partial<Omit<ProfileProperty, 'stat
 
   @IsOptional()
   @IsString()
+  @Transform(({ value }) => toTrim(value))
   @Transform(({ value }) => toEmptyNull(value))
   scienceCode?: string | null;
 
@@ -37,21 +40,25 @@ export class ProfileUpdateBodyDto implements Partial<Omit<ProfileProperty, 'stat
 
   @IsOptional()
   @IsString()
+  @Transform(({ value }) => toTrim(value))
   @Transform(({ value }) => toEmptyNull(value))
   school?: string | null;
 
   @IsOptional()
   @IsString()
+  @Transform(({ value }) => toTrim(value))
   @Transform(({ value }) => toEmptyNull(value))
   major?: string | null;
 
   @IsOptional()
   @IsString()
+  @Transform(({ value }) => toTrim(value))
   @Transform(({ value }) => toEmptyNull(value))
   carType?: string | null;
 
   @IsOptional()
   @IsString()
+  @Transform(({ value }) => toTrim(value))
   @Transform(({ value }) => toEmptyNull(value))
   carNumber?: string | null;
 

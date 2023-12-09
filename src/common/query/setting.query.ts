@@ -13,7 +13,11 @@ export class SettingQuery extends EntityQuery<Setting> {
     return this.repository.findOne({ where: { id: 1 } });
   }
 
+  async updateSetting(entity: DeepPartial<Setting>) {
+    await this.repository.update({ id: 1 }, entity);
+  }
+
   async upsertSetting(entity: DeepPartial<Setting>) {
-    return this.repository.upsert(entity, { conflictPaths: { id: true } });
+    await this.repository.upsert(entity, { conflictPaths: { id: true } });
   }
 }
