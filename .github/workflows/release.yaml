@@ -26,7 +26,6 @@ jobs:
 
       - name: Install dependencies
         run: |
-          git config pull.rebase false
           npm ci
           npm run submodule
 
