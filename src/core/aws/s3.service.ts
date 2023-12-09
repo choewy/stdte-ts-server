@@ -39,15 +39,11 @@ export class S3Service {
 
     try {
       await this.client.send(command);
-
-      return true;
     } catch (e) {
-      this.logger.error(
-        S3UploadFailError.name,
-        JSON.stringify({ name: e?.name, message: e?.message, cause: e?.cause }, null, 2),
-      );
+      const context = [S3Service.name, this.upload.name].join('.');
+      const error = new S3UploadFailError(e);
 
-      return false;
+      this.logger.error(error.name, error.details, context);
     }
   }
 }

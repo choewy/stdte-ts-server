@@ -106,11 +106,10 @@ export class BatchService {
         await uploadLogBatchQuery.updateLogBatch(false);
       })
       .catch((e) => {
-        this.logger.error(
-          LogUploadBatchFailError.name,
-          { name: e?.name, message: e?.message, cause: e?.cause },
-          this.uploadLogFiles.name,
-        );
+        const context = [BatchService.name, this.uploadLogFiles.name].join('.');
+        const error = new LogUploadBatchFailError(e);
+
+        this.logger.error(error.name, error.details, context);
       });
   }
 }
