@@ -1,4 +1,14 @@
 {
   "extends": "./tsconfig.json",
-  "exclude": ["node_modules", "test", "http", "dist", "**/*spec.ts"]
+  "exclude": [
+    "node_modules",
+    "test",
+    "http",
+    "dist",
+    "**/*spec.ts",
+    "sub_modules/entity/src/main.ts",
+    "sub_modules/entity/src/config.ts",
+    "sub_modules/entity/src/migration.ts",
+    "sub_modules/entity/migrations"
+  ]
 }

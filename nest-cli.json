@@ -4,11 +4,10 @@
   "sourceRoot": "src",
   "compilerOptions": {
     "deleteOutDir": true,
-    "webpack": true,
+    "webpack": false,
     "assets": [
       {
         "include": "sub_modules/entity/src/**/*",
-        "exclude": "(sub_modules/src/{main,config,migration}.ts)|(sub_modules/src/migrations)",
         "watchAssets": true
       }
     ]
