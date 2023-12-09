@@ -17,8 +17,8 @@ export class SettingController {
   }
 
   @Patch()
-  @UseGuards(JwtGuard, CredentialsGuard, RoleGuard)
   @SetRolePolicy({ setting: RolePolicyLevel.Update })
+  @UseGuards(JwtGuard, CredentialsGuard, RoleGuard)
   async updateSetting(@Body() body: SettingUpdateBodyDto) {
     return this.settingService.updateSetting(body);
   }
