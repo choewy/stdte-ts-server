@@ -2,26 +2,26 @@
 
 source /home/ubuntu/develop/profile
 
-IMAGE_ID="$(sudo docker images --filter=reference=*/$IMAGE_NAME --format "{{.ID}}")"
-
+image="$(sudo docker images --filter=reference=*/$IMAGE_NAME --format "{{.ID}}")"
 prefix=stdte-ts-develop
-processes=(1)
+ports=(3000)
 
-for i in ${processes[@]}
-do
-  CONTAINER_NAME="$prefix-$i"
+for (( i = 0; i < ${#ports[@]}; i++ )); do
+  
+  name="$prefix-$(($i + 1))"
+  port=${ports[$i]}
 
-  if [ "$(sudo docker container inspect --format '{{.Name}}' $CONTAINER_NAME 2>&1)" == "/$CONTAINER_NAME" ]; then
-    sudo docker rm -f $CONTAINER_NAME
+  if [ "$(sudo docker container inspect --format '{{.Name}}' $name 2>&1)" == "/$name" ]; then
+    sudo docker rm -f $name
   fi
 
   sudo docker run \
-    --name $CONTAINER_NAME -d \
-    -e CONTAINER_NAME=$CONTAINER_NAME \
-    -p 3001:3000 \
+    --name $name -d \
+    -e CONTAINER_NAME=$name \
+    -p $port:3000 \
     -v /home/ubuntu/logs:/var/server/logs \
     --restart=always \
-    $IMAGE_ID
+    $image
 done
 
 exit 0
