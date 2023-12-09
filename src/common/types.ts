@@ -7,6 +7,8 @@ export type Request = ExpressRequest & {
   id: string;
   requesteAt: DateTime;
   responsedAt: DateTime;
-  userId?: number | null;
+  userId: number;
   user?: User | null;
 };
+
+export type S3Bucket = Record<'log', string>;
