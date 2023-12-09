@@ -1,6 +1,6 @@
 export class AppConfig {
-  private readonly NAME = process.env.NAME;
-  private readonly LABEL = process.env.LABEL;
+  private readonly NAME = process.env.APP_NAME;
+  private readonly CONTAINER = process.env.CONTAINER_NAME;
   private readonly VERSION = process.env.VERSION;
 
   getName() {
@@ -8,7 +8,7 @@ export class AppConfig {
   }
 
   getLoggerName() {
-    return [this.NAME, this.LABEL].join('-');
+    return [this.NAME, this.CONTAINER].join('-');
   }
 
   getVersion() {

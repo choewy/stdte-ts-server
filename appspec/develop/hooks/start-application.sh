@@ -2,13 +2,13 @@
 
 source /home/ubuntu/develop/profile
 
+name="$APP_NAME-develop"
 image="$(sudo docker images --filter=reference=*/$IMAGE_NAME --format "{{.ID}}")"
-name=stdte-ts-develop
+
 ports=(3000)
 
 for (( i = 0; i < ${#ports[@]}; i++ )); do
-  label=$(($i + 1))
-  container="$name-$label"
+  container="$name-$(($i + 1))"
   port=${ports[$i]}
 
   if [ "$(sudo docker container inspect --format '{{.Name}}' $container 2>&1)" == "/$container" ]; then
@@ -17,8 +17,7 @@ for (( i = 0; i < ${#ports[@]}; i++ )); do
 
   sudo docker run \
     --name $container -d \
-    -e NAME=$name \
-    -e LABEL=$label \
+    -e CONTAINER_NAME=$container \
     -p $port:3000 \
     -v /home/ubuntu/logs:/var/server/logs \
     --restart=always \
