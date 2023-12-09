@@ -4,30 +4,24 @@ source /home/ubuntu/release/profile
 
 IMAGE_ID="$(sudo docker images --filter=reference=*/$IMAGE_NAME --format "{{.ID}}")"
 
-BLUE=stdte-ts-server-blue
+prefix=stdte-ts-product
+processes=(1, 2)
 
-if [ "$(sudo docker container inspect --format '{{.Name}}' $BLUE 2>&1)" == "/$BLUE" ]; then
-  sudo docker rm -f $BLUE
-fi
+for i in ${processes[@]}
+do
+  CONTAINER_NAME="$prefix-$i"
 
-sudo docker run \
-  --name $BLUE -d \
-  -p 3001:3000 \
-  -v /home/ubuntu/logs:/var/server/logs \
-  --restart=always \
-  $IMAGE_ID
+  if [ "$(sudo docker container inspect --format '{{.Name}}' $CONTAINER_NAME 2>&1)" == "/$CONTAINER_NAME" ]; then
+    sudo docker rm -f $CONTAINER_NAME
+  fi
 
-GREEN=stdte-ts-server-green
-
-if [ "$(sudo docker container inspect --format '{{.Name}}' $GREEN 2>&1)" == "/$GREEN" ]; then
-  sudo docker rm -f $GREEN
-fi
-
-sudo docker run \
-  --name $GREEN -d \
-  -p 3002:3000 \
-  -v /home/ubuntu/logs:/var/server/logs \
-  --restart=always \
-  $IMAGE_ID 
+  sudo docker run \
+    --name $CONTAINER_NAME -d \
+    -e CONTAINER_NAME=$CONTAINER_NAME \
+    -p 3001:3000 \
+    -v /home/ubuntu/logs:/var/server/logs \
+    --restart=always \
+    $IMAGE_ID
+done
 
 exit 0
