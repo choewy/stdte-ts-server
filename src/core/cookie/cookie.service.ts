@@ -31,7 +31,7 @@ export class CookieService {
     res.cookie(key, value, { expires: this.getExpires(key), ...this.options });
   }
 
-  del(res: Response, key: CookieKey) {
+  delete(res: Response, key: CookieKey) {
     res.clearCookie(key, this.options);
   }
 }
