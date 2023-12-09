@@ -25,11 +25,13 @@ export class RoleController {
   }
 
   @Patch(':id(\\d+)')
+  @SetRolePolicy({ roleAndPolicy: RolePolicyLevel.Update })
   async updateRole(@Param() param: RoleParamDto, @Body() body: RoleUpdateBodyDto) {
     return this.roleService.updateRole(param, body);
   }
 
   @Delete(':id(\\d+)')
+  @SetRolePolicy({ roleAndPolicy: RolePolicyLevel.Delete })
   async deleteRole(@Param() param: RoleParamDto) {
     return this.roleService.deleteRole(param);
   }
