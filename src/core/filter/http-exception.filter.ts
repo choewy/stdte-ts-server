@@ -2,7 +2,7 @@ import { Response } from 'express';
 
 import { ArgumentsHost, Catch, ExceptionFilter, HttpException, InternalServerErrorException } from '@nestjs/common';
 
-import { ExceptionDto, Request } from '@server/common';
+import { ExceptionDto } from '@server/common';
 
 @Catch(HttpException, Error)
 export class HttpExceptionFilter implements ExceptionFilter {
@@ -16,7 +16,6 @@ export class HttpExceptionFilter implements ExceptionFilter {
     }
 
     const http = host.switchToHttp();
-    const req = http.getRequest<Request>();
     const res = http.getResponse<Response>();
 
     res.status(exception.getStatus()).send(new ExceptionDto(exception));

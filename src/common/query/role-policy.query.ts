@@ -1,6 +1,6 @@
 import { DataSource, DeepPartial, EntityManager } from 'typeorm';
 
-import { RolePolicy } from '@entity';
+import { RolePolicy, RolePolicyProperty } from '@entity';
 
 import { EntityQuery } from '../class';
 
@@ -13,17 +13,14 @@ export class RolePolicyQuery extends EntityQuery<RolePolicy> {
     return this.repository.exist({ where: { id } });
   }
 
-  async insertRolePolicy(
-    pickAndPartial: Pick<RolePolicy, 'role'> &
-      Partial<Pick<RolePolicy, 'accessCredentials' | 'accessRole' | 'accessUser' | 'accessProject'>>,
-  ) {
+  async insertRolePolicy(pickAndPartial: Pick<RolePolicy, 'role'> & Partial<RolePolicyProperty>) {
     const rolePolicy = this.repository.create({
       id: pickAndPartial.role.id,
       role: { id: pickAndPartial.role.id },
-      accessCredentials: pickAndPartial.accessCredentials,
-      accessRole: pickAndPartial.accessRole,
-      accessUser: pickAndPartial.accessUser,
-      accessProject: pickAndPartial.accessProject,
+      credentials: pickAndPartial.credentials,
+      roleAndPolicy: pickAndPartial.roleAndPolicy,
+      user: pickAndPartial.user,
+      project: pickAndPartial.project,
     });
 
     await this.repository.insert(rolePolicy);
@@ -35,10 +32,7 @@ export class RolePolicyQuery extends EntityQuery<RolePolicy> {
     await this.repository.insert(deepPartials);
   }
 
-  async updateRolePolicy(
-    roleId: number,
-    partial: Partial<Pick<RolePolicy, 'accessCredentials' | 'accessRole' | 'accessUser' | 'accessProject'>>,
-  ) {
+  async updateRolePolicy(roleId: number, partial: Partial<RolePolicyProperty>) {
     await this.repository.update(roleId, partial);
   }
 }

@@ -1,4 +1,4 @@
-import { CredentialsStatus } from '@entity';
+import { CredentialsStatus, RolePolicyProperty } from '@entity';
 import {
   BadRequestException,
   ConflictException,
@@ -7,8 +7,6 @@ import {
   UnauthorizedException,
   ValidationError,
 } from '@nestjs/common';
-
-import { PolicyLevelMap } from './types';
 
 export class ValidationException extends BadRequestException {
   constructor(errors: ValidationError[]) {
@@ -23,7 +21,7 @@ export class ValidationException extends BadRequestException {
 }
 
 export class CannotAccessException extends ForbiddenException {
-  constructor(cause?: { credentials?: CredentialsStatus | null; policy?: PolicyLevelMap | null }) {
+  constructor(cause?: { credentials?: CredentialsStatus | null; policy?: Partial<RolePolicyProperty> | null }) {
     super();
 
     this.cause = cause;

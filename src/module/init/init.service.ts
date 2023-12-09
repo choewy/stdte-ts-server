@@ -2,8 +2,8 @@ import { DataSource, EntityManager } from 'typeorm';
 
 import { Injectable } from '@nestjs/common';
 
-import { Role, RolePolicy, User, UserCredentials } from '@entity';
-import { RolePolicyQuery, RoleQuery, UserCredentialsQuery, UserQuery } from '@server/common';
+import { Role, RolePolicy, User, Credentials } from '@entity';
+import { RolePolicyQuery, RoleQuery, CredentialsQuery, UserQuery } from '@server/common';
 
 import { InitMap } from './init.map';
 
@@ -72,24 +72,24 @@ export class InitService {
     await userQuery.insertUsersWithBulk(insertRows);
   }
 
-  async initUserCredentials(connection: DataSource | EntityManager) {
+  async initCredentials(connection: DataSource | EntityManager) {
     const initMap = new InitMap(connection);
-    const userCredentialsQuery = new UserCredentialsQuery(connection);
+    const credentialsQuery = new CredentialsQuery(connection);
 
-    const insertRows: UserCredentials[] = [];
+    const insertRows: Credentials[] = [];
 
-    for (const userCredential of initMap.userCredentials) {
-      if (await userCredentialsQuery.hasUserCredentialsById(userCredential.id)) {
+    for (const credentials of initMap.credentials) {
+      if (await credentialsQuery.hasCredentialsById(credentials.id)) {
         continue;
       }
 
-      insertRows.push(userCredential);
+      insertRows.push(credentials);
     }
 
     if (insertRows.length === 0) {
       return;
     }
 
-    await userCredentialsQuery.insertUserCredentialsWithBulk(insertRows);
+    await credentialsQuery.insertCredentialsWithBulk(insertRows);
   }
 }

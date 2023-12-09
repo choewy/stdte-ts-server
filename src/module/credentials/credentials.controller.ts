@@ -2,8 +2,8 @@ import { Response } from 'express';
 
 import { Body, Controller, Get, Param, Patch, Post, Res, UseGuards } from '@nestjs/common';
 
-import { PolicyLevel } from '@entity';
-import { ReqUserID, SetPolicyLevel } from '@server/common';
+import { RolePolicyLevel } from '@entity';
+import { ReqUserID, SetRolePolicy } from '@server/common';
 import { CredentialsGuard, JwtGuard, RoleGuard } from '@server/core';
 
 import { CredentialsService } from './credentials.service';
@@ -48,14 +48,14 @@ export class CredentialsController {
   }
 
   @Patch(':id(\\d+)/status')
-  @SetPolicyLevel({ accessCredentials: PolicyLevel.Update })
+  @SetRolePolicy({ credentials: RolePolicyLevel.Update })
   @UseGuards(JwtGuard, CredentialsGuard, RoleGuard)
   async updateCredentialsStatus(@Param() param: CredentialsParamDto, @Body() body: UpdateCredentialsStatusBodyDto) {
     return this.credentialsService.updateCredentialsStatus(param.id, body);
   }
 
   @Patch(':id(\\d+)/password')
-  @SetPolicyLevel({ accessCredentials: PolicyLevel.Update })
+  @SetRolePolicy({ credentials: RolePolicyLevel.Update })
   @UseGuards(JwtGuard, CredentialsGuard, RoleGuard)
   async updateCredentialsPassword(@Param() param: CredentialsParamDto, @Body() body: UpdateCredentialsPasswordBodyDto) {
     return this.credentialsService.updateCredentialsPassword(param.id, body);

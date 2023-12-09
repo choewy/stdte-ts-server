@@ -16,7 +16,7 @@ export class ProfileService {
       throw new InvalidCredentialsException();
     }
 
-    return new ResponseDto({
+    return {
       name: user.name,
       phone: user.phone,
       birthday: user.birthday,
@@ -29,7 +29,7 @@ export class ProfileService {
       carNumber: user.carNumber,
       status: user.status,
       updatedAt: user.updatedAt,
-    });
+    };
   }
 
   async updateMyProfile(userId: number, body: UpdateMyProfileBodyDto) {

@@ -16,7 +16,7 @@ export class InitModule implements OnApplicationBootstrap {
         await initService.initRoles(em);
         await initService.initRolePolicies(em);
         await initService.initUsers(em);
-        await initService.initUserCredentials(em);
+        await initService.initCredentials(em);
       });
     };
   }

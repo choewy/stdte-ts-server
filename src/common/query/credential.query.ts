@@ -1,31 +1,31 @@
 import { DataSource, DeepPartial, EntityManager } from 'typeorm';
 
-import { CredentialsStatus, UserCredentials } from '@entity';
+import { CredentialsStatus, Credentials } from '@entity';
 
 import { EntityQuery } from '../class';
 
-export class UserCredentialsQuery extends EntityQuery<UserCredentials> {
+export class CredentialsQuery extends EntityQuery<Credentials> {
   constructor(connection: DataSource | EntityManager) {
-    super(connection, UserCredentials);
+    super(connection, Credentials);
   }
 
-  async hasUserCredentialsByEmail(email: string) {
+  async hasCredentialsByEmail(email: string) {
     return this.repository.exist({ where: { email } });
   }
 
-  async hasUserCredentialsById(id: number) {
+  async hasCredentialsById(id: number) {
     return this.repository.exist({ where: { id } });
   }
 
-  async findUserCredentialsByEmail(email: string) {
+  async findCredentialsByEmail(email: string) {
     return this.repository.findOne({ where: { email } });
   }
 
-  async findUserCredentialsByUserId(userId: number) {
+  async findCredentialsByUserId(userId: number) {
     return this.repository.findOne({ where: { user: { id: userId } } });
   }
 
-  async insertUserCredentials(pick: Pick<UserCredentials, 'user' | 'email' | 'password'>) {
+  async insertCredentials(pick: Pick<Credentials, 'user' | 'email' | 'password'>) {
     const credentials = this.repository.create({
       id: pick.user.id,
       user: { id: pick.user.id },
@@ -38,15 +38,15 @@ export class UserCredentialsQuery extends EntityQuery<UserCredentials> {
     return credentials;
   }
 
-  async updateUserCredentialsStatus(id: number, status: CredentialsStatus) {
+  async updateCredentialsStatus(id: number, status: CredentialsStatus) {
     await this.repository.update({ id }, { status });
   }
 
-  async updateUserCredentialsPassword(userId: number, password: string) {
+  async updateCredentialsPassword(userId: number, password: string) {
     await this.repository.update({ user: { id: userId } }, { password });
   }
 
-  async insertUserCredentialsWithBulk(deepPartials: DeepPartial<UserCredentials>[]) {
+  async insertCredentialsWithBulk(deepPartials: DeepPartial<Credentials>[]) {
     await this.repository.insert(deepPartials);
   }
 }

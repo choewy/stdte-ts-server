@@ -1,10 +1,11 @@
 import { Request as ExpressRequest } from 'express';
 
-import { RolePolicy, User } from '@entity';
+import { User } from '@entity';
 
-export type Request = ExpressRequest & {
+import { ResponseDto } from './dto';
+
+export type Request<T = any> = ExpressRequest & {
+  dto: ResponseDto<T>;
   userId?: number | null;
   user?: User | null;
 };
-
-export type PolicyLevelMap = Pick<RolePolicy, 'accessCredentials' | 'accessRole' | 'accessUser' | 'accessProject'>;

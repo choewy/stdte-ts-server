@@ -1,8 +1,7 @@
 import { DataSource, EntityManager } from 'typeorm';
 import { hashSync } from 'bcrypt';
 
-import { CredentialsStatus, PolicyLevel, Role, RolePolicy, User, UserCredentials } from '@entity';
-import { PolicyLevelMap } from '@server/common';
+import { CredentialsStatus, Role, RolePolicy, RolePolicyProperty, User, Credentials, RolePolicyLevel } from '@entity';
 import { CredentialsConfig } from '@server/config';
 
 export class InitMap {
@@ -24,19 +23,29 @@ export class InitMap {
       rolePolicyRepository.create({
         id: 1,
         role: { id: 1 },
-        accessCredentials: PolicyLevel.Developer,
-        accessRole: PolicyLevel.Developer,
-        accessUser: PolicyLevel.Developer,
-        accessProject: PolicyLevel.Developer,
-      } as PolicyLevelMap),
+        roleAndPolicy: RolePolicyLevel.Developer,
+        credentials: RolePolicyLevel.Developer,
+        setting: RolePolicyLevel.Developer,
+        customer: RolePolicyLevel.Developer,
+        user: RolePolicyLevel.Developer,
+        taskCategory: RolePolicyLevel.Developer,
+        industryCategory: RolePolicyLevel.Developer,
+        businessCategory: RolePolicyLevel.Developer,
+        project: RolePolicyLevel.Developer,
+      } as RolePolicyProperty),
       rolePolicyRepository.create({
         id: 2,
         role: { id: 2 },
-        accessCredentials: PolicyLevel.Admin,
-        accessRole: PolicyLevel.Admin,
-        accessUser: PolicyLevel.Admin,
-        accessProject: PolicyLevel.Admin,
-      } as PolicyLevelMap),
+        roleAndPolicy: RolePolicyLevel.Admin,
+        credentials: RolePolicyLevel.Admin,
+        setting: RolePolicyLevel.Admin,
+        customer: RolePolicyLevel.Admin,
+        user: RolePolicyLevel.Admin,
+        taskCategory: RolePolicyLevel.Admin,
+        industryCategory: RolePolicyLevel.Admin,
+        businessCategory: RolePolicyLevel.Admin,
+        project: RolePolicyLevel.Admin,
+      } as RolePolicyProperty),
     ];
   }
 
@@ -49,22 +58,22 @@ export class InitMap {
     ];
   }
 
-  get userCredentials() {
-    const userCredentialsRepository = this.connection.getRepository(UserCredentials);
+  get credentials() {
+    const credentialsRepository = this.connection.getRepository(Credentials);
 
     const credentialsConfig = new CredentialsConfig();
     const developerCredentials = credentialsConfig.getDeveloperCredentials();
     const adminCredentials = credentialsConfig.getAdminCredentials();
 
     return [
-      userCredentialsRepository.create({
+      credentialsRepository.create({
         id: 1,
         user: { id: 1 },
         email: developerCredentials.email,
         password: hashSync(developerCredentials.password, 10),
         status: CredentialsStatus.Active,
       }),
-      userCredentialsRepository.create({
+      credentialsRepository.create({
         id: 2,
         user: { id: 2 },
         email: adminCredentials.email,
