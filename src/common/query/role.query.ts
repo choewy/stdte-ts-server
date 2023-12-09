@@ -13,8 +13,8 @@ export class RoleQuery extends EntityQuery<Role> {
     return this.repository.exist({ where: { id } });
   }
 
-  async hasRoleByIdAndOnInit(id: number) {
-    return this.repository.exist({ where: { id, onInit: true } });
+  async findRolesByOnInit() {
+    return this.repository.find({ where: { onInit: true } });
   }
 
   async hasRoleByName(name: string) {
@@ -43,8 +43,8 @@ export class RoleQuery extends EntityQuery<Role> {
     return this.repository.save(this.repository.create(pick));
   }
 
-  async insertRolesWithBulk(deepPartials: DeepPartial<Role>[]) {
-    await this.repository.insert(deepPartials);
+  async upsertRoles(entities: DeepPartial<Role>[]) {
+    await this.repository.upsert(entities, { conflictPaths: { id: true } });
   }
 
   async deleteRole(id: number) {

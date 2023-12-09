@@ -9,10 +9,6 @@ export class UserQuery extends EntityQuery<User> {
     super(connection, User);
   }
 
-  async hasUserByIdAndOnInit(id: number) {
-    return this.repository.exist({ where: { id, onInit: true } });
-  }
-
   async findUsersAsList(skip?: number, take?: number) {
     return this.repository
       .createQueryBuilder('user')
@@ -21,6 +17,10 @@ export class UserQuery extends EntityQuery<User> {
       .skip(skip)
       .take(take)
       .getManyAndCount();
+  }
+
+  async findUsersByOnInit() {
+    return this.repository.find({ where: { onInit: true } });
   }
 
   async findUserById(id: number) {
@@ -109,6 +109,10 @@ export class UserQuery extends EntityQuery<User> {
 
   async saveUser(pick: Pick<User, 'name'>) {
     return this.repository.save(this.repository.create(pick));
+  }
+
+  async upsertUsers(entities: DeepPartial<User>[]) {
+    await this.repository.upsert(entities, { conflictPaths: { id: true } });
   }
 
   async insertUsersWithBulk(deepPartials: DeepPartial<User>[]) {

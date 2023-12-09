@@ -9,6 +9,10 @@ export class RolePolicyQuery extends EntityQuery<RolePolicy> {
     super(connection, RolePolicy);
   }
 
+  async findRolePoliciesByOnInit() {
+    return this.repository.find({ where: { onInit: true } });
+  }
+
   async hasRolePolicyById(id: number) {
     return this.repository.exist({ where: { id } });
   }
@@ -28,8 +32,8 @@ export class RolePolicyQuery extends EntityQuery<RolePolicy> {
     return rolePolicy;
   }
 
-  async insertRolePoliciesWithBulk(deepPartials: DeepPartial<RolePolicy>[]) {
-    await this.repository.insert(deepPartials);
+  async upsertRolePolicies(entities: DeepPartial<RolePolicy>[]) {
+    await this.repository.upsert(entities, { conflictPaths: { id: true } });
   }
 
   async updateRolePolicy(roleId: number, partial: Partial<RolePolicyProperty>) {

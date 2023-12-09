@@ -9,12 +9,13 @@ import { AppService } from './app.service';
 
 import { MySQLConfig } from './config';
 import { HttpExceptionFilter, LogInterceptor, RequestMiddleware, TransformInterceptor } from './core';
-import { BatchModule, CredentialsModule } from './module';
+import { BatchModule, CredentialsModule, InitializeModule } from './module';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
     TypeOrmModule.forRoot(new MySQLConfig().getTypeOrmModuleOptions()),
+    InitializeModule,
     BatchModule,
     CredentialsModule,
   ],

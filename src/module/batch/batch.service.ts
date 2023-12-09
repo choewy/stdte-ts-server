@@ -75,6 +75,10 @@ export class BatchService {
         const uploadLogBatchQuery = new UploadLogBatchQuery(em);
         const uploadLogBatch = await uploadLogBatchQuery.findLogBatch();
 
+        if (uploadLogBatch == null) {
+          return;
+        }
+
         if (uploadLogBatch.working) {
           return;
         }
