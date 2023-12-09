@@ -2,7 +2,14 @@ import { DataSource } from 'typeorm';
 
 import { Injectable } from '@nestjs/common';
 
-import { AlreadyExistRoleException, NotFoundRoleException, RolePolicyQuery, RoleQuery } from '@server/common';
+import {
+  AlreadyExistRoleException,
+  NotFoundRoleException,
+  RolePolicyQuery,
+  RoleQuery,
+  UserQuery,
+  extractAppendOrRemoveTarget,
+} from '@server/common';
 
 import { RoleCreateBodyDto, RoleListQueryDto, RoleParamDto, RoleUpdateBodyDto } from './dto';
 
@@ -32,6 +39,15 @@ export class RoleService {
 
       const role = await roleQuery.createRole(body.name);
       await rolePolicyQuery.insertRolePolicy(role, body.rolePolicy);
+
+      if (Array.isArray(body.users)) {
+        const target = extractAppendOrRemoveTarget(body.users);
+        const userQuery = new UserQuery(em);
+
+        if (target.appends.length > 0) {
+          await userQuery.updateUsers(target.appends, { role: { id: role.id } });
+        }
+      }
     });
   }
 
@@ -61,6 +77,19 @@ export class RoleService {
       if (body.rolePolicy) {
         const rolePolicyQuery = new RolePolicyQuery(em);
         await rolePolicyQuery.updateRolePolicy(param.id, body.rolePolicy);
+      }
+
+      if (Array.isArray(body.users)) {
+        const target = extractAppendOrRemoveTarget(body.users);
+        const userQuery = new UserQuery(em);
+
+        if (target.appends.length > 0) {
+          await userQuery.updateUsers(target.appends, { role: { id: param.id } });
+        }
+
+        if (target.removes.length > 0) {
+          await userQuery.updateUsers(target.removes, { role: null });
+        }
       }
     });
   }

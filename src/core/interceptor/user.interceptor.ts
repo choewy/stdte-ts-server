@@ -17,7 +17,7 @@ export class UserInterceptor implements NestInterceptor {
     const req = http.getRequest<Request>();
 
     if (req.userId) {
-      req.user = await this.userQuery.findUserByIdAtInterceptor(req.userId);
+      req.user = await this.userQuery.findUserByIdWithRelations(req.userId, {});
     }
 
     return next.handle();

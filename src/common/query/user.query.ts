@@ -3,13 +3,14 @@ import { DataSource, DeepPartial, EntityManager, In } from 'typeorm';
 import { User } from '@entity';
 
 import { EntityQuery } from '../class';
+import { UserQueryFindWithRelationsArgs } from './types';
 
 export class UserQuery extends EntityQuery<User> {
   constructor(connection: DataSource | EntityManager) {
     super(connection, User);
   }
 
-  async findUsersAsList(skip?: number, take?: number) {
+  async findUserList(skip?: number, take?: number) {
     return this.repository
       .createQueryBuilder('user')
       .leftJoinAndMapOne('user.role', 'user.role', 'role')
@@ -27,8 +28,9 @@ export class UserQuery extends EntityQuery<User> {
     return this.repository.findOne({ where: { id } });
   }
 
-  async findUserByIdAtInterceptor(id: number) {
+  async findUserByIdWithRelations(id: number, args: UserQueryFindWithRelationsArgs) {
     return this.repository.findOne({
+      relations: args,
       where: { id },
     });
   }
@@ -72,6 +74,14 @@ export class UserQuery extends EntityQuery<User> {
     });
 
     return users.map(({ id }) => id);
+  }
+
+  async updateUser(id: number, entity: DeepPartial<User>) {
+    await this.repository.update(id, entity);
+  }
+
+  async updateUsers(ids: number[], entity: DeepPartial<User>) {
+    await this.repository.update({ id: In(ids) }, entity);
   }
 
   async updateUserProfile(

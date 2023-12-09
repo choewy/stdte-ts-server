@@ -1,8 +1,8 @@
 import { Transform } from 'class-transformer';
 
-import { QueryGetListArgs } from '../query';
+import { FindListArgs } from '../query';
 
-export class ListQueryDto implements QueryGetListArgs {
+export class ListQueryDto implements FindListArgs {
   @Transform(({ value }) => {
     value = Number(value);
 

@@ -3,7 +3,7 @@ import { DataSource, DeepPartial, EntityManager, Not } from 'typeorm';
 import { Role } from '@entity';
 
 import { EntityQuery } from '../class';
-import { RoleQueryGetListArgs } from './types';
+import { RoleQueryFindListArgs } from './types';
 
 export class RoleQuery extends EntityQuery<Role> {
   constructor(connection: DataSource | EntityManager) {
@@ -26,7 +26,7 @@ export class RoleQuery extends EntityQuery<Role> {
     return this.repository.find({ where: { onInit: true } });
   }
 
-  async findRoleList(args: RoleQueryGetListArgs) {
+  async findRoleList(args: RoleQueryFindListArgs) {
     return this.repository
       .createQueryBuilder('role')
       .innerJoinAndMapOne('role.policy', 'role.policy', 'policy')

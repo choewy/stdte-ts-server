@@ -1,4 +1,6 @@
 export * from './types';
+export * from './enums';
+export * from './helpers';
 
 export * from './setting.query';
 export * from './upload-log-batch.query';
