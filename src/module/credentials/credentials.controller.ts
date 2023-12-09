@@ -1,9 +1,9 @@
 import { Response } from 'express';
 
-import { Body, Controller, Get, Param, Patch, Post, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Req, Res, UseGuards } from '@nestjs/common';
 
 import { RolePolicyLevel } from '@entity';
-import { ReqUserID, SetRolePolicy } from '@server/common';
+import { ReqUserID, Request, SetRolePolicy } from '@server/common';
 import { CredentialsGuard, JwtGuard, RoleGuard } from '@server/core';
 
 import { CredentialsService } from './credentials.service';
@@ -22,8 +22,8 @@ export class CredentialsController {
 
   @Get()
   @UseGuards(JwtGuard)
-  async getMyCredentials(@ReqUserID() userId: number) {
-    return this.credentialsService.getMyCredentials(userId);
+  async getMyCredentials(@Req() req: Request) {
+    return this.credentialsService.getMyCredentials(req.userId);
   }
 
   @Post('signup')

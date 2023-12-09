@@ -39,8 +39,8 @@ export class CredentialsService {
   private removeTokensAtCookie(res: Response) {
     const cookieService = new CookieService();
 
-    cookieService.del(res, CookieKey.Access);
-    cookieService.del(res, CookieKey.Refresh);
+    cookieService.delete(res, CookieKey.Access);
+    cookieService.delete(res, CookieKey.Refresh);
 
     res.send();
   }
