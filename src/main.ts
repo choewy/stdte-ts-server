@@ -1,16 +1,16 @@
 import cookieParser from 'cookie-parser';
+import { json, urlencoded } from 'express';
 
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 
 import { AppModule } from './app.module';
 import { CorsConfig } from './config';
-import { HttpExceptionFilter, requestBinder } from './core';
+import { HttpExceptionFilter, WinstonLogger, requestBinder } from './core';
 import { ValidationException } from './common';
-import { json, urlencoded } from 'express';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, { logger: new WinstonLogger().create() });
 
   app.use(cookieParser());
   app.use(json());
