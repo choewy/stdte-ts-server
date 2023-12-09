@@ -1,4 +1,3 @@
-import 'dotenv/config';
 import 'winston-daily-rotate-file';
 
 import winstonDailyRotateFile from 'winston-daily-rotate-file';
@@ -10,7 +9,17 @@ import { LogLevel } from '@nestjs/common';
 
 export class WinstonLogger {
   private readonly LEVEL = Symbol.for('level');
-  private readonly NAME = process.env.LOGGER_NAME;
+  private readonly NAME?: string;
+  private readonly INDEX?: string;
+
+  constructor() {
+    this.NAME = process.env.NAME;
+    this.INDEX = process.env.INDEX;
+  }
+
+  create() {
+    return WinstonModule.createLogger(this.getWinstonModuleOptions());
+  }
 
   private getFormatByLevel(level: LogLevel) {
     const format = winston.format((info) => {
@@ -27,7 +36,7 @@ export class WinstonLogger {
   private getDefaultFormats() {
     return [
       winston.format.timestamp(),
-      utilities.format.nestLike(this.NAME, {
+      utilities.format.nestLike([this.NAME, this.INDEX].join('-'), {
         prettyPrint: true,
         colors: true,
       }),
@@ -67,9 +76,5 @@ export class WinstonLogger {
     );
 
     return { transports };
-  }
-
-  create() {
-    return WinstonModule.createLogger(this.getWinstonModuleOptions());
   }
 }
