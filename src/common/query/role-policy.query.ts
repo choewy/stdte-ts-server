@@ -14,13 +14,7 @@ export class RolePolicyQuery extends EntityQuery<RolePolicy> {
   }
 
   async insertRolePolicy(role: Role, entity: DeepPartial<RolePolicy>) {
-    await this.repository.insert(
-      this.repository.create({
-        id: role.id,
-        role: { id: role.id },
-        ...entity,
-      }),
-    );
+    await this.repository.insert(this.repository.create({ id: role.id, role: { id: role.id }, ...entity }));
   }
 
   async upsertRolePolicies(entities: DeepPartial<RolePolicy>[]) {

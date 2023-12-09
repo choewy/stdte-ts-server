@@ -24,7 +24,7 @@ export class BatchService {
     }
   }
 
-  @Cron(CronExpression.EVERY_DAY_AT_10AM, { timeZone: process.env.TZ })
+  @Cron(CronExpression.EVERY_DAY_AT_5AM, { timeZone: process.env.TZ })
   async uploadLogFiles() {
     await this.dataSource
       .transaction(async (em) => {

@@ -17,4 +17,4 @@ RUN echo "CONTAINER_PROCESS = $CONTAINER_PROCESS" >> /var/server/.env
 
 RUN npm ci --omit=dev
 
-CMD ["node", "dist/main.js"]
+CMD ["node", "dist/src/main.js"]
