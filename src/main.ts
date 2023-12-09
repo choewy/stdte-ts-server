@@ -4,14 +4,17 @@ import { json, urlencoded } from 'express';
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 
-import { CorsConfig } from './config';
+import { CorsConfig, SystemConfig } from './config';
 import { ValidationException } from './common';
 import { HttpExceptionFilter, LogInterceptor, TransformInterceptor, WinstonLogger } from './core';
 
 import { AppModule } from './app.module';
+import { Settings } from 'luxon';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { logger: new WinstonLogger().create() });
+
+  Settings.defaultZone = new SystemConfig().getTimezone();
 
   app.use(cookieParser());
   app.use(json());

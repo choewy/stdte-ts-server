@@ -1,23 +1,25 @@
+import { DateTime } from 'luxon';
 import { Request } from '../types';
 
 import { ExceptionDto } from './exception.dto';
+import { toISO } from '../helpers';
 
 export class ResponseDto<D> {
   request: {
     id: string;
-    requestedAt: Date;
-    responsedAt: Date;
+    requestedAt: string | null;
+    responsedAt: string | null;
   };
 
   data: D | ExceptionDto | null;
 
   constructor(request: Request, data?: D | ExceptionDto | null) {
-    request.responsedAt = new Date();
+    request.responsedAt = DateTime.local();
 
     this.request = {
       id: request.id,
-      requestedAt: request.requesteAt,
-      responsedAt: request.responsedAt,
+      requestedAt: toISO(request.requesteAt),
+      responsedAt: toISO(request.responsedAt),
     };
 
     this.data = data ?? null;
