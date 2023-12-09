@@ -20,7 +20,7 @@ export class S3Service {
   });
 
   getLogPath(filename: string) {
-    return [new AppConfig().getName(), new SystemConfig().getNodeEnv(), filename].join('/');
+    return [new AppConfig().getAppName(), new SystemConfig().getNodeEnv(), filename].join('/');
   }
 
   async upload(

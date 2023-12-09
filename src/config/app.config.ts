@@ -1,17 +1,22 @@
 export class AppConfig {
-  private readonly NAME = process.env.APP_NAME;
-  private readonly CONTAINER = process.env.CONTAINER_NAME;
+  private readonly NAME = process.env.NAME;
+  private readonly CONTAINER_PREFIX = process.env.CONTAINER_PREFIX;
+  private readonly CONTAINER_PROCESS = process.env.CONTAINER_PROCESS;
   private readonly VERSION = process.env.VERSION;
 
-  getName() {
+  getAppName() {
     return this.NAME as string;
-  }
-
-  getLoggerName() {
-    return [this.NAME, this.CONTAINER].join('-');
   }
 
   getVersion() {
     return this.VERSION ?? '';
+  }
+
+  getContainerPrefix() {
+    return this.CONTAINER_PREFIX;
+  }
+
+  getContainerName() {
+    return [this.CONTAINER_PREFIX, this.CONTAINER_PROCESS].join('-');
   }
 }

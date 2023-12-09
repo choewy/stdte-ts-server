@@ -2,22 +2,24 @@
 
 source /home/ubuntu/develop/profile
 
-name="$APP_NAME-develop"
+prefix=stdte-ts-develop
 image="$(sudo docker images --filter=reference=*/$IMAGE_NAME --format "{{.ID}}")"
 
 ports=(3000)
 
 for (( i = 0; i < ${#ports[@]}; i++ )); do
-  container="$name-$(($i + 1))"
+  process=$(($i + 1))
+  name="$prefix-$process"
   port=${ports[$i]}
 
-  if [ "$(sudo docker container inspect --format '{{.Name}}' $container 2>&1)" == "/$container" ]; then
-    sudo docker rm -f $container
+  if [ "$(sudo docker container inspect --format '{{.Name}}' $name 2>&1)" == "/$name" ]; then
+    sudo docker rm -f $name
   fi
 
   sudo docker run \
-    --name $container -d \
-    -e CONTAINER_NAME=$container \
+    --name $name -d \
+    -e CONTAINER_PREFIX=$prefix \
+    -e CONTAINER_PROCESS=$process \
     -p $port:3000 \
     -v /home/ubuntu/logs:/var/server/logs \
     --restart=always \

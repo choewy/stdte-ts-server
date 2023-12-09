@@ -31,10 +31,16 @@ export class BatchService {
     const map: Record<string, ZipFileTarget[]> = {};
 
     for (const filename of readdirSync('./logs')) {
+      const path = `./logs/${filename}`;
       const filenames = filename.split('.');
-      const name = filenames.pop() ?? '';
+      const extension = filenames.pop() ?? '';
 
-      if (['verbose', 'warn', 'error', 'log'].includes(name) === false) {
+      if (filename.startsWith('.')) {
+        unlinkSync(path);
+        continue;
+      }
+
+      if (['verbose', 'warn', 'error', 'log'].includes(extension) === false) {
         continue;
       }
 
@@ -50,7 +56,9 @@ export class BatchService {
         continue;
       }
 
-      if (filenames.pop() !== this.appConfig.getName()) {
+      const prefix = filenames.pop();
+
+      if (prefix !== this.appConfig.getContainerPrefix()) {
         continue;
       }
 
@@ -60,9 +68,7 @@ export class BatchService {
         map[zipname] = [];
       }
 
-      const path = `./logs/${filename}`;
-
-      map[zipname].push({ name, path, remove: true });
+      map[zipname].push({ name: [prefix, extension].join('.'), path, remove: true });
     }
 
     return map;
