@@ -1,3 +1,4 @@
 export * from './initialize';
-export * from './batch';
 export * from './credentials';
+export * from './batch';
+export * from './role';

@@ -3,6 +3,7 @@ import { DataSource, DeepPartial, EntityManager, Not } from 'typeorm';
 import { Role } from '@entity';
 
 import { EntityQuery } from '../class';
+import { RoleQueryGetListArgs } from './types';
 
 export class RoleQuery extends EntityQuery<Role> {
   constructor(connection: DataSource | EntityManager) {
@@ -13,10 +14,6 @@ export class RoleQuery extends EntityQuery<Role> {
     return this.repository.exist({ where: { id } });
   }
 
-  async findRolesByOnInit() {
-    return this.repository.find({ where: { onInit: true } });
-  }
-
   async hasRoleByName(name: string) {
     return this.repository.exist({ where: { name } });
   }
@@ -25,22 +22,27 @@ export class RoleQuery extends EntityQuery<Role> {
     return this.repository.exist({ where: { id: Not(id), name } });
   }
 
-  async findRolesAndUserCountAsList(skip?: number, take?: number) {
+  async findRolesByOnInit() {
+    return this.repository.find({ where: { onInit: true } });
+  }
+
+  async findRoleList(args: RoleQueryGetListArgs) {
     return this.repository
       .createQueryBuilder('role')
       .innerJoinAndMapOne('role.policy', 'role.policy', 'policy')
       .leftJoinAndMapMany('role.users', 'role.users', 'users')
-      .skip(skip)
-      .take(take)
+      .where('role.onInit = false')
+      .skip(args.skip)
+      .take(args.take)
       .getManyAndCount();
   }
 
-  async updateRoleName(id: number, name?: string) {
-    await this.repository.update(id, { name });
+  async updateRole(id: number, entity: DeepPartial<Role>) {
+    await this.repository.update(id, entity);
   }
 
-  async saveRole(pick: Pick<Role, 'name'>) {
-    return this.repository.save(this.repository.create(pick));
+  async createRole(name: string) {
+    return this.repository.save(this.repository.create({ name }));
   }
 
   async upsertRoles(entities: DeepPartial<Role>[]) {

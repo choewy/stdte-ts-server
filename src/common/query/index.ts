@@ -1,3 +1,5 @@
+export * from './types';
+
 export * from './setting.query';
 export * from './upload-log-batch.query';
 
