@@ -10,7 +10,6 @@ import {
   InvalidPasswordException,
   UserQuery,
   InvalidCredentialsException,
-  ResponseDto,
   NotFoundUserCredentialsException,
 } from '@server/common';
 import { CookieKey, CookieService, JwtService, JwtTokenType } from '@server/core';
@@ -117,8 +116,6 @@ export class CredentialsService {
     }
 
     await credentialsQuery.updateCredentialsPassword(userId, hashSync(body.newPassword, 10));
-
-    return new ResponseDto();
   }
 
   async updateCredentialsStatus(id: number, body: UpdateCredentialsStatusBodyDto) {
@@ -131,8 +128,6 @@ export class CredentialsService {
     }
 
     await credentialsQuery.updateCredentialsStatus(id, body.status);
-
-    return new ResponseDto();
   }
 
   async updateCredentialsPassword(id: number, body: UpdateCredentialsPasswordBodyDto) {
@@ -149,7 +144,5 @@ export class CredentialsService {
     }
 
     await credentialsQuery.updateCredentialsPassword(id, hashSync(body.newPassword, 10));
-
-    return new ResponseDto();
   }
 }

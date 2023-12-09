@@ -2,7 +2,7 @@ import { DataSource } from 'typeorm';
 
 import { Injectable } from '@nestjs/common';
 
-import { InvalidCredentialsException, ResponseDto, UserQuery } from '@server/common';
+import { InvalidCredentialsException, UserQuery } from '@server/common';
 import { UpdateMyProfileBodyDto } from './dto';
 
 @Injectable()
@@ -34,7 +34,5 @@ export class ProfileService {
 
   async updateMyProfile(userId: number, body: UpdateMyProfileBodyDto) {
     await new UserQuery(this.dataSource).updateUserProfile(userId, body);
-
-    return new ResponseDto();
   }
 }

@@ -2,10 +2,10 @@ import { Request as ExpressRequest } from 'express';
 
 import { User } from '@entity';
 
-import { ResponseDto } from './dto';
-
-export type Request<T = any> = ExpressRequest & {
-  dto: ResponseDto<T>;
+export type Request = ExpressRequest & {
+  id: string;
+  requesteAt: Date;
+  responsedAt: Date;
   userId?: number | null;
   user?: User | null;
 };

@@ -1,18 +1,25 @@
-import { v4 } from 'uuid';
+import { Request } from '../types';
 
 import { ExceptionDto } from './exception.dto';
 
 export class ResponseDto<D> {
-  id: string;
-  tag: string;
+  request: {
+    id: string;
+    requestedAt: Date;
+    responsedAt: Date;
+  };
+
   data: D | ExceptionDto | null;
 
-  constructor() {
-    this.id = v4();
-    this.tag = process.env.VERSION ?? '';
-  }
+  constructor(request: Request, data?: D | ExceptionDto | null) {
+    request.responsedAt = new Date();
 
-  setData(data?: D | ExceptionDto | null) {
+    this.request = {
+      id: request.id,
+      requestedAt: request.requesteAt,
+      responsedAt: request.responsedAt,
+    };
+
     this.data = data ?? null;
   }
 }
