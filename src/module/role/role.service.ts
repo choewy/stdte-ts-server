@@ -4,6 +4,7 @@ import { Injectable } from '@nestjs/common';
 
 import {
   AlreadyExistRoleException,
+  ListDto,
   NotFoundRoleException,
   RolePolicyQuery,
   RoleQuery,
@@ -19,9 +20,8 @@ export class RoleService {
 
   async getRoles(query: RoleListQueryDto) {
     const roleQuery = new RoleQuery(this.dataSource);
-    const [rows, total] = await roleQuery.findRoleList(query);
 
-    return { total, rows, query };
+    return new ListDto(query, await roleQuery.findRoleList(query));
   }
 
   async createRole(body: RoleCreateBodyDto) {
