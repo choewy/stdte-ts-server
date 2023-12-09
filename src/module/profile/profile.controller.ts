@@ -1,10 +1,10 @@
-import { Body, Controller, Get, Patch, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Patch, Req, UseGuards } from '@nestjs/common';
 
-import { ReqUserID } from '@server/common';
+import { Request } from '@server/common';
 import { JwtGuard } from '@server/core';
 
 import { ProfileService } from './profile.service';
-import { UpdateMyProfileBodyDto } from './dto';
+import { ProfileUpdateBodyDto } from './dto';
 
 @UseGuards(JwtGuard)
 @Controller('profile')
@@ -12,12 +12,12 @@ export class ProfileController {
   constructor(private readonly profileService: ProfileService) {}
 
   @Get()
-  async getMyProfile(@ReqUserID() userId: number) {
-    return this.profileService.getMyProfile(userId);
+  async getProfile(@Req() req: Request) {
+    return this.profileService.getProfile(req.userId);
   }
 
   @Patch()
-  async updateMyProfile(@ReqUserID() userId: number, @Body() body: UpdateMyProfileBodyDto) {
-    return this.profileService.updateMyProfile(userId, body);
+  async updateProfile(@Req() req: Request, @Body() body: ProfileUpdateBodyDto) {
+    return this.profileService.updateProfile(req.userId, body);
   }
 }
