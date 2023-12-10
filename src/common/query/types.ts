@@ -15,3 +15,4 @@ export type UserQueryFindListArgs = FindListArgs;
 export type BusinessCategoryQueryFindListArgs = FindListArgs;
 export type IndustryCategoryQueryFindListArgs = FindListArgs;
 export type TaskMainCategoryQueryFindListArgs = FindListArgs;
+export type CustomerQueryFindListArgs = FindListArgs;
