@@ -1,12 +1,20 @@
 import { Transform } from 'class-transformer';
-import { IsInt, IsNotEmpty, IsOptional, IsString, MinLength } from 'class-validator';
+import { IsInstance, IsNotEmpty, IsOptional, IsString, MinLength } from 'class-validator';
 
 import { toEmptyNull, toTrim } from '@server/common';
+import { TaskMainCategory } from '@entity';
 
 export class TaskSubCategoryCreateBodyDto {
   @IsNotEmpty()
-  @IsInt()
-  mainCategory: number;
+  @IsInstance(TaskMainCategory)
+  @Transform(({ value }) => {
+    if (value == null) {
+      return value;
+    }
+
+    return { id: value };
+  })
+  parent: TaskMainCategory;
 
   @IsNotEmpty()
   @IsString()
