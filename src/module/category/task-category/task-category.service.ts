@@ -2,6 +2,8 @@ import { DataSource } from 'typeorm';
 
 import { Injectable } from '@nestjs/common';
 
+import { ListDto, TaskMainCategoryQuery } from '@server/common';
+
 import {
   TaskCategoryListQueryDto,
   TaskCategoryParamDto,
@@ -11,7 +13,6 @@ import {
   TaskSubCategoryCreateBodyDto,
   TaskSubCategoryUpdateBodyDto,
 } from './dto';
-import { ListDto, TaskMainCategoryQuery } from '@server/common';
 
 @Injectable()
 export class TaskCategoryService {
