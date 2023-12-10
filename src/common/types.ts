@@ -7,6 +7,7 @@ export type Request = ExpressRequest & {
   id: string;
   requesteAt: DateTime;
   responsedAt: DateTime;
+  ignoreLog?: boolean;
   userId: number;
   user?: User | null;
 };

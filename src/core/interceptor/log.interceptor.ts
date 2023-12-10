@@ -41,6 +41,12 @@ export class LogInterceptor implements NestInterceptor {
 
   intercept(context: ExecutionContext, next: CallHandler<any>): Observable<any> | Promise<Observable<any>> {
     const http = context.switchToHttp();
+    const request = http.getRequest<Request>();
+
+    if (request.ignoreLog === true) {
+      return next.handle();
+    }
+
     const classname = context.getClass().name;
 
     return next.handle().pipe(
