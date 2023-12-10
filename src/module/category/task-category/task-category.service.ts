@@ -2,7 +2,15 @@ import { DataSource } from 'typeorm';
 
 import { Injectable } from '@nestjs/common';
 
-import { ListDto, TaskMainCategoryQuery } from '@server/common';
+import {
+  AlreadyExistTaskMainCategoryException,
+  InsertDto,
+  ListDto,
+  NotFoundTaskMainCategoryException,
+  NotFoundTaskSubCategoryException,
+  TaskMainCategoryQuery,
+  TaskSubCategoryQuery,
+} from '@server/common';
 
 import {
   TaskCategoryListQueryDto,
@@ -25,30 +33,86 @@ export class TaskCategoryService {
   }
 
   async getTaskMainCategory(param: TaskCategoryParamDto) {
-    return;
+    const taskMainCategoryQuery = new TaskMainCategoryQuery(this.dataSource);
+    const taskMainCategory = await taskMainCategoryQuery.findTaskMainCategoryById(param.id);
+
+    if (taskMainCategory == null) {
+      throw new NotFoundTaskMainCategoryException();
+    }
+
+    return new TaskMainCategoryDto(taskMainCategory);
   }
 
   async createTaskMainCategory(body: TaskMainCategoryCreateBodyDto) {
-    return;
+    const taskMainCategoryQuery = new TaskMainCategoryQuery(this.dataSource);
+    const hasTaskMainCategory = await taskMainCategoryQuery.hasTaskMainCategoryByName(body.name);
+
+    if (hasTaskMainCategory) {
+      throw new AlreadyExistTaskMainCategoryException();
+    }
+
+    return new InsertDto(await taskMainCategoryQuery.insertTaskMainCategory(body));
   }
 
   async updateTaskMainCategory(param: TaskCategoryParamDto, body: TaskMainCategoryUpdateBodyDto) {
-    return;
+    const taskMainCategoryQuery = new TaskMainCategoryQuery(this.dataSource);
+    const hasTaskMainCategory = await taskMainCategoryQuery.hasTaskMainCategoryById(param.id);
+
+    if (hasTaskMainCategory === false) {
+      throw new NotFoundTaskMainCategoryException();
+    }
+
+    if (body.name) {
+      if (await taskMainCategoryQuery.hasTaskMainCategoryByName(body.name)) {
+        throw new AlreadyExistTaskMainCategoryException();
+      }
+    }
+
+    await taskMainCategoryQuery.updateTaskMainCategory(param.id, body);
   }
 
   async deleteTaskMainCategory(param: TaskCategoryParamDto) {
-    return;
+    const taskMainCategoryQuery = new TaskMainCategoryQuery(this.dataSource);
+    const hasTaskMainCategory = await taskMainCategoryQuery.hasTaskMainCategoryById(param.id);
+
+    if (hasTaskMainCategory === false) {
+      throw new NotFoundTaskMainCategoryException();
+    }
+
+    await taskMainCategoryQuery.deleteTaskMainCategory(param.id);
   }
 
   async createTaskSubCategory(body: TaskSubCategoryCreateBodyDto) {
-    return;
+    const taskMainCategoryQuery = new TaskMainCategoryQuery(this.dataSource);
+    const hasTaskMainCategory = await taskMainCategoryQuery.hasTaskMainCategoryById(body.parent.id);
+
+    if (hasTaskMainCategory === false) {
+      throw new NotFoundTaskMainCategoryException();
+    }
+
+    const taskSubCategoryQuery = new TaskSubCategoryQuery(this.dataSource);
+    return new InsertDto(await taskSubCategoryQuery.insertTaskSubCategory(body));
   }
 
   async updateTaskSubCategory(param: TaskCategoryParamDto, body: TaskSubCategoryUpdateBodyDto) {
-    return;
+    const taskSubCategoryQuery = new TaskSubCategoryQuery(this.dataSource);
+    const hasTaskSubCategory = await taskSubCategoryQuery.hasTaskSubCategoryById(param.id);
+
+    if (hasTaskSubCategory === false) {
+      throw new NotFoundTaskSubCategoryException();
+    }
+
+    await taskSubCategoryQuery.updateTaskSubCategory(param.id, body);
   }
 
   async deleteTaskSubCategory(param: TaskCategoryParamDto) {
-    return;
+    const taskSubCategoryQuery = new TaskSubCategoryQuery(this.dataSource);
+    const hasTaskSubCategory = await taskSubCategoryQuery.hasTaskSubCategoryById(param.id);
+
+    if (hasTaskSubCategory === false) {
+      throw new NotFoundTaskSubCategoryException();
+    }
+
+    await taskSubCategoryQuery.deleteTaskSubCategory(param.id);
   }
 }
