@@ -2,7 +2,7 @@ name: Unit Test
 
 on:
   pull_request:
-    branches: ['master', 'develop']
+    branches: ['master']
     paths-ignore: ['*.md', 'docs', '!.github/workflows/*-test.yaml', '!docker/database']
 
 jobs:
