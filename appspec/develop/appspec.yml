@@ -29,8 +29,3 @@ hooks:
     - location: hooks/start-application.sh
       timeout: 300
       runas: ubuntu
-
-  ValidateService:
-    - location: hooks/validate-service.sh
-      timeout: 100
-      runas: ubuntu
