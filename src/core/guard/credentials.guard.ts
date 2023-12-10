@@ -3,14 +3,14 @@ import { DataSource } from 'typeorm';
 import { CanActivate, ExecutionContext, Injectable, Scope } from '@nestjs/common';
 
 import { CredentialsStatus } from '@entity';
-import { CannotAccessException, Request, UserCredentialsQuery } from '@server/common';
+import { CannotAccessException, Request, CredentialsQuery } from '@server/common';
 
 @Injectable({ scope: Scope.REQUEST })
 export class CredentialsGuard implements CanActivate {
-  private readonly userCredentialsQuery: UserCredentialsQuery;
+  private readonly credentialsQuery: CredentialsQuery;
 
   constructor(private readonly dataSource: DataSource) {
-    this.userCredentialsQuery = new UserCredentialsQuery(this.dataSource);
+    this.credentialsQuery = new CredentialsQuery(this.dataSource);
   }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -21,7 +21,7 @@ export class CredentialsGuard implements CanActivate {
       throw new CannotAccessException({ credentials: null });
     }
 
-    const credentials = await this.userCredentialsQuery.findUserCredentialsByUserId(req.userId);
+    const credentials = await this.credentialsQuery.findCredentialsByUserId(req.userId);
 
     if (credentials == null) {
       throw new CannotAccessException({ credentials: null });

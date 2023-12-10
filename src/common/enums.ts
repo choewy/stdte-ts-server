@@ -5,5 +5,5 @@ export enum NodeEnv {
 }
 
 export enum MetadataKey {
-  PolicyLevel = 'policy-level',
+  RolePolicy = 'role-policy',
 }

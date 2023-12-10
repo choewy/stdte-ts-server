@@ -1,52 +1,35 @@
-import { BeforeApplicationShutdown, Module } from '@nestjs/common';
+import { DataSource } from 'typeorm';
+
+import { BeforeApplicationShutdown, MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { AppController } from './app.controller';
-import { AppService } from './app.service';
 
 import { MySQLConfig } from './config';
-import { HttpExceptionFilter } from './core';
-import {
-  InitModule,
-  CredentialsModule,
-  ProfileModule,
-  RoleModule,
-  TeamModule,
-  UserModule,
-  ProjectModule,
-  ProjectTypeModule,
-  ProjectOptionModule,
-  TimeRecordModule,
-  TimeRecordMemoModule,
-  TimeRecordLogModule,
-  SearchModule,
-} from './module';
-import { DataSource } from 'typeorm';
+import { HttpExceptionFilter, LogInterceptor, RequestMiddleware, TransformInterceptor } from './core';
+import { BatchModule, CategoryModule, CredentialsModule, InitializeModule, RoleModule, SettingModule } from './module';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
     TypeOrmModule.forRoot(new MySQLConfig().getTypeOrmModuleOptions()),
-    InitModule,
+    InitializeModule,
+    SettingModule,
     CredentialsModule,
-    ProfileModule,
+    BatchModule,
     RoleModule,
-    TeamModule,
-    UserModule,
-    ProjectModule,
-    ProjectTypeModule,
-    ProjectOptionModule,
-    TimeRecordModule,
-    TimeRecordMemoModule,
-    TimeRecordLogModule,
-    SearchModule,
+    CategoryModule,
   ],
   controllers: [AppController],
-  providers: [AppService, HttpExceptionFilter],
+  providers: [RequestMiddleware, HttpExceptionFilter, LogInterceptor, TransformInterceptor],
 })
-export class AppModule implements BeforeApplicationShutdown {
+export class AppModule implements BeforeApplicationShutdown, NestModule {
   constructor(private readonly dataSource: DataSource) {}
+
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(RequestMiddleware).forRoutes('/');
+  }
 
   async beforeApplicationShutdown() {
     await this.dataSource.destroy();

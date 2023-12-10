@@ -1,1 +1,3 @@
-export * from './update-my-profile.body.dto';
+export * from './types';
+export * from './profile.dto';
+export * from './profile-update.body.dto';

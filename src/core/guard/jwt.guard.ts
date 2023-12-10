@@ -19,7 +19,9 @@ export class JwtGuard implements CanActivate {
       throw new InvalidCredentialsException(result.error);
     }
 
-    req.userId = result.payload?.id;
+    if (result.payload) {
+      req.userId = result.payload.id;
+    }
 
     return typeof req.userId === 'number';
   }

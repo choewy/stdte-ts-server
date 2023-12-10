@@ -1,106 +1,124 @@
 import { DataSource } from 'typeorm';
 
 import { Injectable } from '@nestjs/common';
+
 import {
   AlreadyExistRoleException,
+  InsertDto,
   ListDto,
   NotFoundRoleException,
-  ResponseDto,
   RolePolicyQuery,
   RoleQuery,
   UserQuery,
+  extractAppendOrRemoveTarget,
 } from '@server/common';
 
-import { CreateRoleBodyDto, RoleListQueryDto, RoleParamDto, UpdateRoleBodyDto } from './dto';
+import { RoleCreateBodyDto, RoleDto, RoleListQueryDto, RoleParamDto, RoleUpdateBodyDto } from './dto';
 
 @Injectable()
 export class RoleService {
   constructor(private readonly dataSource: DataSource) {}
 
   async getRoles(query: RoleListQueryDto) {
-    return new ResponseDto(
-      new ListDto(query, await new RoleQuery(this.dataSource).findRolesAndUserCountAsList(query.skip, query.take)),
-    );
-  }
-
-  async createRole(body: CreateRoleBodyDto) {
-    const has = await new RoleQuery(this.dataSource).hasRoleByName(body.name);
-
-    if (has) {
-      throw new AlreadyExistRoleException();
-    }
-
-    await this.dataSource.transaction(async (em) =>
-      new RolePolicyQuery(em).insertRolePolicy({
-        role: await new RoleQuery(em).saveRole({ name: body.name }),
-        accessCredentials: body.accessCredentials,
-        accessRoleLevel: body.accessRoleLevel,
-        accessTeamLevel: body.accessTeamLevel,
-        accessUserLevel: body.accessUserLevel,
-        accessProjectLevel: body.accessProjectLevel,
-      }),
-    );
-
-    return new ResponseDto();
-  }
-
-  async updateRole(param: RoleParamDto, body: UpdateRoleBodyDto) {
     const roleQuery = new RoleQuery(this.dataSource);
 
-    const has = await roleQuery.hasRoleById(param.id);
+    return new ListDto(query, await roleQuery.findRoleList(query), RoleDto);
+  }
 
-    if (has === false) {
+  async getRole(param: RoleParamDto) {
+    const roleQuery = new RoleQuery(this.dataSource);
+    const role = await roleQuery.findRoleById(param.id);
+
+    if (role == null) {
       throw new NotFoundRoleException();
     }
 
-    if (typeof body.name === 'string') {
-      if (await roleQuery.hasRoleByNameOmitId(param.id, body.name)) {
+    return new RoleDto(role);
+  }
+
+  async createRole(body: RoleCreateBodyDto) {
+    const roleQuery = new RoleQuery(this.dataSource);
+
+    const hasName = await roleQuery.hasRoleByName(body.name);
+
+    if (hasName) {
+      throw new AlreadyExistRoleException();
+    }
+
+    const insert = await this.dataSource.transaction(async (em) => {
+      const roleQuery = new RoleQuery(em);
+      const rolePolicyQuery = new RolePolicyQuery(em);
+
+      const insert = await roleQuery.insertRole(body.name);
+      await rolePolicyQuery.insertRolePolicy(insert.raw.insertId, body.rolePolicy);
+
+      if (Array.isArray(body.users)) {
+        const target = extractAppendOrRemoveTarget(body.users);
+        const userQuery = new UserQuery(em);
+
+        if (target.appends.length > 0) {
+          await userQuery.updateUsers(target.appends, { role: { id: insert.raw.insertId } });
+        }
+      }
+
+      return insert;
+    });
+
+    return new InsertDto(insert);
+  }
+
+  async updateRole(param: RoleParamDto, body: RoleUpdateBodyDto) {
+    const roleQuery = new RoleQuery(this.dataSource);
+
+    const hasRole = await roleQuery.hasRoleById(param.id);
+
+    if (hasRole === false) {
+      throw new NotFoundRoleException();
+    }
+
+    if (body.name) {
+      const hasName = await roleQuery.hasRoleByNameOmitId(param.id, body.name);
+
+      if (hasName) {
         throw new AlreadyExistRoleException();
       }
     }
 
     await this.dataSource.transaction(async (em) => {
-      if (typeof body.name === 'string') {
-        await new RoleQuery(em).updateRoleName(param.id, body.name);
+      if (body.name) {
+        const roleQuery = new RoleQuery(em);
+        await roleQuery.updateRole(param.id, { name: body.name });
       }
 
-      if (
-        typeof body.accessCredentials === 'boolean' ||
-        typeof body.accessRoleLevel === 'boolean' ||
-        typeof body.accessTeamLevel === 'boolean' ||
-        typeof body.accessUserLevel === 'boolean' ||
-        typeof body.accessProjectLevel === 'boolean'
-      ) {
-        await new RolePolicyQuery(em).updateRolePolicy(param.id, {
-          accessCredentials: body.accessCredentials,
-          accessRoleLevel: body.accessRoleLevel,
-          accessTeamLevel: body.accessTeamLevel,
-          accessUserLevel: body.accessUserLevel,
-          accessProjectLevel: body.accessProjectLevel,
-        });
+      if (body.rolePolicy) {
+        const rolePolicyQuery = new RolePolicyQuery(em);
+        await rolePolicyQuery.updateRolePolicy(param.id, body.rolePolicy);
       }
 
       if (Array.isArray(body.users)) {
+        const target = extractAppendOrRemoveTarget(body.users);
         const userQuery = new UserQuery(em);
-        await userQuery.deleteUsersRole(param.id);
-        await userQuery.updateUsersRoleInUserIds(param.id, body.users);
+
+        if (target.appends.length > 0) {
+          await userQuery.updateUsers(target.appends, { role: { id: param.id } });
+        }
+
+        if (target.removes.length > 0) {
+          await userQuery.updateUsers(target.removes, { role: null });
+        }
       }
     });
-
-    return new ResponseDto();
   }
 
   async deleteRole(param: RoleParamDto) {
     const roleQuery = new RoleQuery(this.dataSource);
 
-    const has = await roleQuery.hasRoleById(param.id);
+    const hasRole = await roleQuery.hasRoleById(param.id);
 
-    if (has === false) {
+    if (hasRole === false) {
       throw new NotFoundRoleException();
     }
 
     await roleQuery.deleteRole(param.id);
-
-    return new ResponseDto();
   }
 }

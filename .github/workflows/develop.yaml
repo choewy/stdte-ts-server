@@ -1,0 +1,140 @@
+name: Develop
+
+on:
+  push:
+    branches: ['develop']
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+
+    strategy:
+      matrix:
+        node: [20]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.ACTION_TOKEN }}
+          submodules: true
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Install dependencies
+        run: |
+          npm ci
+          npm run submodule
+
+      - name: Build application
+        run: |
+          npm run build
+
+      - name: Set Timezone
+        uses: szenius/set-timezone@v1.2
+        with:
+          timezoneLinux: Asia/Seoul
+
+      - name: Create environments
+        env:
+          ENV: ${{ secrets.ENV_DEVELOP }}
+          IMAGE_TAG: ${{ github.ref_name }}
+        run: |
+          rm .env
+          touch .env
+          echo "$ENV" >> .env
+          echo "VERSION=$IMAGE_TAG_$(date +'%Y-%m-%d_%H:%M:%S')" >> .env
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-region: ${{ secrets.AWS_REGION }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: Login to ECR
+        id: ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Image Build and push to ECR
+        id: docker-build
+        env:
+          IMAGE_TAG: ${{ github.ref_name }}
+          REGISTRY: ${{ steps.ecr.outputs.registry }}
+          REPOSITORY: ${{ secrets.AWS_ECR_REPOSITORY_DEVELOP }}
+        run: |
+          IMAGE_PATH="$REGISTRY/$REPOSITORY:$IMAGE_TAG"
+          cd docker/server
+          bash scripts/build.sh $IMAGE_PATH
+          bash scripts/push.sh $IMAGE_PATH
+
+  deploy:
+    needs: build
+
+    runs-on: ubuntu-22.04
+
+    env:
+      BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.ACTION_TOKEN }}
+          submodules: false
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-region: ${{ secrets.AWS_REGION }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: Login to ECR
+        id: ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Create profile and zip files
+        env:
+          IMAGE_TAG: ${{ github.ref_name }}
+          REGISTRY: ${{ steps.ecr.outputs.registry }}
+          REGION: ${{ secrets.AWS_REGION }}
+          ACCOUNT_ID: ${{ secrets.AWS_ECR_ACCOUNT_ID }}
+          REPOSITORY: ${{ secrets.AWS_ECR_REPOSITORY_DEVELOP }}
+        run: |
+          ZIP_NAME="develop-$GITHUB_SHA"
+          IMAGE_NAME="$REPOSITORY:$IMAGE_TAG"
+          IMAGE_PATH="$REGISTRY/$IMAGE_NAME"
+          touch profile
+          echo "ZIP_NAME=$ZIP_NAME" >> profile
+          echo "IMAGE_NAME=$IMAGE_NAME" >> profile
+          echo "IMAGE_PATH=$IMAGE_PATH" >> profile
+          echo "REGION=$REGION" >> profile
+          echo "ACCOUNT_ID=$ACCOUNT_ID" >> profile
+
+      - name: Zip files
+        run: |
+          source profile
+          mv appspec/develop/* .
+          zip -r $ZIP_NAME.zip appspec.yml profile hooks
+
+      - name: Upload to S3
+        run: |
+          source profile
+          unzip $ZIP_NAME.zip -d $ZIP_NAME
+          aws deploy push \
+            --application-name stdte-ts-server \
+            --s3-location s3://$BUCKET/$ZIP_NAME.zip \
+            --source $ZIP_NAME
+
+      - name: Create Deployment
+        run: |
+          source profile
+          aws deploy create-deployment \
+            --application-name stdte-ts-server \
+            --deployment-group-name develop \
+            --deployment-config-name CodeDeployDefault.AllAtOnce \
+            --s3-location bucket=$BUCKET,bundleType=zip,key=$ZIP_NAME.zip

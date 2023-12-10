@@ -1,11 +1,22 @@
-import { ConfigService } from '@nestjs/config';
-
 export class AppConfig {
-  private readonly configService = new ConfigService();
+  private readonly NAME = process.env.NAME;
+  private readonly CONTAINER_PREFIX = process.env.CONTAINER_PREFIX;
+  private readonly CONTAINER_PROCESS = process.env.CONTAINER_PROCESS;
+  private readonly VERSION = process.env.VERSION;
 
-  private readonly VERSION = this.configService.get<string>('VERSION');
+  getAppName() {
+    return this.NAME as string;
+  }
 
   getVersion() {
     return this.VERSION ?? '';
+  }
+
+  getContainerPrefix() {
+    return this.CONTAINER_PREFIX;
+  }
+
+  getContainerName() {
+    return [this.CONTAINER_PREFIX, this.CONTAINER_PROCESS].join('-');
   }
 }

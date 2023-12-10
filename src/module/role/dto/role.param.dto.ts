@@ -1,8 +1,7 @@
-import { IsInt, IsNotEmpty, Min } from 'class-validator';
+import { IsInt, IsNotEmpty } from 'class-validator';
 
 export class RoleParamDto {
   @IsNotEmpty()
   @IsInt()
-  @Min(1)
   id: number;
 }

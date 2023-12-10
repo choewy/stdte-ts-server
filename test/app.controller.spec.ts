@@ -5,7 +5,6 @@ import { INestApplication } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 
 import { AppController } from '@server/app.controller';
-import { AppService } from '@server/app.service';
 
 describe('AppController', () => {
   let app: INestApplication;
@@ -14,7 +13,6 @@ describe('AppController', () => {
     const module = await Test.createTestingModule({
       imports: [ConfigModule.forRoot()],
       controllers: [AppController],
-      providers: [AppService],
     }).compile();
 
     app = module.createNestApplication();

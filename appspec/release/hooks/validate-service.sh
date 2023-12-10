@@ -1,11 +1,17 @@
 #!/bin/bash
 
-if  [ -d "/home/ubuntu/release" ]; then
-  rm -rf /home/ubuntu/release
+if ! [ -d "/home/ubuntu/archive" ]; then
+  mkdir /home/ubuntu/archive
 fi
 
-curl -X GET "http://localhost:3001"
-curl -X GET "http://localhost:3002"
+if ! [ -d "/home/ubuntu/archive/release" ]; then
+  mkdir /home/ubuntu/archive/release
+fi
+
+if  [ -d "/home/ubuntu/release" ]; then
+  datetime=`date +%Y%m%d%H%M%S`
+  mv /home/ubuntu/release /home/ubuntu/archive/release/$datetime
+fi
 
 sudo docker image prune -a --force
 
