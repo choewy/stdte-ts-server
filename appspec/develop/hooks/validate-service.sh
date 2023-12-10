@@ -19,19 +19,6 @@ do
   sleep 5s
 done
 
-if [ $bootstrap == true ]; then
-  echo "success bootstrap ${REPLACE}"
-
-  container="$PREFIX-$ORIGIN"
-
-  if [ "$(sudo docker container inspect --format '{{.Name}}' $container 2>&1)" == "/$container" ]; then
-    sudo docker rm -f $container
-  fi
-
-  if [ -d "/home/ubuntu/develop" ]; then
-    rm -rf /home/ubuntu/develop
-  fi
-fi
 
 if [ $bootstrap == false ]; then
   echo "fail bootstrap ${REPLACE}"
@@ -39,10 +26,33 @@ if [ $bootstrap == false ]; then
   container="$PREFIX-$REPLACE"
 
   if [ "$(sudo docker container inspect --format '{{.Name}}' $container 2>&1)" == "/$container" ]; then
-    sudo docker rm -f $container
+    container_id=`sudo docker rm -f $container`
+    echo "remove replace container $container_id"
+  fi
+  
+  exit 1
+fi
+
+if [ $bootstrap == true ]; then
+  echo "success bootstrap ${REPLACE}"
+
+  container="$PREFIX-$ORIGIN"
+
+  if [ "$(sudo docker container inspect --format '{{.Name}}' $container 2>&1)" == "/$container" ]; then
+    sleep 15s
+    
+    container_id=`sudo docker stop $container`
+    echo "stop origin container $container_id"
+
+    sleep 15s
   fi
 fi
 
+if [ -d "/home/ubuntu/develop" ]; then
+  rm -rf /home/ubuntu/develop
+fi
+
 sudo docker image prune -a --force
+sudo docker container prune --force
 
 exit 0
