@@ -18,4 +18,4 @@ RUN echo "CONTAINER_PROCESS = $CONTAINER_PROCESS" >> /var/server/.env
 RUN npm ci --omit=dev
 RUN npm i -g pm2
 
-CMD ["pm2", "start", "dist/src/main.js"]
+CMD ["npm", "run", "start:prod"]
