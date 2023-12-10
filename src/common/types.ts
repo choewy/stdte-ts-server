@@ -12,3 +12,5 @@ export type Request = ExpressRequest & {
 };
 
 export type S3Bucket = Record<'log', string>;
+
+export type DtoConstructor<D, T> = new (args: D) => T;

@@ -4,3 +4,4 @@ export * from './error.dto';
 
 export * from './list.dto';
 export * from './list.query.dto';
+export * from './insert.dto';
