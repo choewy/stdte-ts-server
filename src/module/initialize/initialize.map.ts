@@ -11,6 +11,10 @@ import {
   RolePolicyLevel,
   UploadLogBatch,
   Setting,
+  BusinessCategory,
+  IndustryCategory,
+  TaskMainCategory,
+  TaskSubCategory,
 } from '@entity';
 import { CredentialsConfig } from '@server/config';
 
@@ -106,6 +110,75 @@ export class InitializeMap {
         password: hashSync(admin.password, 10),
         status: CredentialsStatus.Active,
       }),
+    ];
+  }
+
+  get businessCategory() {
+    const repository = this.connection.getRepository(BusinessCategory);
+
+    return [
+      repository.create({ id: 1, name: '기술', description: '엔지니어링 단가를 적용받는 모든 사업' }),
+      repository.create({ id: 2, name: '연구', description: '국가연구개발혁신법을 적용받는 모든 사업' }),
+      repository.create({ id: 3, name: '실험', description: '발주처의 의뢰를 받아 진행하는 실험/시험 관련 사업' }),
+      repository.create({ id: 4, name: '판매', description: '제품의 제조, 판매와 관련된 사업' }),
+      repository.create({ id: 5, name: '지원', description: '정부, 특정기관으로부터 지원받는 사업' }),
+    ];
+  }
+
+  get industryCategory() {
+    const repository = this.connection.getRepository(IndustryCategory);
+
+    return [
+      repository.create({ id: 1, name: '원전' }),
+      repository.create({ id: 2, name: '원자력시설' }),
+      repository.create({ id: 3, name: '비원자력' }),
+    ];
+  }
+
+  get taskMainCategory() {
+    const repository = this.connection.getRepository(TaskMainCategory);
+
+    return [
+      repository.create({
+        id: 1,
+        name: '일반',
+        children: [
+          { id: 1, parent: { id: 1 }, name: '사업개발' },
+          { id: 2, parent: { id: 1 }, name: '부서관리' },
+          { id: 3, parent: { id: 1 }, name: '교육/훈련' },
+          { id: 4, parent: { id: 1 }, name: '기타업무' },
+        ],
+      }),
+      repository.create({
+        id: 2,
+        name: '사업',
+        children: [
+          { id: 5, parent: { id: 2 }, name: '작성' },
+          { id: 6, parent: { id: 2 }, name: '검토' },
+          { id: 7, parent: { id: 2 }, name: '피드백' },
+          { id: 8, parent: { id: 2 }, name: '출장이동' },
+        ],
+      }),
+      repository.create({
+        id: 3,
+        name: '타부서 업무 지원',
+        children: [],
+      }),
+    ];
+  }
+
+  get taskSubCategory() {
+    const repository = this.connection.getRepository(TaskSubCategory);
+
+    return [
+      repository.create({ id: 1, parent: { id: 1 }, name: '사업개발' }),
+      repository.create({ id: 2, parent: { id: 1 }, name: '부서관리' }),
+      repository.create({ id: 3, parent: { id: 1 }, name: '교육/훈련' }),
+      repository.create({ id: 4, parent: { id: 1 }, name: '기타업무' }),
+      repository.create({ id: 5, parent: { id: 2 }, name: '작성' }),
+      repository.create({ id: 6, parent: { id: 2 }, name: '검토' }),
+      repository.create({ id: 7, parent: { id: 2 }, name: '피드백' }),
+      repository.create({ id: 8, parent: { id: 2 }, name: '출장이동' }),
     ];
   }
 }

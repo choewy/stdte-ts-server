@@ -8,6 +8,10 @@ import {
   UserQuery,
   UploadLogBatchQuery,
   SettingQuery,
+  IndustryCategoryQuery,
+  BusinessCategoryQuery,
+  TaskMainCategoryQuery,
+  TaskSubCategoryQuery,
 } from '@server/common';
 
 import { InitializeMap } from './initialize.map';
@@ -51,7 +55,6 @@ export class Initializer {
 
       if (row.name !== entity.name) {
         entities.push(entity);
-        continue;
       }
     }
 
@@ -104,7 +107,6 @@ export class Initializer {
 
       if (row == null) {
         entities.push(entity);
-        continue;
       }
     }
 
@@ -126,7 +128,6 @@ export class Initializer {
 
       if (row == null) {
         entities.push(entity);
-        continue;
       }
     }
 
@@ -135,5 +136,49 @@ export class Initializer {
     }
 
     await query.upsertCredentials(entities);
+  }
+
+  async initBusinessCategory(initializeMap: InitializeMap, connection: DataSource | EntityManager) {
+    const query = new BusinessCategoryQuery(connection);
+    const count = await query.countBusinessCategories();
+
+    if (count > 0) {
+      return;
+    }
+
+    await query.insertBusinessCategories(initializeMap.businessCategory);
+  }
+
+  async initIndustryCategory(initializeMap: InitializeMap, connection: DataSource | EntityManager) {
+    const query = new IndustryCategoryQuery(connection);
+    const count = await query.countIndustryCategories();
+
+    if (count > 0) {
+      return;
+    }
+
+    await query.insertIndustryCategories(initializeMap.industryCategory);
+  }
+
+  async initTaskMainCategory(initializeMap: InitializeMap, connection: DataSource | EntityManager) {
+    const query = new TaskMainCategoryQuery(connection);
+    const count = await query.countTaskMainCategory();
+
+    if (count > 0) {
+      return;
+    }
+
+    await query.insertTaskMainCategories(initializeMap.taskMainCategory);
+  }
+
+  async initTaskSubCategory(initializeMap: InitializeMap, connection: DataSource | EntityManager) {
+    const query = new TaskSubCategoryQuery(connection);
+    const count = await query.countTaskSubCategory();
+
+    if (count > 0) {
+      return;
+    }
+
+    await query.insertTaskSubCategories(initializeMap.taskSubCategory);
   }
 }

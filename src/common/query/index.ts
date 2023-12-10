@@ -13,3 +13,5 @@ export * from './role-policy.query';
 
 export * from './business-category.query';
 export * from './industry-category.query';
+export * from './task-main-category.query';
+export * from './task-sub-category.query';

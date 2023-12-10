@@ -3,19 +3,24 @@ import { DataSource } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 
 import {
+  TaskCategoryListQueryDto,
   TaskCategoryParamDto,
   TaskMainCategoryCreateBodyDto,
+  TaskMainCategoryDto,
   TaskMainCategoryUpdateBodyDto,
   TaskSubCategoryCreateBodyDto,
   TaskSubCategoryUpdateBodyDto,
 } from './dto';
+import { ListDto, TaskMainCategoryQuery } from '@server/common';
 
 @Injectable()
 export class TaskCategoryService {
   constructor(private readonly dataSource: DataSource) {}
 
-  async getTaskMainCategories() {
-    return;
+  async getTaskMainCategories(query: TaskCategoryListQueryDto) {
+    const taskMainCategoryQuery = new TaskMainCategoryQuery(this.dataSource);
+
+    return new ListDto(query, await taskMainCategoryQuery.findTaskMainCategoryList(query), TaskMainCategoryDto);
   }
 
   async getTaskMainCategory(param: TaskCategoryParamDto) {

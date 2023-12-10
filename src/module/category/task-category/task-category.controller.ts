@@ -1,7 +1,8 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 
 import { TaskCategoryService } from './task-category.service';
 import {
+  TaskCategoryListQueryDto,
   TaskCategoryParamDto,
   TaskMainCategoryCreateBodyDto,
   TaskMainCategoryUpdateBodyDto,
@@ -14,8 +15,8 @@ export class TaskCategoryController {
   constructor(private taskCategoryService: TaskCategoryService) {}
 
   @Get('main')
-  async getTaskMainCategories() {
-    return this.taskCategoryService.getTaskMainCategories();
+  async getTaskMainCategories(@Query() query: TaskCategoryListQueryDto) {
+    return this.taskCategoryService.getTaskMainCategories(query);
   }
 
   @Get('main/:id(\\d+)')
