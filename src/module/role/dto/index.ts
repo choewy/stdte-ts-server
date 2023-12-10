@@ -1,4 +1,5 @@
 export * from './role.dto';
+export * from './role-user.dto';
 export * from './role.param.dto';
 export * from './role-list.query.dto';
 export * from './role-user.body.dto';
