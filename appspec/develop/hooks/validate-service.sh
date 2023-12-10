@@ -39,7 +39,7 @@ if [ $bootstrap == true ]; then
   container="$PREFIX-$ORIGIN"
 
   if [ "$(sudo docker container inspect --format '{{.Name}}' $container 2>&1)" == "/$container" ]; then
-    sleep 20s
+    sleep 30s
     
     container_id=`sudo docker stop $container`
     echo "stop origin container $container_id"
