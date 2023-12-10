@@ -7,8 +7,9 @@
     "dist",
     "**/*spec.ts",
     "sub_modules/entity/src/main.ts",
+    "sub_modules/entity/src/test.ts",
     "sub_modules/entity/src/config.ts",
     "sub_modules/entity/src/migration.ts",
-    "sub_modules/entity/migrations"
+    "sub_modules/entity/migrations/**"
   ]
 }
