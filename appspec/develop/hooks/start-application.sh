@@ -7,7 +7,8 @@ image="$(sudo docker images --filter=reference=*/$IMAGE_NAME --format "{{.ID}}")
 prefix=stdte-ts-develop
 ports=(3000 3001)
 
-origin_port=-1
+origin_port=
+replace_port=
 
 for (( i = 0; i < ${#ports[@]}; i++ )); do
   port=${ports[$i]}
@@ -15,12 +16,11 @@ for (( i = 0; i < ${#ports[@]}; i++ )); do
 
   if [ "$(sudo docker container inspect --format '{{.Name}}' $name 2>&1)" == "/$name" ]; then
     origin_port=$port
-    ports=${ports[@]/$origin_port}
-    break
+  else
+    replace_port=$port
   fi
 done
 
-replace_port=${ports[0]}
 replace_name="$prefix-$replace_port"
 
 sudo docker run \
@@ -39,6 +39,8 @@ while [ $loop -le 10 ]
 do
   ((loop++))
 
+  sleep 5s
+
   status="$(curl --silent --head -X GET http://localhost:$replace_port | awk '/^HTTP/{print $2}')"
 
   if [ "$status" == "200" ]; then
@@ -46,8 +48,6 @@ do
     bootstrap=true
     break
   fi
-
-  sleep 5s
 done
 
 if [ $bootstrap == false ]; then
@@ -63,8 +63,8 @@ fi
 
 sudo docker image prune -a --force
 
-if [ -d "home/ubuntu/develop" ]; then
-  rm -rf home/ubuntu/develop
+if [ -d "/home/ubuntu/develop" ]; then
+  rm -rf /home/ubuntu/develop
 fi
 
 exit 0
