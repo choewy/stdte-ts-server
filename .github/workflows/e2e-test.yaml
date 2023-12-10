@@ -28,7 +28,8 @@ jobs:
       - name: Install dependencies
         run: |
           npm ci
-          npm run submodule
+          git submodule update --init
+          git submodule foreach git pull origin ${{ github.ref_name }}
 
       - name: Docker run database
         run: |
