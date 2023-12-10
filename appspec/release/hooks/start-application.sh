@@ -5,7 +5,7 @@ source /home/ubuntu/release/profile
 prefix=stdte-ts-product
 image="$(sudo docker images --filter=reference=*/$IMAGE_NAME --format "{{.ID}}")"
 
-ports=(3001, 3002)
+ports=(4000 4001)
 
 for (( i = 0; i < ${#ports[@]}; i++ )); do
   process=$(($i + 1))
