@@ -29,7 +29,7 @@ jobs:
         run: |
           npm ci
           git submodule update --init
-          git submodule foreach git pull origin ${{ github.ref_name }}
+          git submodule foreach git pull origin ${{ github.head_ref }}
 
       - name: Docker run database
         run: |
