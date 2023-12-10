@@ -18,6 +18,12 @@ export class RoleController {
     return this.roleService.getRoles(query);
   }
 
+  @Get(':id(\\d+)')
+  @SetRolePolicy({ roleAndPolicy: RolePolicyLevel.Read })
+  async getRole(@Param() param: RoleParamDto) {
+    return this.roleService.getRole(param);
+  }
+
   @Post()
   @SetRolePolicy({ roleAndPolicy: RolePolicyLevel.Write })
   async createRole(@Body() body: RoleCreateBodyDto) {

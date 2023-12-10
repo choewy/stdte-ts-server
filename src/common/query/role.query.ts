@@ -26,6 +26,13 @@ export class RoleQuery extends EntityQuery<Role> {
     return this.repository.find({ where: { onInit: true } });
   }
 
+  async findRoleById(id: number) {
+    return this.repository.findOne({
+      relations: { policy: true, users: true },
+      where: { id },
+    });
+  }
+
   async findRoleList(args: RoleQueryFindListArgs) {
     return this.repository
       .createQueryBuilder('role')
@@ -41,8 +48,8 @@ export class RoleQuery extends EntityQuery<Role> {
     await this.repository.update(id, entity);
   }
 
-  async createRole(name: string) {
-    return this.repository.save(this.repository.create({ name }));
+  async insertRole(name: string) {
+    return this.repository.insert(this.repository.create({ name }));
   }
 
   async upsertRoles(entities: DeepPartial<Role>[]) {
