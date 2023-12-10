@@ -1,4 +1,3 @@
-import { User } from '@entity';
 import { AppendOrRemove } from './enums';
 
 export type FindListArgs = {
@@ -13,3 +12,6 @@ export type AppendOrRemoveArgs = {
 
 export type RoleQueryFindListArgs = FindListArgs;
 export type UserQueryFindListArgs = FindListArgs;
+export type BusinessCategoryQueryFindListArgs = FindListArgs;
+export type IndustryCategoryQueryFindListArgs = FindListArgs;
+export type TaskMainCategoryQueryFindListArgs = FindListArgs;

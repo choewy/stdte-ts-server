@@ -47,10 +47,12 @@ export class InvalidCredentialsException extends UnauthorizedException {
 
 export class AlreadyExistUserEmailException extends ConflictException {}
 export class AlreadyExistRoleException extends ConflictException {}
-export class AlreadyExistProjectCodeException extends ConflictException {}
+export class AlreadyExistBusinessCategoryException extends ConflictException {}
+export class AlreadyExistIndustryCategoryException extends ConflictException {}
+export class AlreadyExistTaskMainCategoryException extends ConflictException {}
 export class InvalidPasswordException extends BadRequestException {}
 export class NotFoundUserException extends NotFoundException {}
 export class NotFoundRoleException extends NotFoundException {}
-export class NotFoundProjectException extends NotFoundException {}
-export class NotFoundProjectTypeException extends NotFoundException {}
-export class NotFoundProjectOptionException extends NotFoundException {}
+export class NotFoundBusinessCategoryException extends NotFoundException {}
+export class NotFoundIndustryCategoryException extends NotFoundException {}
+export class NotFoundTaskMainCategoryException extends NotFoundException {}
