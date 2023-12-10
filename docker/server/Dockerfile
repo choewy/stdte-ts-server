@@ -18,4 +18,4 @@ RUN echo "CONTAINER_PROCESS = $CONTAINER_PROCESS" >> /var/server/.env
 RUN npm ci --omit=dev
 RUN npm i -g forever
 
-CMD ["forever start", "dist/src/main.js"]
+CMD ["forever", "start", "dist/src/main.js"]
