@@ -24,7 +24,7 @@ if [ $bootstrap == true ]; then
 
   container="$PREFIX-$ORIGIN"
 
-  if [ "$(sudo docker container inspect --format '{{.Name}}' $container 2>&1)" == "/${$container}" ]; then
+  if [ "$(sudo docker container inspect --format '{{.Name}}' $container 2>&1)" == "/$container" ]; then
     sudo docker rm -f $container
   fi
 
@@ -38,7 +38,7 @@ if [ $bootstrap == false ]; then
 
   container="$PREFIX-$REPLACE"
 
-  if [ "$(sudo docker container inspect --format '{{.Name}}' $container 2>&1)" == "/${$container}" ]; then
+  if [ "$(sudo docker container inspect --format '{{.Name}}' $container 2>&1)" == "/$container" ]; then
     sudo docker rm -f $container
   fi
 fi
