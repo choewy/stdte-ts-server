@@ -56,3 +56,4 @@ export class NotFoundRoleException extends NotFoundException {}
 export class NotFoundBusinessCategoryException extends NotFoundException {}
 export class NotFoundIndustryCategoryException extends NotFoundException {}
 export class NotFoundTaskMainCategoryException extends NotFoundException {}
+export class NotFoundCustomerException extends NotFoundException {}
