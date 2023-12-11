@@ -1,6 +1,6 @@
 import { DataSource, EntityManager } from 'typeorm';
 
-import { Role, RolePolicy, User, Credentials, ROLE_POLICY_KEY } from '@entity';
+import { Role, RolePolicy, User, Credentials, ROLE_POLICY_KEY, TimeLog } from '@entity';
 import {
   RolePolicyQuery,
   RoleQuery,
@@ -12,6 +12,7 @@ import {
   BusinessCategoryQuery,
   TaskMainCategoryQuery,
   TaskSubCategoryQuery,
+  TimeLogQuery,
 } from '@server/common';
 
 import { InitializeMap } from './initialize.map';
@@ -136,6 +137,27 @@ export class Initializer {
     }
 
     await query.upsertCredentials(entities);
+  }
+
+  async initTimeLog(initializeMap: InitializeMap, connection: DataSource | EntityManager) {
+    const query = new TimeLogQuery(connection);
+    const rows = await query.findTimeLogsInUsers([1, 2]);
+
+    const entities: TimeLog[] = [];
+
+    for (const entity of initializeMap.timeLog) {
+      const row = rows.find((row) => row.user.id === entity.user.id);
+
+      if (row == null) {
+        entities.push(entity);
+      }
+    }
+
+    if (entities.length === 0) {
+      return;
+    }
+
+    await query.insertTimeLogs(entities);
   }
 
   async initBusinessCategory(initializeMap: InitializeMap, connection: DataSource | EntityManager) {

@@ -14,6 +14,17 @@ export class CustomerQuery extends EntityQuery<Customer> {
     return this.repository.exist({ where: { id } });
   }
 
+  async findCustomerOnlyId(entity?: Customer | null) {
+    if (entity == null) {
+      return entity;
+    }
+
+    return this.repository.findOne({
+      select: { id: true },
+      where: { id: entity.id },
+    });
+  }
+
   async findCustomerList(args: CustomerQueryFindListArgs) {
     return this.repository.findAndCount({
       relations: { projects: true },

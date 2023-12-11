@@ -1,5 +1,5 @@
 import { BusinessCategory } from '@entity';
-import { toISO } from '@server/common';
+import { toISOString } from '@server/common';
 
 export class BusinessCategoryDto {
   id: number;
@@ -12,7 +12,7 @@ export class BusinessCategoryDto {
     this.id = businessCategory.id;
     this.name = businessCategory.name;
     this.description = businessCategory.description ?? '';
-    this.createdAt = toISO(businessCategory.createdAt);
-    this.updatedAt = toISO(businessCategory.updatedAt);
+    this.createdAt = toISOString(businessCategory.createdAt);
+    this.updatedAt = toISOString(businessCategory.updatedAt);
   }
 }

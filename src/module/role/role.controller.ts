@@ -25,7 +25,7 @@ export class RoleController {
   }
 
   @Post()
-  @SetRolePolicy({ roleAndPolicy: RolePolicyLevel.Write })
+  @SetRolePolicy({ roleAndPolicy: RolePolicyLevel.Create })
   async createRole(@Body() body: RoleCreateBodyDto) {
     return this.roleService.createRole(body);
   }

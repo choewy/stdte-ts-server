@@ -4,9 +4,7 @@ import { IsDate, IsEnum, IsNotIn, IsOptional, IsString } from 'class-validator';
 import { GenderCode, Degree } from '@entity';
 import { toDate, toEmptyNull, toTrim } from '@server/common';
 
-import { ProfileProperty } from './types';
-
-export class ProfileUpdateBodyDto implements Partial<Omit<ProfileProperty, 'status'>> {
+export class UserUpdateBodyDto {
   @IsOptional()
   @IsNotIn([null])
   @IsString()
@@ -32,7 +30,7 @@ export class ProfileUpdateBodyDto implements Partial<Omit<ProfileProperty, 'stat
   @IsString()
   @Transform(({ value }) => toTrim(value))
   @Transform(({ value }) => toEmptyNull(value))
-  scienceCode?: string | null;
+  scienceNumber?: string | null;
 
   @IsOptional()
   @IsEnum(Degree)

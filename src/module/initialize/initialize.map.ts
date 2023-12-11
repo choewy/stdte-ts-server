@@ -15,6 +15,7 @@ import {
   IndustryCategory,
   TaskMainCategory,
   TaskSubCategory,
+  TimeLog,
 } from '@entity';
 import { CredentialsConfig } from '@server/config';
 
@@ -111,6 +112,12 @@ export class InitializeMap {
         status: CredentialsStatus.Active,
       }),
     ];
+  }
+
+  get timeLog() {
+    const repository = this.connection.getRepository(TimeLog);
+
+    return [repository.create({ id: 1, user: { id: 1 } }), repository.create({ id: 2, user: { id: 2 } })];
   }
 
   get businessCategory() {

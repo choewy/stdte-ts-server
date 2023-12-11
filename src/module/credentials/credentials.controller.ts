@@ -27,18 +27,18 @@ export class CredentialsController {
   }
 
   @Post('signup')
-  async signup(@Res() res: Response, @Body() body: SignupBodyDto) {
-    return this.credentialsService.signup(res, body);
+  async signup(@Req() req: Request, @Res() res: Response, @Body() body: SignupBodyDto) {
+    return this.credentialsService.signup(req, res, body);
   }
 
   @Post('signin')
-  async signin(@Res() res: Response, @Body() body: SigninBodyDto) {
-    return this.credentialsService.signin(res, body);
+  async signin(@Req() req: Request, @Res() res: Response, @Body() body: SigninBodyDto) {
+    return this.credentialsService.signin(req, res, body);
   }
 
   @Post('signout')
-  async signout(@Res() res: Response) {
-    return this.credentialsService.signout(res);
+  async signout(@Req() req: Request, @Res() res: Response) {
+    return this.credentialsService.signout(req, res);
   }
 
   @Patch('password')
@@ -48,15 +48,15 @@ export class CredentialsController {
   }
 
   @Patch(':id(\\d+)/status')
-  @SetRolePolicy({ credentials: RolePolicyLevel.Update })
   @UseGuards(JwtGuard, CredentialsGuard, RoleGuard)
+  @SetRolePolicy({ credentials: RolePolicyLevel.Update })
   async updateCredentialsStatus(@Param() param: CredentialsParamDto, @Body() body: CredentialsUpdateStatusBodyDto) {
     return this.credentialsService.updateCredentialsStatus(param.id, body);
   }
 
   @Patch(':id(\\d+)/password')
-  @SetRolePolicy({ credentials: RolePolicyLevel.Update })
   @UseGuards(JwtGuard, CredentialsGuard, RoleGuard)
+  @SetRolePolicy({ credentials: RolePolicyLevel.Update })
   async updateCredentialsPassword(@Param() param: CredentialsParamDto, @Body() body: CredentialsUpdatePasswordBodyDto) {
     return this.credentialsService.updateCredentialsPassword(param.id, body);
   }

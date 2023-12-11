@@ -34,14 +34,12 @@ export class RoleQuery extends EntityQuery<Role> {
   }
 
   async findRoleList(args: RoleQueryFindListArgs) {
-    return this.repository
-      .createQueryBuilder('role')
-      .innerJoinAndMapOne('role.policy', 'role.policy', 'policy')
-      .leftJoinAndMapMany('role.users', 'role.users', 'users')
-      .where('role.onInit = false')
-      .skip(args.skip)
-      .take(args.take)
-      .getManyAndCount();
+    return this.repository.findAndCount({
+      relations: { policy: true, users: true },
+      where: { onInit: false },
+      skip: args.skip,
+      take: args.take,
+    });
   }
 
   async updateRole(id: number, entity: DeepPartial<Role>) {

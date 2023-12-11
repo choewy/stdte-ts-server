@@ -14,9 +14,12 @@ import {
   CredentialsModule,
   CustomerModule,
   InitializeModule,
+  ProjectModule,
   RoleModule,
   SettingModule,
+  UserModule,
 } from './module';
+import { TimeModule } from './module/time';
 
 @Module({
   imports: [
@@ -29,6 +32,9 @@ import {
     RoleModule,
     CategoryModule,
     CustomerModule,
+    ProjectModule,
+    UserModule,
+    TimeModule,
   ],
   controllers: [AppController],
   providers: [RequestMiddleware, HttpExceptionFilter, LogInterceptor, TransformInterceptor],
