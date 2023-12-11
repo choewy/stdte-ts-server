@@ -1,6 +1,7 @@
 import { DataSource } from 'typeorm';
 
 import { Injectable } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 import { TimeMemoIdProperty, decodeEntityId, encodeEntityId } from '@entity';
 import {
@@ -9,14 +10,18 @@ import {
   ListDto,
   NotFoundTimeMemoException,
   TimeMemoQuery,
-  TimeLogQuery,
+  TimeLogEvent,
+  TimeMemoEvent,
 } from '@server/common';
 
 import { TimeMemoDto, TimeMemoListBodyDto, TimeMemoParamDto, TimeMemoUpdateBodyDto } from './dto';
 
 @Injectable()
 export class TimeMemoService {
-  constructor(private readonly dataSource: DataSource) {}
+  constructor(
+    private readonly dataSource: DataSource,
+    private readonly eventEmitter: EventEmitter2,
+  ) {}
 
   async getTimeMemos(body: TimeMemoListBodyDto) {
     const timeMemoQuery = new TimeMemoQuery(this.dataSource);
@@ -50,10 +55,8 @@ export class TimeMemoService {
       throw new NotFoundTimeMemoException();
     }
 
-    const timeLogQuery = new TimeLogQuery(this.dataSource);
-    await timeLogQuery.upsertTimeLog(userId);
-
-    return new TimeMemoDto(timeMemo);
+    this.eventEmitter.emit(TimeMemoEvent.Update, userId, new TimeMemoDto(timeMemo));
+    this.eventEmitter.emit(TimeLogEvent.Update, userId);
   }
 
   async deleteTimeMemo(userId: number, param: TimeMemoParamDto) {
@@ -66,7 +69,7 @@ export class TimeMemoService {
     const timeMemoQuery = new TimeMemoQuery(this.dataSource);
     await timeMemoQuery.deleteTimeMemo(param.id);
 
-    const timeLogQuery = new TimeLogQuery(this.dataSource);
-    await timeLogQuery.upsertTimeLog(userId);
+    this.eventEmitter.emit(TimeMemoEvent.Delete, userId, timeMemo);
+    this.eventEmitter.emit(TimeLogEvent.Update, userId);
   }
 }
