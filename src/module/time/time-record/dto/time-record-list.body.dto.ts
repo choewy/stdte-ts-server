@@ -14,10 +14,10 @@ export class TimeRecordListBodyDto {
   @IsNotEmpty()
   @IsDateString()
   @Transform(({ value }) => toSQLDate(value))
-  s = DateTime.local().startOf('week').toSQLDate() as string;
+  s = DateTime.local().startOf('week').toSQLDate();
 
   @IsNotEmpty()
   @IsDateString()
   @Transform(({ value }) => toSQLDate(value))
-  e = DateTime.local().endOf('week').toSQLDate() as string;
+  e = DateTime.local().endOf('week').toSQLDate();
 }
