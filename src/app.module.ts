@@ -41,7 +41,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
   controllers: [AppController],
   providers: [RequestMiddleware, HttpExceptionFilter, LogInterceptor, TransformInterceptor],
 })
-export class AppModule implements BeforeApplicationShutdown, NestModule {
+export class AppModule implements NestModule, BeforeApplicationShutdown {
   constructor(private readonly dataSource: DataSource) {}
 
   configure(consumer: MiddlewareConsumer) {

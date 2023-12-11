@@ -14,6 +14,9 @@ export class HttpLogDto {
     return JSON.stringify(
       {
         id: this.request.id,
+        ip: this.request.ip,
+        ips: this.request.ips.length === 0 ? undefined : this.request.ips,
+        'x-forwarded-for': this.request.headers['x-forwarded-for'],
         params: this.request.params,
         query: this.request.query,
         body: this.request.body,
@@ -26,20 +29,12 @@ export class HttpLogDto {
   }
 
   getExceptionMessage(exception: HttpException) {
-    return [
-      this.request.ip,
-      `${this.request.method}(${this.request.path})`,
-      `${exception.name}(${exception.getStatus()})`,
-      this.requestInfo(),
-    ].join(' - ');
+    const name = exception.name;
+    const status = exception.getStatus();
+    return [`${this.request.method}(${this.request.path})`, `${name}(${status})`, this.requestInfo()].join(' - ');
   }
 
   getNextMessage() {
-    return [
-      this.request.ip,
-      `${this.request.method}(${this.request.path})`,
-      this.response.statusCode,
-      this.requestInfo(),
-    ].join(' - ');
+    return [`${this.request.method}(${this.request.path})`, this.response.statusCode, this.requestInfo()].join(' - ');
   }
 }
