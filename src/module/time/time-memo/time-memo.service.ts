@@ -9,7 +9,7 @@ import {
   ListDto,
   NotFoundTimeMemoException,
   TimeMemoQuery,
-  TimeRecordLogQuery,
+  TimeLogQuery,
 } from '@server/common';
 
 import { TimeMemoDto, TimeMemoListBodyDto, TimeMemoParamDto, TimeMemoUpdateBodyDto } from './dto';
@@ -50,8 +50,8 @@ export class TimeMemoService {
       throw new NotFoundTimeMemoException();
     }
 
-    const timeRecordLogQuery = new TimeRecordLogQuery(this.dataSource);
-    await timeRecordLogQuery.upsertTimeRecordLog(userId);
+    const timeLogQuery = new TimeLogQuery(this.dataSource);
+    await timeLogQuery.upsertTimeLog(userId);
 
     return new TimeMemoDto(timeMemo);
   }
@@ -66,7 +66,7 @@ export class TimeMemoService {
     const timeMemoQuery = new TimeMemoQuery(this.dataSource);
     await timeMemoQuery.deleteTimeMemo(param.id);
 
-    const timeRecordLogQuery = new TimeRecordLogQuery(this.dataSource);
-    await timeRecordLogQuery.upsertTimeRecordLog(userId);
+    const timeLogQuery = new TimeLogQuery(this.dataSource);
+    await timeLogQuery.upsertTimeLog(userId);
   }
 }

@@ -1,15 +1,15 @@
 import { DataSource, DeepPartial, EntityManager, In } from 'typeorm';
 
-import { CredentialsStatus, TimeRecordLog, UserStatus } from '@entity';
+import { CredentialsStatus, TimeLog, UserStatus } from '@entity';
 
 import { EntityQuery } from '../class';
 
-export class TimeRecordLogQuery extends EntityQuery<TimeRecordLog> {
+export class TimeLogQuery extends EntityQuery<TimeLog> {
   constructor(connection: DataSource | EntityManager) {
-    super(connection, TimeRecordLog);
+    super(connection, TimeLog);
   }
 
-  async findTImeRecordList() {
+  async findTimeLogList() {
     return this.repository.findAndCount({
       relations: { user: { credentials: true } },
       select: {
@@ -32,7 +32,7 @@ export class TimeRecordLogQuery extends EntityQuery<TimeRecordLog> {
     });
   }
 
-  async findTimeRecordsInUsers(userIds: number[]) {
+  async findTimeLogsInUsers(userIds: number[]) {
     return this.repository.find({
       relations: { user: true },
       select: { user: { id: true } },
@@ -40,15 +40,15 @@ export class TimeRecordLogQuery extends EntityQuery<TimeRecordLog> {
     });
   }
 
-  async insertTimeRecordLog(userId: number) {
+  async insertTimeLog(userId: number) {
     return this.repository.insert(this.repository.create({ id: userId, user: { id: userId } }));
   }
 
-  async insertTimeRecordLogs(entities: DeepPartial<TimeRecordLog>[]) {
+  async insertTimeLogs(entities: DeepPartial<TimeLog>[]) {
     return this.repository.insert(this.repository.create(entities));
   }
 
-  async upsertTimeRecordLog(id: number) {
+  async upsertTimeLog(id: number) {
     return this.repository.upsert({ id, lastUpdatedAt: new Date() }, { conflictPaths: { id: true } });
   }
 }

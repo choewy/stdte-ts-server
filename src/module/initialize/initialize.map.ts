@@ -15,7 +15,7 @@ import {
   IndustryCategory,
   TaskMainCategory,
   TaskSubCategory,
-  TimeRecordLog,
+  TimeLog,
 } from '@entity';
 import { CredentialsConfig } from '@server/config';
 
@@ -114,8 +114,8 @@ export class InitializeMap {
     ];
   }
 
-  get timeRecordLog() {
-    const repository = this.connection.getRepository(TimeRecordLog);
+  get timeLog() {
+    const repository = this.connection.getRepository(TimeLog);
 
     return [repository.create({ id: 1, user: { id: 1 } }), repository.create({ id: 2, user: { id: 2 } })];
   }

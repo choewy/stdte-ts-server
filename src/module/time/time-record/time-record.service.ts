@@ -9,7 +9,7 @@ import {
   CannotUpdateTimeRecordException,
   NotFoundTimeRecordException,
   OverTimeRecordSumException,
-  TimeRecordLogQuery,
+  TimeLogQuery,
   TimeRecordQuery,
 } from '@server/common';
 
@@ -83,8 +83,8 @@ export class TimeRecordService {
       throw new NotFoundTimeRecordException();
     }
 
-    const timeRecordLogQuery = new TimeRecordLogQuery(this.dataSource);
-    await timeRecordLogQuery.upsertTimeRecordLog(userId);
+    const timeLogQuery = new TimeLogQuery(this.dataSource);
+    await timeLogQuery.upsertTimeLog(userId);
 
     const timeRecordSum = await timeRecordQuery.sumTimeRecordsByDate(userId, body.date);
     return new TimeRecordRowDto(timeRecordSum.sum, timeRecord);
@@ -100,7 +100,7 @@ export class TimeRecordService {
     const timeRecordQuery = new TimeRecordQuery(this.dataSource);
     await timeRecordQuery.deleteTimeRecord(param.id);
 
-    const timeRecordLogQuery = new TimeRecordLogQuery(this.dataSource);
-    await timeRecordLogQuery.upsertTimeRecordLog(userId);
+    const timeLogQuery = new TimeLogQuery(this.dataSource);
+    await timeLogQuery.upsertTimeLog(userId);
   }
 }

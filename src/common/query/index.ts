@@ -22,5 +22,5 @@ export * from './project-record.query';
 export * from './project-users.query';
 
 export * from './time-record.query';
-export * from './time-record-log.query';
+export * from './time-log.query';
 export * from './time-memo.query';
