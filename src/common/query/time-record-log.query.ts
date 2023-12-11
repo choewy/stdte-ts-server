@@ -17,12 +17,14 @@ export class TimeRecordLogQuery extends EntityQuery<TimeRecordLog> {
         user: {
           id: true,
           name: true,
+          onInit: true,
           status: true,
           credentials: { status: true },
         },
       },
       where: {
         user: {
+          onInit: false,
           status: UserStatus.Active,
           credentials: { status: CredentialsStatus.Active },
         },

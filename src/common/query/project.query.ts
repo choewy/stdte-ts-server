@@ -1,4 +1,4 @@
-import { DataSource, DeepPartial, EntityManager, Not } from 'typeorm';
+import { DataSource, DeepPartial, EntityManager, IsNull, Not } from 'typeorm';
 
 import { Project } from '@entity';
 
@@ -60,6 +60,30 @@ export class ProjectQuery extends EntityQuery<Project> {
       },
       skip: args.skip,
       take: args.take,
+    });
+  }
+
+  async findProjectListByCanExpose() {
+    return this.repository.findAndCount({
+      relations: { taskMainCategory: { children: true } },
+      select: {
+        id: true,
+        name: true,
+        code: true,
+        canExpose: true,
+        taskMainCategory: {
+          id: true,
+          name: true,
+          children: { id: true, name: true },
+        },
+      },
+      where: {
+        taskMainCategory: {
+          id: Not(IsNull()),
+          children: { id: Not(IsNull()) },
+        },
+        canExpose: true,
+      },
     });
   }
 
