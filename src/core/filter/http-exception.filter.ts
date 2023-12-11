@@ -15,21 +15,29 @@ export class HttpExceptionFilter implements ExceptionFilter {
 
     const log = new HttpLogDto(request, response);
 
+    let error: Error | null = null;
     let exception: HttpException;
 
     if (e instanceof HttpException) {
       exception = e;
-      this.logger.warn(log.getExceptionMessage(e));
     } else {
-      exception = new InternalServerException(e);
-      this.logger.error(log.getExceptionMessage(exception), {
-        name: e.name,
-        message: e.message,
-        cause: e.cause,
-      });
+      error = e;
+      exception = new InternalServerException(error);
     }
 
-    response.status(exception.getStatus());
-    response.send(new ResponseDto(request, new ExceptionDto(exception)));
+    const dto = new ResponseDto(request, new ExceptionDto(exception));
+
+    this.logger[error === null ? 'warn' : 'error'](
+      log.getExceptionMessage(exception),
+      error
+        ? {
+            name: error?.name,
+            message: error?.message,
+            cause: error?.cause,
+          }
+        : undefined,
+    );
+
+    response.status(exception.getStatus()).send(dto);
   }
 }
