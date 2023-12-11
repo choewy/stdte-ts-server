@@ -117,7 +117,7 @@ export class InitializeMap {
   get timeRecordLog() {
     const repository = this.connection.getRepository(TimeRecordLog);
 
-    return [repository.create({ user: { id: 1 } }), repository.create({ user: { id: 2 } })];
+    return [repository.create({ id: 1, user: { id: 1 } }), repository.create({ id: 2, user: { id: 2 } })];
   }
 
   get businessCategory() {
