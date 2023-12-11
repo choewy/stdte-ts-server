@@ -3,6 +3,7 @@ import { DataSource, DeepPartial, EntityManager, FindOptionsRelations, In } from
 import { User } from '@entity';
 
 import { EntityQuery } from '../class';
+import { UserQueryFindListArgs } from './types';
 
 export class UserQuery extends EntityQuery<User> {
   constructor(connection: DataSource | EntityManager) {
@@ -13,12 +14,12 @@ export class UserQuery extends EntityQuery<User> {
     return this.repository.exist({ where: { id } });
   }
 
-  async findUserList(skip?: number, take?: number) {
+  async findUserList(args: UserQueryFindListArgs) {
     return this.repository.findAndCount({
-      relations: { role: true },
+      relations: { credentials: true, role: { policy: true } },
       where: { onInit: false },
-      skip,
-      take,
+      skip: args.skip,
+      take: args.take,
     });
   }
 
@@ -44,9 +45,5 @@ export class UserQuery extends EntityQuery<User> {
 
   async upsertUsers(entities: DeepPartial<User>[]) {
     await this.repository.upsert(entities, { conflictPaths: { id: true } });
-  }
-
-  async insertUsersWithBulk(deepPartials: DeepPartial<User>[]) {
-    return this.repository.insert(deepPartials);
   }
 }
