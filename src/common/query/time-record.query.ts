@@ -10,7 +10,6 @@ export class TimeRecordQuery extends EntityQuery<TimeRecord> {
     super(connection, TimeRecord);
   }
 
-  /** @todo 프로젝트 노출 상태 체크 필요 */
   async sumTimeRecordsByDate(userId: number, date: string) {
     const result = await this.repository
       .createQueryBuilder('timeRecord')

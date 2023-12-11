@@ -68,6 +68,7 @@ export class NotFoundTaskSubCategoryException extends NotFoundException {}
 export class NotFoundCustomerException extends NotFoundException {}
 export class NotFoundProjectException extends NotFoundException {}
 export class NotFoundTimeRecordException extends NotFoundException {}
+export class NotFoundTimeMemoException extends NotFoundException {}
 export class CannotUpdateTimeRecordException extends ForbiddenException {}
 export class CannotDeleteTimeRecordException extends ForbiddenException {}
 export class CannotUpdateTimeMemoException extends ForbiddenException {}
