@@ -1,8 +1,11 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, UseGuards } from '@nestjs/common';
+
+import { CredentialsGuard, JwtGuard, RoleGuard } from '@server/core';
 
 import { TimeRecordLogService } from './time-record-log.service';
 
-@Controller('time/log')
+@UseGuards(JwtGuard, CredentialsGuard, RoleGuard)
+@Controller('record/log')
 export class TimeRecordLogController {
   constructor(private readonly timeRecordLogService: TimeRecordLogService) {}
 

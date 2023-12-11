@@ -12,6 +12,6 @@ export class TimeRecordLogService {
   async getTimeRecordLogs() {
     const timeRecordLogQuery = new TimeRecordLogQuery(this.dataSource);
 
-    return new ListDto({}, await timeRecordLogQuery.findTImeRecordList(), TimeRecordLogDto);
+    return new ListDto(undefined, await timeRecordLogQuery.findTImeRecordList(), TimeRecordLogDto);
   }
 }
