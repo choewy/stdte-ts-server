@@ -17,3 +17,8 @@ export type IndustryCategoryQueryFindListArgs = FindListArgs;
 export type TaskMainCategoryQueryFindListArgs = FindListArgs;
 export type CustomerQueryFindListArgs = FindListArgs;
 export type ProjectQueryFindListArgs = FindListArgs;
+export type TimeRecordQueryFindsArgs = {
+  userId: number;
+  s: Date;
+  e: Date;
+};

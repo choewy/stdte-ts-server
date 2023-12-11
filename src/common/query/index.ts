@@ -20,3 +20,5 @@ export * from './customer.query';
 export * from './project.query';
 export * from './project-record.query';
 export * from './project-users.query';
+
+export * from './time-record.query';
