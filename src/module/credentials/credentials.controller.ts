@@ -48,15 +48,15 @@ export class CredentialsController {
   }
 
   @Patch(':id(\\d+)/status')
-  @SetRolePolicy({ credentials: RolePolicyLevel.Update })
   @UseGuards(JwtGuard, CredentialsGuard, RoleGuard)
+  @SetRolePolicy({ credentials: RolePolicyLevel.Update })
   async updateCredentialsStatus(@Param() param: CredentialsParamDto, @Body() body: CredentialsUpdateStatusBodyDto) {
     return this.credentialsService.updateCredentialsStatus(param.id, body);
   }
 
   @Patch(':id(\\d+)/password')
-  @SetRolePolicy({ credentials: RolePolicyLevel.Update })
   @UseGuards(JwtGuard, CredentialsGuard, RoleGuard)
+  @SetRolePolicy({ credentials: RolePolicyLevel.Update })
   async updateCredentialsPassword(@Param() param: CredentialsParamDto, @Body() body: CredentialsUpdatePasswordBodyDto) {
     return this.credentialsService.updateCredentialsPassword(param.id, body);
   }

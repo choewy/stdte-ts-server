@@ -1,14 +1,15 @@
 import { DateTime } from 'luxon';
 
-import { SetMetadata } from '@nestjs/common';
+import { SetMetadata, Type } from '@nestjs/common';
 
 import { RolePolicyProperty } from '@entity';
 
 import { MetadataKey } from './enums';
+import { plainToInstance } from 'class-transformer';
 
 export const SetRolePolicy = (value: Partial<RolePolicyProperty>) => SetMetadata(MetadataKey.RolePolicy, value);
 
-export const toISO = (date?: string | DateTime | Date) => {
+export const toDateFormat = (format: string, date?: string | DateTime | Date | null) => {
   if (typeof date === 'string') {
     date = new Date(date);
   }
@@ -18,6 +19,30 @@ export const toISO = (date?: string | DateTime | Date) => {
   }
 
   if (date instanceof DateTime) {
+    if (date.isValid === false) {
+      return null;
+    }
+
+    return date.toFormat(format);
+  }
+
+  return null;
+};
+
+export const toISOString = (date?: string | DateTime | Date | null) => {
+  if (typeof date === 'string') {
+    date = new Date(date);
+  }
+
+  if (date instanceof Date) {
+    date = DateTime.fromJSDate(date);
+  }
+
+  if (date instanceof DateTime) {
+    if (date.isValid === false) {
+      return null;
+    }
+
     return date.toISO({ includeOffset: false });
   }
 
@@ -60,4 +85,28 @@ export const toDate = (date?: Date | string | null) => {
   } else {
     return null;
   }
+};
+
+export const toEntity = <E extends { id: number }>(Entity: Type<E>, value?: number | null) => {
+  if (value == null) {
+    return value;
+  }
+
+  return plainToInstance(Entity, { id: value });
+};
+
+export const toEntities = <E extends { id: number }>(Entity: Type<E>, value?: number[]) => {
+  if (value == null) {
+    return [];
+  }
+
+  return value.map((id) => plainToInstance(Entity, { id }));
+};
+
+export const toStr = (value?: number | null | string | undefined) => {
+  if (value == null) {
+    return value;
+  }
+
+  return String(value);
 };

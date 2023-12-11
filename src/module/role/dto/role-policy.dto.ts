@@ -1,5 +1,5 @@
 import { RolePolicy, RolePolicyLevel, RolePolicyProperty } from '@entity';
-import { toISO } from '@server/common';
+import { toISOString } from '@server/common';
 
 export class RolePolicyDto implements RolePolicyProperty {
   setting: RolePolicyLevel;
@@ -24,7 +24,7 @@ export class RolePolicyDto implements RolePolicyProperty {
     this.taskCategory = rolePolicy.taskCategory;
     this.industryCategory = rolePolicy.industryCategory;
     this.businessCategory = rolePolicy.businessCategory;
-    this.createdAt = toISO(rolePolicy.createdAt);
-    this.updatedAt = toISO(rolePolicy.updatedAt);
+    this.createdAt = toISOString(rolePolicy.createdAt);
+    this.updatedAt = toISOString(rolePolicy.updatedAt);
   }
 }

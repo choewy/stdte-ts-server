@@ -14,6 +14,7 @@ import {
   CredentialsModule,
   CustomerModule,
   InitializeModule,
+  ProjectModule,
   RoleModule,
   SettingModule,
 } from './module';
@@ -29,6 +30,7 @@ import {
     RoleModule,
     CategoryModule,
     CustomerModule,
+    ProjectModule,
   ],
   controllers: [AppController],
   providers: [RequestMiddleware, HttpExceptionFilter, LogInterceptor, TransformInterceptor],

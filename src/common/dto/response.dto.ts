@@ -2,7 +2,7 @@ import { DateTime } from 'luxon';
 import { Request } from '../types';
 
 import { ExceptionDto } from './exception.dto';
-import { toISO } from '../helpers';
+import { toISOString } from '../helpers';
 import { AppConfig } from '@server/config';
 
 export class ResponseDto<D> {
@@ -21,8 +21,8 @@ export class ResponseDto<D> {
     this.version = new AppConfig().getVersion();
     this.request = {
       id: request.id,
-      requestedAt: toISO(request.requesteAt),
-      responsedAt: toISO(request.responsedAt),
+      requestedAt: toISOString(request.requesteAt),
+      responsedAt: toISOString(request.responsedAt),
     };
 
     this.data = data ?? null;
