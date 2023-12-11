@@ -21,16 +21,12 @@ export class CredentialsQuery extends EntityQuery<Credentials> {
     return this.repository.find({ where: { onInit: true } });
   }
 
-  async findCredentialsByEmail(email: string) {
-    return this.repository.findOne({ where: { email } });
-  }
-
   async findCredentialsByUserId(userId: number) {
     return this.repository.findOne({ where: { user: { id: userId } } });
   }
 
-  async createCredentials(user: User, entity: DeepPartial<Credentials>) {
-    return this.repository.save(this.repository.create({ ...entity, id: user.id, user }));
+  async insertCredentials(user: User, entity: DeepPartial<Credentials>) {
+    return this.repository.insert(this.repository.create({ ...entity, id: user.id, user }));
   }
 
   async updateCredentialsStatus(id: number, status: CredentialsStatus) {

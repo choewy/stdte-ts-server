@@ -4,7 +4,7 @@ import { compareSync, hashSync } from 'bcrypt';
 
 import { Injectable } from '@nestjs/common';
 
-import { Credentials } from '@entity';
+import { User } from '@entity';
 import {
   UserQuery,
   CredentialsQuery,
@@ -31,14 +31,14 @@ import {
 export class CredentialsService {
   constructor(private readonly dataSource: DataSource) {}
 
-  private setTokensInCookie(req: Request, res: Response, credentials: Credentials) {
+  private setTokensInCookie(req: Request, res: Response, user: User) {
     const cookieService = new CookieService();
     const jwtService = new JwtService();
 
-    cookieService.set(res, CookieKey.Access, jwtService.issue(JwtTokenType.Access, { id: credentials.id }));
-    cookieService.set(res, CookieKey.Refresh, jwtService.issue(JwtTokenType.Access, { id: credentials.id }));
+    cookieService.set(res, CookieKey.Access, jwtService.issue(JwtTokenType.Access, { id: user.id }));
+    cookieService.set(res, CookieKey.Refresh, jwtService.issue(JwtTokenType.Access, { id: user.id }));
 
-    return res.send(new ResponseDto(req, new CredentialsDto(credentials)));
+    return res.send(new ResponseDto(req, new CredentialsDto(user)));
   }
 
   private removeTokensAtCookie(req: Request, res: Response) {
@@ -51,14 +51,17 @@ export class CredentialsService {
   }
 
   async getMyCredentials(userId: number) {
-    const credentialsQuery = new CredentialsQuery(this.dataSource);
-    const credentials = await credentialsQuery.findCredentialsByUserId(userId);
+    const userQuery = new UserQuery(this.dataSource);
+    const user = await userQuery.findUserById(userId, {
+      credentials: true,
+      role: { policy: true },
+    });
 
-    if (credentials == null) {
+    if (user == null) {
       throw new InvalidCredentialsException();
     }
 
-    return new CredentialsDto(credentials);
+    return new CredentialsDto(user);
   }
 
   async signup(req: Request, res: Response, body: SignupBodyDto) {
@@ -73,37 +76,38 @@ export class CredentialsService {
       throw new InvalidPasswordException();
     }
 
-    const credentials = await this.dataSource.transaction(async (em) => {
+    const user = await this.dataSource.transaction(async (em) => {
       const userQuery = new UserQuery(em);
-      const credentialsQuery = new CredentialsQuery(em);
-      const timeLogQuery = new TimeLogQuery(em);
-
       const user = await userQuery.createUser({ name: body.name });
-      await timeLogQuery.insertTimeLog(user.id);
-      const credentials = await credentialsQuery.createCredentials(user, {
+
+      const credentialsQuery = new CredentialsQuery(em);
+      await credentialsQuery.insertCredentials(user, {
         email: body.email,
         password: hashSync(body.password, 10),
       });
 
-      return credentials;
+      const timeLogQuery = new TimeLogQuery(em);
+      await timeLogQuery.insertTimeLog(user.id);
+
+      return user;
     });
 
-    return this.setTokensInCookie(req, res, credentials);
+    return this.setTokensInCookie(req, res, user);
   }
 
   async signin(req: Request, res: Response, body: SigninBodyDto) {
-    const credentialsQuery = new CredentialsQuery(this.dataSource);
-    const credentials = await credentialsQuery.findCredentialsByEmail(body.email);
+    const userQuery = new UserQuery(this.dataSource);
+    const user = await userQuery.findUserByEmail(body.email);
 
-    if (credentials == null) {
+    if (user == null) {
       throw new InvalidCredentialsException();
     }
 
-    if (compareSync(body.password, credentials.password) === false) {
+    if (compareSync(body.password, user.credentials.password) === false) {
       throw new InvalidCredentialsException();
     }
 
-    return this.setTokensInCookie(req, res, credentials);
+    return this.setTokensInCookie(req, res, user);
   }
 
   async signout(req: Request, res: Response) {
