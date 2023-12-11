@@ -7,3 +7,7 @@ export enum NodeEnv {
 export enum MetadataKey {
   RolePolicy = 'role-policy',
 }
+
+export enum DateTimeFormat {
+  YYYY_MM_DD = 'yyyy-MM-dd',
+}

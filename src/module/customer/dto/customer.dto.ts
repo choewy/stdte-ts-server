@@ -1,5 +1,5 @@
 import { Customer } from '@entity';
-import { toISO } from '@server/common';
+import { toISOString } from '@server/common';
 import { CustomerProjectDto } from './customer-project.dto';
 
 export class CustomerDto {
@@ -19,7 +19,7 @@ export class CustomerDto {
     this.alias = customer.alias;
     this.projects = customer.projects.map((project) => new CustomerProjectDto(project));
     this.description = customer.description ?? '';
-    this.createdAt = toISO(customer.createdAt);
-    this.updatedAt = toISO(customer.updatedAt);
+    this.createdAt = toISOString(customer.createdAt);
+    this.updatedAt = toISOString(customer.updatedAt);
   }
 }

@@ -1,6 +1,6 @@
 import { Credentials, CredentialsStatus } from '@entity';
 
-import { toISO } from '@server/common';
+import { toISOString } from '@server/common';
 
 export class CredentialsDto {
   email: string;
@@ -11,7 +11,7 @@ export class CredentialsDto {
   constructor(credentials: Credentials) {
     this.email = credentials.email;
     this.status = credentials.status;
-    this.createdAt = toISO(credentials.createdAt);
-    this.updatedAt = toISO(credentials.createdAt);
+    this.createdAt = toISOString(credentials.createdAt);
+    this.updatedAt = toISOString(credentials.createdAt);
   }
 }
