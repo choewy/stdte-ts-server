@@ -27,8 +27,6 @@ jobs:
       - name: Install dependencies
         run: |
           npm ci
-          git submodule update --init
-          git submodule foreach git pull origin master
 
       - name: Build application
         run: |

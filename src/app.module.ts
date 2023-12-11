@@ -17,6 +17,7 @@ import {
   ProjectModule,
   RoleModule,
   SettingModule,
+  UserModule,
 } from './module';
 
 @Module({
@@ -31,6 +32,7 @@ import {
     CategoryModule,
     CustomerModule,
     ProjectModule,
+    UserModule,
   ],
   controllers: [AppController],
   providers: [RequestMiddleware, HttpExceptionFilter, LogInterceptor, TransformInterceptor],
