@@ -19,6 +19,7 @@ import {
   SettingModule,
   UserModule,
 } from './module';
+import { TimeModule } from './module/time';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import {
     CustomerModule,
     ProjectModule,
     UserModule,
+    TimeModule,
   ],
   controllers: [AppController],
   providers: [RequestMiddleware, HttpExceptionFilter, LogInterceptor, TransformInterceptor],
