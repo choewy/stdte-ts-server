@@ -11,6 +11,7 @@ import {
   NotFoundTimeRecordException,
   OverTimeRecordSumException,
   TimeLogEvent,
+  TimeRecordEvent,
   TimeRecordQuery,
 } from '@server/common';
 
@@ -87,10 +88,13 @@ export class TimeRecordService {
       throw new NotFoundTimeRecordException();
     }
 
+    const timeRecordSum = await timeRecordQuery.sumTimeRecordsByDate(userId, body.date);
+    const timeRecordRow = new TimeRecordRowDto(timeRecordSum.sum, timeRecord);
+
+    this.eventEmitter.emit(TimeRecordEvent.Update, userId, timeRecordRow);
     this.eventEmitter.emit(TimeLogEvent.Update, userId);
 
-    const timeRecordSum = await timeRecordQuery.sumTimeRecordsByDate(userId, body.date);
-    return new TimeRecordRowDto(timeRecordSum.sum, timeRecord);
+    return timeRecordRow;
   }
 
   async deleteTimeRecord(userId: number, param: TimeRecordParamDto) {
@@ -103,6 +107,7 @@ export class TimeRecordService {
     const timeRecordQuery = new TimeRecordQuery(this.dataSource);
     await timeRecordQuery.deleteTimeRecord(param.id);
 
+    this.eventEmitter.emit(TimeRecordEvent.Update, userId, timeRecord);
     this.eventEmitter.emit(TimeLogEvent.Update, userId);
   }
 }

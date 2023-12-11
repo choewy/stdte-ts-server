@@ -6,16 +6,16 @@ import { Namespace, Socket } from 'socket.io';
 import { OnGatewayConnection, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { OnEvent } from '@nestjs/event-emitter';
 
-import { TimeMemoIdProperty } from '@entity';
-import { TimeMemoEvent } from '@server/common';
+import { TimeRecordIdProperty } from '@entity';
+import { TimeRecordEvent } from '@server/common';
 import { CookieKey, JwtService, JwtTokenType } from '@server/core';
 import { CorsConfig } from '@server/config';
 
-import { TimeMemoGatewayEvent } from './enums';
-import { TimeMemoDto } from './dto';
+import { TimeRecordGatewayEvent } from './enums';
+import { TimeRecordRowDto } from './dto';
 
 @WebSocketGateway({
-  namespace: 'timememo',
+  namespace: 'timerecord',
   transports: ['websocket'],
   allowRequest: (req: IncomingMessage, func) => {
     const pass = new CorsConfig().checkOrigin(req.headers.origin ?? '');
@@ -23,13 +23,13 @@ import { TimeMemoDto } from './dto';
     func(null, pass);
   },
 })
-export class TimeMemoGateway implements OnGatewayConnection {
+export class TimeRecordGateway implements OnGatewayConnection {
   @WebSocketServer()
   private readonly server: Namespace;
   private readonly jwtService = new JwtService();
 
   private generateRoom(id: number) {
-    return ['timememo', id].join(':');
+    return ['timerecord', id].join(':');
   }
 
   async handleConnection(client: Socket) {
@@ -51,13 +51,13 @@ export class TimeMemoGateway implements OnGatewayConnection {
     await client.join(this.generateRoom(id));
   }
 
-  @OnEvent(TimeMemoEvent.Update)
-  onUpdateTimeMemo(userId: number, payload: TimeMemoDto) {
-    this.server.in(this.generateRoom(userId)).emit(TimeMemoGatewayEvent.Update, payload);
+  @OnEvent(TimeRecordEvent.Update)
+  onUpdateTimeRecord(userId: number, payload: TimeRecordRowDto) {
+    this.server.in(this.generateRoom(userId)).emit(TimeRecordGatewayEvent.Update, payload);
   }
 
-  @OnEvent(TimeMemoEvent.Delete)
-  onDeleteTimeMemo(userId: number, payload: TimeMemoIdProperty) {
-    this.server.in(this.generateRoom(userId)).emit(TimeMemoGatewayEvent.Delete, payload);
+  @OnEvent(TimeRecordEvent.Delete)
+  onDeleteTimeRecord(userId: number, payload: TimeRecordIdProperty) {
+    this.server.in(this.generateRoom(userId)).emit(TimeRecordGatewayEvent.Delete, payload);
   }
 }

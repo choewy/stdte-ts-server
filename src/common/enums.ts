@@ -13,6 +13,11 @@ export enum DateTimeFormat {
   YYYY_MM_DD = 'yyyy-MM-dd',
 }
 
+export enum TimeRecordEvent {
+  Update = 'timerecord.update',
+  Delete = 'timerecord.delete',
+}
+
 export enum TimeMemoEvent {
   Update = 'timememo.update',
   Delete = 'timememo.delete',
