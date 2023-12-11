@@ -12,4 +12,8 @@ export class CorsConfig {
       credentials: true,
     };
   }
+
+  checkOrigin(origin: string) {
+    return new RegExp(this.ORIGIN ?? '').test(origin);
+  }
 }
