@@ -1,3 +1,4 @@
+export * from './http-log.dto';
 export * from './response.dto';
 export * from './exception.dto';
 export * from './error.dto';

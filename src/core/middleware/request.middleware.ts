@@ -12,7 +12,7 @@ export class RequestMiddleware implements NestMiddleware {
     req.id = v4();
     req.requesteAt = DateTime.local();
 
-    if (['/', '/health'].includes(req.path)) {
+    if (['/health'].includes(req.path)) {
       req.ignoreLog = true;
     }
 

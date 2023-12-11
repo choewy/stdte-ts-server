@@ -22,6 +22,7 @@ for (( i = 0; i < ${#ports[@]}; i++ )); do
     -e CONTAINER_PROCESS=$process \
     -p $port:3000 \
     -v /home/ubuntu/logs:/var/server/logs \
+    --network=net \
     --restart=always \
     $image
 done
