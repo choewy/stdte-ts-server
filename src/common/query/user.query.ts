@@ -14,13 +14,12 @@ export class UserQuery extends EntityQuery<User> {
   }
 
   async findUserList(skip?: number, take?: number) {
-    return this.repository
-      .createQueryBuilder('user')
-      .leftJoinAndMapOne('user.role', 'user.role', 'role')
-      .where('user.onInit = false')
-      .skip(skip)
-      .take(take)
-      .getManyAndCount();
+    return this.repository.findAndCount({
+      relations: { role: true },
+      where: { onInit: false },
+      skip,
+      take,
+    });
   }
 
   async findUsersByOnInit() {
