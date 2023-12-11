@@ -7,7 +7,7 @@ import { NestFactory } from '@nestjs/core';
 
 import { CorsConfig, SystemConfig } from './config';
 import { ErrorDto, ValidationException } from './common';
-import { HttpExceptionFilter, LogInterceptor, TransformInterceptor, WinstonLogger } from './core';
+import { HttpExceptionFilter, LogInterceptor, RedisIoAdapter, TransformInterceptor, WinstonLogger } from './core';
 
 import { AppModule } from './app.module';
 
@@ -16,6 +16,10 @@ async function bootstrap() {
 
   Settings.defaultZone = new SystemConfig().getTimezone();
 
+  const redisIoAdapter = new RedisIoAdapter(app);
+  await redisIoAdapter.connectToRedis();
+
+  app.useWebSocketAdapter(redisIoAdapter);
   app.use(cookieParser());
   app.use(json());
   app.use(urlencoded({ extended: true }));
