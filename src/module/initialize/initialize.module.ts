@@ -20,6 +20,7 @@ export class InitializeModule implements OnApplicationBootstrap {
       await initializer.initRolePolicies(initializeMap, em);
       await initializer.initUsers(initializeMap, em);
       await initializer.initCredentials(initializeMap, em);
+      await initializer.initTimeRecordLog(initializeMap, em);
       await initializer.initBusinessCategory(initializeMap, em);
       await initializer.initIndustryCategory(initializeMap, em);
       await initializer.initTaskMainCategory(initializeMap, em);

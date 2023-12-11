@@ -14,6 +14,7 @@ import {
   NotFoundUserException,
   ResponseDto,
   Request,
+  TimeRecordLogQuery,
 } from '@server/common';
 import { CookieKey, CookieService, JwtService, JwtTokenType } from '@server/core';
 
@@ -75,8 +76,10 @@ export class CredentialsService {
     const credentials = await this.dataSource.transaction(async (em) => {
       const userQuery = new UserQuery(em);
       const credentialsQuery = new CredentialsQuery(em);
+      const timeRecordLogQuery = new TimeRecordLogQuery(em);
 
       const user = await userQuery.createUser({ name: body.name });
+      await timeRecordLogQuery.insertTimeRecordLog(user.id);
       const credentials = await credentialsQuery.createCredentials(user, {
         email: body.email,
         password: hashSync(body.password, 10),
