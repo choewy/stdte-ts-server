@@ -2,6 +2,7 @@ import { DateTime } from 'luxon';
 import { DataSource } from 'typeorm';
 
 import { Injectable } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 import { TimeRecord, TimeRecordIdProperty, decodeEntityId, encodeEntityId } from '@entity';
 import {
@@ -9,7 +10,8 @@ import {
   CannotUpdateTimeRecordException,
   NotFoundTimeRecordException,
   OverTimeRecordSumException,
-  TimeLogQuery,
+  TimeLogEvent,
+  TimeRecordEvent,
   TimeRecordQuery,
 } from '@server/common';
 
@@ -24,7 +26,10 @@ import {
 
 @Injectable()
 export class TimeRecordService {
-  constructor(private readonly dataSource: DataSource) {}
+  constructor(
+    private readonly dataSource: DataSource,
+    private readonly eventEmitter: EventEmitter2,
+  ) {}
 
   private getTimeRecordsTimeTotal(s: string, e: string, timeRecords: TimeRecord[]) {
     const total: TimeRecordSumMap = {};
@@ -83,11 +88,13 @@ export class TimeRecordService {
       throw new NotFoundTimeRecordException();
     }
 
-    const timeLogQuery = new TimeLogQuery(this.dataSource);
-    await timeLogQuery.upsertTimeLog(userId);
-
     const timeRecordSum = await timeRecordQuery.sumTimeRecordsByDate(userId, body.date);
-    return new TimeRecordRowDto(timeRecordSum.sum, timeRecord);
+    const timeRecordRow = new TimeRecordRowDto(timeRecordSum.sum, timeRecord);
+
+    this.eventEmitter.emit(TimeRecordEvent.Update, userId, timeRecordRow);
+    this.eventEmitter.emit(TimeLogEvent.Update, userId);
+
+    return timeRecordRow;
   }
 
   async deleteTimeRecord(userId: number, param: TimeRecordParamDto) {
@@ -100,7 +107,7 @@ export class TimeRecordService {
     const timeRecordQuery = new TimeRecordQuery(this.dataSource);
     await timeRecordQuery.deleteTimeRecord(param.id);
 
-    const timeLogQuery = new TimeLogQuery(this.dataSource);
-    await timeLogQuery.upsertTimeLog(userId);
+    this.eventEmitter.emit(TimeRecordEvent.Update, userId, timeRecord);
+    this.eventEmitter.emit(TimeLogEvent.Update, userId);
   }
 }

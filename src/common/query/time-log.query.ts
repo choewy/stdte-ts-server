@@ -9,6 +9,23 @@ export class TimeLogQuery extends EntityQuery<TimeLog> {
     super(connection, TimeLog);
   }
 
+  async findTimeLogById(id: number) {
+    return this.repository.findOne({
+      relations: { user: { credentials: true } },
+      select: {
+        lastUpdatedAt: true,
+        user: {
+          id: true,
+          name: true,
+          onInit: true,
+          status: true,
+          credentials: { status: true },
+        },
+      },
+      where: { user: { id, onInit: false } },
+    });
+  }
+
   async findTimeLogList() {
     return this.repository.findAndCount({
       relations: { user: { credentials: true } },

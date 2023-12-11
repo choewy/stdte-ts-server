@@ -36,6 +36,12 @@ jobs:
           sh scripts/build.sh
           sh scripts/run.sh
 
+      - name: Docker run redis
+        run: |
+          cd docker/redis
+          sh scripts/build.sh
+          sh scripts/run.sh
+
       - name: Synchronize database
         run: |
           cd sub_modules/entity

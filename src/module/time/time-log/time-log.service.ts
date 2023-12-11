@@ -14,4 +14,17 @@ export class TimeLogService {
 
     return new ListDto(undefined, await timeLogQuery.findTimeLogList(), TimeLogDto);
   }
+
+  async updateLog(id: number) {
+    const timeLogQuery = new TimeLogQuery(this.dataSource);
+    await timeLogQuery.upsertTimeLog(id);
+
+    const timeLog = await timeLogQuery.findTimeLogById(id);
+
+    if (timeLog == null) {
+      return;
+    }
+
+    return new TimeLogDto(timeLog);
+  }
 }

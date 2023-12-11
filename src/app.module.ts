@@ -20,10 +20,12 @@ import {
   UserModule,
 } from './module';
 import { TimeModule } from './module/time';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
+    EventEmitterModule.forRoot(),
     TypeOrmModule.forRoot(new MySQLConfig().getTypeOrmModuleOptions()),
     InitializeModule,
     SettingModule,
