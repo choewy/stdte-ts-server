@@ -6,7 +6,7 @@ export class ErrorDto {
 
   constructor(e?: any, details?: any) {
     this.name = e?.name;
-    this.name = e?.mesage;
+    this.name = e?.message;
     this.cause = e?.cause;
     this.details = details;
   }
