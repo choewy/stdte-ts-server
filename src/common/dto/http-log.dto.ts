@@ -3,6 +3,7 @@ import { Response } from 'express';
 import { HttpException } from '@nestjs/common';
 
 import { Request } from '../types';
+import { toISOString } from '../helpers';
 
 export class HttpLogDto {
   constructor(
@@ -20,8 +21,8 @@ export class HttpLogDto {
         params: this.request.params,
         query: this.request.query,
         body: this.request.body,
-        requestedAt: this.request.requesteAt,
-        responsedAt: this.request.responsedAt,
+        requestedAt: toISOString(this.request.requesteAt),
+        responsedAt: toISOString(this.request.responsedAt),
       },
       null,
       2,
