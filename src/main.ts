@@ -46,14 +46,7 @@ async function bootstrap() {
   });
 
   process.on('unhandledRejection', async (reason, promise) => {
-    const error = new ErrorDto(
-      reason,
-      await promise.catch((e) => ({
-        name: e?.name,
-        message: e?.message,
-        cause: e?.cause,
-      })),
-    );
+    const error = new ErrorDto(reason, promise);
     logger.error('unhandledRejection', error, bootstrap.name);
   });
 
