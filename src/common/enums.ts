@@ -9,5 +9,6 @@ export enum MetadataKey {
 }
 
 export enum DateTimeFormat {
+  YYYYMMDD = 'yyyyMMdd',
   YYYY_MM_DD = 'yyyy-MM-dd',
 }

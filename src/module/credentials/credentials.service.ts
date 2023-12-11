@@ -12,6 +12,9 @@ import {
   InvalidPasswordException,
   InvalidCredentialsException,
   NotFoundUserException,
+  ResponseDto,
+  Request,
+  TimeRecordLogQuery,
 } from '@server/common';
 import { CookieKey, CookieService, JwtService, JwtTokenType } from '@server/core';
 
@@ -28,21 +31,23 @@ import {
 export class CredentialsService {
   constructor(private readonly dataSource: DataSource) {}
 
-  private setTokensInCookie(res: Response, credentials: Credentials) {
+  private setTokensInCookie(req: Request, res: Response, credentials: Credentials) {
     const cookieService = new CookieService();
     const jwtService = new JwtService();
 
     cookieService.set(res, CookieKey.Access, jwtService.issue(JwtTokenType.Access, { id: credentials.id }));
     cookieService.set(res, CookieKey.Refresh, jwtService.issue(JwtTokenType.Access, { id: credentials.id }));
 
-    res.send(new CredentialsDto(credentials));
+    return res.send(new ResponseDto(req, new CredentialsDto(credentials)));
   }
 
-  private removeTokensAtCookie(res: Response) {
+  private removeTokensAtCookie(req: Request, res: Response) {
     const cookieService = new CookieService();
 
     cookieService.delete(res, CookieKey.Access);
     cookieService.delete(res, CookieKey.Refresh);
+
+    return res.send(new ResponseDto(req));
   }
 
   async getMyCredentials(userId: number) {
@@ -56,7 +61,7 @@ export class CredentialsService {
     return new CredentialsDto(credentials);
   }
 
-  async signup(res: Response, body: SignupBodyDto) {
+  async signup(req: Request, res: Response, body: SignupBodyDto) {
     const credentialsQuery = new CredentialsQuery(this.dataSource);
     const hasCredentials = await credentialsQuery.hasCredentialsByEmail(body.email);
 
@@ -71,8 +76,10 @@ export class CredentialsService {
     const credentials = await this.dataSource.transaction(async (em) => {
       const userQuery = new UserQuery(em);
       const credentialsQuery = new CredentialsQuery(em);
+      const timeRecordLogQuery = new TimeRecordLogQuery(em);
 
       const user = await userQuery.createUser({ name: body.name });
+      await timeRecordLogQuery.insertTimeRecordLog(user.id);
       const credentials = await credentialsQuery.createCredentials(user, {
         email: body.email,
         password: hashSync(body.password, 10),
@@ -81,10 +88,10 @@ export class CredentialsService {
       return credentials;
     });
 
-    return this.setTokensInCookie(res, credentials);
+    return this.setTokensInCookie(req, res, credentials);
   }
 
-  async signin(res: Response, body: SigninBodyDto) {
+  async signin(req: Request, res: Response, body: SigninBodyDto) {
     const credentialsQuery = new CredentialsQuery(this.dataSource);
     const credentials = await credentialsQuery.findCredentialsByEmail(body.email);
 
@@ -96,11 +103,11 @@ export class CredentialsService {
       throw new InvalidCredentialsException();
     }
 
-    return this.setTokensInCookie(res, credentials);
+    return this.setTokensInCookie(req, res, credentials);
   }
 
-  async signout(res: Response) {
-    return this.removeTokensAtCookie(res);
+  async signout(req: Request, res: Response) {
+    return this.removeTokensAtCookie(req, res);
   }
 
   async updatePassword(userId: number, body: PasswordUpdateBodyDto) {

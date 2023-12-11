@@ -1,5 +1,15 @@
 import { Transform } from 'class-transformer';
-import { IsArray, IsDate, IsEnum, IsInstance, IsNotEmpty, IsNumberString, IsOptional, IsString } from 'class-validator';
+import {
+  IsArray,
+  IsBoolean,
+  IsDate,
+  IsEnum,
+  IsInstance,
+  IsNotEmpty,
+  IsNumberString,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 import { BusinessCategory, Customer, IndustryCategory, ProjectStatus, TaskMainCategory, User } from '@entity';
 import { toDate, toEmptyNull, toEntities, toEntity, toStr, toTrim } from '@server/common';
@@ -112,4 +122,8 @@ export class ProjectCreateBodyDto {
   @IsInstance(User, { each: true })
   @Transform(({ value }) => toEntities(User, value))
   externalLeaders: User[];
+
+  @IsNotEmpty()
+  @IsBoolean()
+  canExpose: boolean;
 }
