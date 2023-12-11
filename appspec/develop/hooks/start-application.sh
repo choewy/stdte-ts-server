@@ -10,6 +10,7 @@ sudo docker run \
   -e CONTAINER_PROCESS=${REPLACE} \
   -p ${REPLACE}:3000 \
   -v /home/ubuntu/logs:/var/server/logs \
+  --network=net \
   --restart=always \
   $IMAGE_ID
 
