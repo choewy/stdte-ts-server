@@ -31,6 +31,13 @@ export class UserQuery extends EntityQuery<User> {
     return this.repository.findOne({ relations, where: { id } });
   }
 
+  async findUserByEmail(email: string) {
+    return this.repository.findOne({
+      relations: { credentials: true, role: { policy: true } },
+      where: { credentials: { email } },
+    });
+  }
+
   async updateUser(id: number, entity: DeepPartial<User>) {
     await this.repository.update(id, entity);
   }
