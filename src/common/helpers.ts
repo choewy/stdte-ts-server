@@ -87,6 +87,24 @@ export const toDate = (date?: Date | string | null) => {
   }
 };
 
+export const toSQLDate = (date?: Date | string | null) => {
+  if (date == null) {
+    return date;
+  }
+
+  if (typeof date === 'string') {
+    date = new Date(date);
+  }
+
+  const datetime = DateTime.fromJSDate(date);
+
+  if (datetime.isValid) {
+    return datetime.toSQLDate();
+  } else {
+    return null;
+  }
+};
+
 export const toEntity = <E extends { id: number }>(Entity: Type<E>, value?: number | null) => {
   if (value == null) {
     return value;

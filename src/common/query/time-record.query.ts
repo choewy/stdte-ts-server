@@ -1,43 +1,42 @@
-import { DateTime } from 'luxon';
 import { And, DataSource, DeepPartial, EntityManager, LessThanOrEqual, MoreThanOrEqual } from 'typeorm';
 
 import { TimeRecord } from '@entity';
 
 import { EntityQuery } from '../class';
-import { TimeRecordQueryFindsArgs } from './types';
-import { DateTimeFormat } from '../enums';
+import { TimeRecordQueryFindsArgs, TimeRecordQueryHasOverTimeArgs } from './types';
 
 export class TimeRecordQuery extends EntityQuery<TimeRecord> {
   constructor(connection: DataSource | EntityManager) {
     super(connection, TimeRecord);
   }
 
-  private createId(
-    entity: DeepPartial<Pick<TimeRecord, 'user' | 'project' | 'taskMainCategory' | 'taskSubCategory' | 'date'>>,
-  ) {
-    let datetime: DateTime;
+  /** @todo 프로젝트 노출 상태 체크 필요 */
+  async sumTimeRecordsByDate(userId: number, date: string) {
+    const result = await this.repository
+      .createQueryBuilder('timeRecord')
+      .select('SUM(timeRecord.time)', 'sum')
+      .innerJoin('timeRecord.project', 'project')
+      .where('timeRecord.date = :date', { date })
+      .andWhere('timeRecord.userId = :userId', { userId })
+      .getRawOne<{ sum: string }>();
 
-    if (entity.date instanceof Date) {
-      datetime = DateTime.fromJSDate(entity.date);
-    } else if (typeof entity.date === 'string') {
-      datetime = DateTime.fromJSDate(new Date(entity.date));
-    } else {
-      datetime = DateTime.local();
-    }
-
-    let date: string;
-
-    if (datetime.isValid) {
-      date = datetime.toFormat(DateTimeFormat.YYYYMMDD) as string;
-    } else {
-      date = [DateTime.local().toFormat(DateTimeFormat.YYYYMMDD), 'invalid'].join('_');
-    }
-
-    return [date, entity.user?.id, entity.project?.id, entity.taskMainCategory?.id, entity.taskSubCategory?.id].join(
-      '-',
-    );
+    return result ?? { sum: '0' };
   }
 
+  /** @description 프로젝트 상태 체크 하지 않음 */
+  async hasOverDailyTimeRecords(id: string, args: TimeRecordQueryHasOverTimeArgs) {
+    const result = await this.repository
+      .createQueryBuilder('timeRecord')
+      .select('SUM(timeRecord.time)', 'sum')
+      .where('timeRecord.id != :id', { id })
+      .andWhere('timeRecord.userId = :userId', { userId: args.user.id })
+      .andWhere('timeRecord.date = :date', { date: args.date })
+      .getRawOne<{ sum: string }>();
+
+    return Number(result?.sum ?? '0') + Number(args.time) > 24;
+  }
+
+  /** @description 프로젝트 상태 체크 필요 */
   async findTimeRecordById(id: string) {
     return this.repository.findOne({
       relations: {
@@ -57,10 +56,11 @@ export class TimeRecordQuery extends EntityQuery<TimeRecord> {
         taskMainCategory: { id: true },
         taskSubCategory: { id: true },
       },
-      where: { id },
+      where: { id, project: {} },
     });
   }
 
+  /** @description 프로젝트 상태 체크 필요 */
   async findTimeRecords(args: TimeRecordQueryFindsArgs) {
     return this.repository.find({
       relations: {
@@ -82,13 +82,14 @@ export class TimeRecordQuery extends EntityQuery<TimeRecord> {
       },
       where: {
         user: { id: args.userId },
+        project: {},
         date: And(MoreThanOrEqual(args.s), LessThanOrEqual(args.e)),
       },
     });
   }
 
-  async upsertTimeRecord(entity: DeepPartial<TimeRecord>) {
-    return this.repository.upsert({ ...entity, id: this.createId(entity) }, { conflictPaths: { id: true } });
+  async upsertTimeRecord(id: string, entity: DeepPartial<TimeRecord>) {
+    return this.repository.upsert({ ...entity, id }, { conflictPaths: { id: true } });
   }
 
   async deleteTimeRecord(id: string) {

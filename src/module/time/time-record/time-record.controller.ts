@@ -22,7 +22,7 @@ export class TimeRecordController {
   }
 
   @Delete(':id')
-  async deleteTimeRecord(@Param() param: TimeRecordParamDto) {
-    return this.timeRecordService.deleteTimeRecord(param);
+  async deleteTimeRecord(@Req() req: Request, @Param() param: TimeRecordParamDto) {
+    return this.timeRecordService.deleteTimeRecord(req.userId, param);
   }
 }

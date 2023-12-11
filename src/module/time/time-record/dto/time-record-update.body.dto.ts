@@ -1,14 +1,14 @@
 import { Transform } from 'class-transformer';
-import { IsDate, IsInstance, IsNotEmpty, IsNumberString } from 'class-validator';
+import { IsDateString, IsInstance, IsNotEmpty, IsNumberString } from 'class-validator';
 
 import { Project, TaskMainCategory, TaskSubCategory, User } from '@entity';
-import { toDate, toEntity, toStr } from '@server/common';
+import { toEntity, toSQLDate, toStr } from '@server/common';
 
 export class TimeRecordUpdateBodyDto {
   @IsNotEmpty()
-  @IsDate()
-  @Transform(({ value }) => toDate(value))
-  date: Date;
+  @IsDateString()
+  @Transform(({ value }) => toSQLDate(value))
+  date: string;
 
   @IsNotEmpty()
   @IsNumberString()

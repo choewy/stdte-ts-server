@@ -1,21 +1,23 @@
 import { DateTime } from 'luxon';
 import { Transform } from 'class-transformer';
-import { IsDate, IsInt, IsNotEmpty } from 'class-validator';
+import { IsDateString, IsInstance, IsNotEmpty } from 'class-validator';
 
-import { toDate } from '@server/common';
+import { toEntity, toSQLDate } from '@server/common';
+import { User } from '@entity';
 
 export class TimeRecordListBodyDto {
   @IsNotEmpty()
-  @IsInt()
-  userId: number;
+  @IsInstance(User)
+  @Transform(({ value }) => toEntity(User, value))
+  user: User;
 
   @IsNotEmpty()
-  @IsDate()
-  @Transform(({ value }) => toDate(value))
-  s = DateTime.local().startOf('week').toJSDate();
+  @IsDateString()
+  @Transform(({ value }) => toSQLDate(value))
+  s = DateTime.local().startOf('week').toSQLDate() as string;
 
   @IsNotEmpty()
-  @IsDate()
-  @Transform(({ value }) => toDate(value))
-  e = DateTime.local().endOf('week').toJSDate();
+  @IsDateString()
+  @Transform(({ value }) => toSQLDate(value))
+  e = DateTime.local().endOf('week').toSQLDate() as string;
 }
