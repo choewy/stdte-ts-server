@@ -9,7 +9,7 @@ import {
   UserQuery,
   CredentialsQuery,
   AlreadyExistUserEmailException,
-  InvalidPasswordException,
+  IncorrectPasswordException,
   InvalidCredentialsException,
   NotFoundUserException,
   ResponseDto,
@@ -73,7 +73,7 @@ export class CredentialsService {
     }
 
     if (body.password !== body.confirmPassword) {
-      throw new InvalidPasswordException();
+      throw new IncorrectPasswordException();
     }
 
     const user = await this.dataSource.transaction(async (em) => {
@@ -123,11 +123,11 @@ export class CredentialsService {
     }
 
     if (compareSync(body.currentPassword, credentials.password) === false) {
-      throw new InvalidPasswordException();
+      throw new IncorrectPasswordException();
     }
 
     if (body.newPassword !== body.confirmPassword) {
-      throw new InvalidPasswordException();
+      throw new IncorrectPasswordException();
     }
 
     await credentialsQuery.updateCredentialsPassword(userId, hashSync(body.newPassword, 10));
@@ -153,7 +153,7 @@ export class CredentialsService {
     }
 
     if (body.newPassword !== body.confirmPassword) {
-      throw new InvalidPasswordException();
+      throw new IncorrectPasswordException();
     }
 
     await credentialsQuery.updateCredentialsPassword(id, hashSync(body.newPassword, 10));
