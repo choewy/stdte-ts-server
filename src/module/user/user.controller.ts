@@ -7,27 +7,27 @@ import { CredentialsGuard, JwtGuard, RoleGuard } from '@server/core';
 import { UserService } from './user.service';
 import { UserListQueryDto, UserParamDto, UserUpdateBodyDto } from './dto';
 
-@UseGuards(JwtGuard, CredentialsGuard)
+@UseGuards(JwtGuard)
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get()
-  @UseGuards(RoleGuard)
+  @UseGuards(CredentialsGuard, RoleGuard)
   @SetRolePolicy({ user: RolePolicyLevel.Read })
   async getUsers(@Query() query: UserListQueryDto) {
     return this.userService.getUsers(query);
   }
 
   @Get(':id(\\d+)')
-  @UseGuards(RoleGuard)
+  @UseGuards(CredentialsGuard, RoleGuard)
   @SetRolePolicy({ user: RolePolicyLevel.Read })
   async getUser(@Param() param: UserParamDto) {
     return this.userService.getUser(param.id);
   }
 
   @Patch(':id(\\d+)')
-  @UseGuards(RoleGuard)
+  @UseGuards(CredentialsGuard, RoleGuard)
   @SetRolePolicy({ user: RolePolicyLevel.Update })
   async updateUser(@Param() param: UserParamDto, @Body() body: UserUpdateBodyDto) {
     return this.userService.updateUser(param.id, body);

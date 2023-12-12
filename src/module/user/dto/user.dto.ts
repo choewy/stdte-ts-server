@@ -8,10 +8,10 @@ export class UserDto {
   name: string;
   email: string;
   phone: string;
-  gender: GenderCode | null;
+  gender: GenderCode | string;
   birthday: string;
   scienceNumber: string;
-  degree: Degree | null;
+  degree: Degree | string;
   school: string;
   major: string;
   carType: string;
@@ -28,10 +28,10 @@ export class UserDto {
     this.name = user.name;
     this.email = user.credentials.email;
     this.phone = user.phone ?? '';
-    this.gender = user.gender;
+    this.gender = user.gender ?? '';
     this.birthday = toDateFormat(DateTimeFormat.YYYY_MM_DD, user.birthday) ?? '';
     this.scienceNumber = user.scienceNumber ?? '';
-    this.degree = user.degree;
+    this.degree = user.degree ?? '';
     this.school = user.school ?? '';
     this.major = user.major ?? '';
     this.carType = user.carType ?? '';
