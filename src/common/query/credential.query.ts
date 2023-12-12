@@ -25,8 +25,8 @@ export class CredentialsQuery extends EntityQuery<Credentials> {
     return this.repository.findOne({ where: { user: { id: userId } } });
   }
 
-  async insertCredentials(user: User, entity: DeepPartial<Credentials>) {
-    return this.repository.insert(this.repository.create({ ...entity, id: user.id, user }));
+  async saveCredentials(user: User, entity: DeepPartial<Credentials>) {
+    return this.repository.save(this.repository.create({ ...entity, id: user.id, user }));
   }
 
   async updateCredentialsStatus(id: number, status: CredentialsStatus) {

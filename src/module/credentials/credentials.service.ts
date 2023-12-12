@@ -81,7 +81,7 @@ export class CredentialsService {
       const user = await userQuery.createUser({ name: body.name });
 
       const credentialsQuery = new CredentialsQuery(em);
-      await credentialsQuery.insertCredentials(user, {
+      user.credentials = await credentialsQuery.saveCredentials(user, {
         email: body.email,
         password: hashSync(body.password, 10),
       });
