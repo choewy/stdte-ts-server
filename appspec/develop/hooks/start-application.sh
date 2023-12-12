@@ -2,13 +2,16 @@
 
 source /home/ubuntu/develop/docker
 
-container="$PREFIX-$REPLACE"
+if [ "$(sudo docker container inspect --format '{{.Name}}' $PREFIX 2>&1)" == "/$PREFIX" ]; then
+  container_id=`sudo docker rm -f $PREFIX`
+  echo "remove container $container_id"
+fi
 
 sudo docker run \
-  --name $container -d \
+  --name $PREFIX -d \
   -e CONTAINER_PREFIX=$PREFIX \
-  -e CONTAINER_PROCESS=${REPLACE} \
-  -p ${REPLACE}:3000 \
+  -e CONTAINER_PROCESS=3000 \
+  -p 3000:3000 \
   -v /home/ubuntu/logs:/var/server/logs \
   --network=net \
   --restart=always \

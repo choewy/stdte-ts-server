@@ -9,7 +9,7 @@ while [ $loop -le 5 ]
 do
   ((loop++))
 
-  status="$(curl --silent --head -X GET http://localhost:${REPLACE}/health | awk '/^HTTP/{print $2}')"
+  status="$(curl --silent --head -X GET http://localhost:3000/health | awk '/^HTTP/{print $2}')"
 
   if [ "$status" == "200" ]; then
     bootstrap=true
@@ -21,28 +21,12 @@ done
 
 
 if [ $bootstrap == false ]; then
-  echo "fail bootstrap ${REPLACE}"
-
-  container="$PREFIX-$REPLACE"
-
-  if [ "$(sudo docker container inspect --format '{{.Name}}' $container 2>&1)" == "/$container" ]; then
-    container_id=`sudo docker rm -f $container`
-    echo "remove replace container $container_id"
-  fi
+  echo "fail bootstrap $PREFIX"
   
   exit 1
 fi
 
-if [ $bootstrap == true ]; then
-  echo "success bootstrap ${REPLACE}"
-
-  container="$PREFIX-$ORIGIN"
-
-  if [ "$(sudo docker container inspect --format '{{.Name}}' $container 2>&1)" == "/$container" ]; then
-    container_id=`sudo docker stop $container`
-    echo "stop origin container $container_id"
-  fi
-fi
+echo "success bootstrap $PREFIX"
 
 if [ -d "/home/ubuntu/develop" ]; then
   rm -rf /home/ubuntu/develop

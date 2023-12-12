@@ -5,6 +5,7 @@
     "test",
     "http",
     "dist",
+    "docker",
     "**/*spec.ts",
     "sub_modules/entity/src/main.ts",
     "sub_modules/entity/src/test.ts",

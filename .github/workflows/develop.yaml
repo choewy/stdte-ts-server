@@ -99,19 +99,15 @@ jobs:
         env:
           IMAGE_TAG: ${{ github.ref_name }}
           REGISTRY: ${{ steps.ecr.outputs.registry }}
-          REGION: ${{ secrets.AWS_REGION }}
-          ACCOUNT_ID: ${{ secrets.AWS_ECR_ACCOUNT_ID }}
           REPOSITORY: ${{ secrets.AWS_ECR_REPOSITORY_DEVELOP }}
         run: |
           ZIP_NAME="develop-$GITHUB_SHA"
           IMAGE_NAME="$REPOSITORY:$IMAGE_TAG"
           IMAGE_PATH="$REGISTRY/$IMAGE_NAME"
-          touch profile
           echo "ZIP_NAME=$ZIP_NAME" >> profile
+          echo "REGISTRY=$REGISTRY" >> profile
           echo "IMAGE_NAME=$IMAGE_NAME" >> profile
           echo "IMAGE_PATH=$IMAGE_PATH" >> profile
-          echo "REGION=$REGION" >> profile
-          echo "ACCOUNT_ID=$ACCOUNT_ID" >> profile
 
       - name: Zip files
         run: |
