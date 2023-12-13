@@ -4,7 +4,7 @@ import { compareSync, hashSync } from 'bcrypt';
 
 import { Injectable } from '@nestjs/common';
 
-import { User } from '@entity';
+import { CredentialsStatus, User } from '@entity';
 import {
   UserQuery,
   CredentialsQuery,
@@ -15,6 +15,7 @@ import {
   ResponseDto,
   Request,
   TimeLogQuery,
+  ListDto,
 } from '@server/common';
 import { CookieKey, CookieService, JwtService, JwtTokenType } from '@server/core';
 
@@ -25,6 +26,9 @@ import {
   PasswordUpdateBodyDto,
   CredentialsUpdateStatusBodyDto,
   CredentialsUpdatePasswordBodyDto,
+  CredentialsStatsDto,
+  CredentialsListQueryDto,
+  CredentialsRowDto,
 } from './dto';
 
 @Injectable()
@@ -62,6 +66,34 @@ export class CredentialsService {
     }
 
     return new CredentialsDto(user);
+  }
+
+  async getCredentialsStats() {
+    const credentialsQuery = new CredentialsQuery(this.dataSource);
+    const credentialsStats = await credentialsQuery.findCredentialsStats();
+
+    const dto: CredentialsStatsDto[] = [];
+    const statuses = Object.values(CredentialsStatus).filter(
+      (status) => typeof status === 'number',
+    ) as CredentialsStatus[];
+
+    for (const status of statuses) {
+      const row = credentialsStats.find((row) => row.status === status);
+
+      if (row) {
+        dto.push(new CredentialsStatsDto(status, row.count));
+      } else {
+        dto.push(new CredentialsStatsDto(status, 0));
+      }
+    }
+
+    return dto;
+  }
+
+  async getCredentialsList(query: CredentialsListQueryDto) {
+    const credentialsQuery = new CredentialsQuery(this.dataSource);
+
+    return new ListDto(query, await credentialsQuery.findCredentialsList(query), CredentialsRowDto);
   }
 
   async signup(req: Request, res: Response, body: SignupBodyDto) {
