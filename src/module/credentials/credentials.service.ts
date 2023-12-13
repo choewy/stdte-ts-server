@@ -4,7 +4,7 @@ import { compareSync, hashSync } from 'bcrypt';
 
 import { Injectable } from '@nestjs/common';
 
-import { CredentialsStatus, User } from '@entity';
+import { User } from '@entity';
 import {
   UserQuery,
   CredentialsQuery,
@@ -16,6 +16,7 @@ import {
   Request,
   TimeLogQuery,
   ListDto,
+  CREDENTIALS_STATUS_VALUES,
 } from '@server/common';
 import { CookieKey, CookieService, JwtService, JwtTokenType } from '@server/core';
 
@@ -73,11 +74,8 @@ export class CredentialsService {
     const credentialsStats = await credentialsQuery.findCredentialsStats();
 
     const dto: CredentialsStatsDto[] = [];
-    const statuses = Object.values(CredentialsStatus).filter(
-      (status) => typeof status === 'number',
-    ) as CredentialsStatus[];
 
-    for (const status of statuses) {
+    for (const status of CREDENTIALS_STATUS_VALUES) {
       const row = credentialsStats.find((row) => row.status === status);
 
       if (row) {
