@@ -31,6 +31,7 @@ export class CredentialsQuery extends EntityQuery<Credentials> {
       .createQueryBuilder('credentials')
       .select('credentials.status', 'status')
       .addSelect('COUNT(credentials.id)', 'count')
+      .where('credentials.onInit = :onInit', { onInit: false })
       .groupBy('credentials.status')
       .getRawMany<{ status: CredentialsStatus; count: string }>();
 
@@ -48,7 +49,7 @@ export class CredentialsQuery extends EntityQuery<Credentials> {
         updatedAt: true,
         user: { name: true },
       },
-      where: { status: args.status },
+      where: { status: args.status, onInit: false },
       skip: args.skip,
       take: args.take,
     });
