@@ -1,8 +1,10 @@
 import { DataSource } from 'typeorm';
 
 import { BeforeApplicationShutdown, MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { HttpModule } from '@nestjs/axios';
 
 import { AppController } from './app.controller';
 
@@ -18,15 +20,15 @@ import {
   RoleModule,
   SettingModule,
   UserModule,
+  TimeModule,
 } from './module';
-import { TimeModule } from './module/time';
-import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
     EventEmitterModule.forRoot(),
     TypeOrmModule.forRoot(new MySQLConfig().getTypeOrmModuleOptions()),
+    HttpModule,
     InitializeModule,
     SettingModule,
     CredentialsModule,
@@ -45,7 +47,7 @@ export class AppModule implements NestModule, BeforeApplicationShutdown {
   constructor(private readonly dataSource: DataSource) {}
 
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(RequestMiddleware).forRoutes('/');
+    consumer.apply(RequestMiddleware).exclude('/health').forRoutes('*');
   }
 
   async beforeApplicationShutdown() {

@@ -15,6 +15,8 @@ import {
   ResponseDto,
   Request,
   TimeLogQuery,
+  ListDto,
+  CREDENTIALS_STATUS_VALUES,
 } from '@server/common';
 import { CookieKey, CookieService, JwtService, JwtTokenType } from '@server/core';
 
@@ -25,6 +27,9 @@ import {
   PasswordUpdateBodyDto,
   CredentialsUpdateStatusBodyDto,
   CredentialsUpdatePasswordBodyDto,
+  CredentialsStatsDto,
+  CredentialsListQueryDto,
+  CredentialsRowDto,
 } from './dto';
 
 @Injectable()
@@ -64,6 +69,31 @@ export class CredentialsService {
     return new CredentialsDto(user);
   }
 
+  async getCredentialsStats() {
+    const credentialsQuery = new CredentialsQuery(this.dataSource);
+    const credentialsStats = await credentialsQuery.findCredentialsStats();
+
+    const dto: CredentialsStatsDto[] = [];
+
+    for (const status of CREDENTIALS_STATUS_VALUES) {
+      const row = credentialsStats.find((row) => row.status === status);
+
+      if (row) {
+        dto.push(new CredentialsStatsDto(status, row.count));
+      } else {
+        dto.push(new CredentialsStatsDto(status, 0));
+      }
+    }
+
+    return dto;
+  }
+
+  async getCredentialsList(query: CredentialsListQueryDto) {
+    const credentialsQuery = new CredentialsQuery(this.dataSource);
+
+    return new ListDto(query, await credentialsQuery.findCredentialsList(query), CredentialsRowDto);
+  }
+
   async signup(req: Request, res: Response, body: SignupBodyDto) {
     const credentialsQuery = new CredentialsQuery(this.dataSource);
     const hasCredentials = await credentialsQuery.hasCredentialsByEmail(body.email);
@@ -81,7 +111,7 @@ export class CredentialsService {
       const user = await userQuery.createUser({ name: body.name });
 
       const credentialsQuery = new CredentialsQuery(em);
-      await credentialsQuery.insertCredentials(user, {
+      user.credentials = await credentialsQuery.saveCredentials(user, {
         email: body.email,
         password: hashSync(body.password, 10),
       });

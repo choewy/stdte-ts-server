@@ -24,7 +24,7 @@ export class UserUpdateBodyDto {
 
   @IsOptional()
   @IsEnum(GenderCode)
-  genderCode?: GenderCode | null;
+  gender?: GenderCode | null;
 
   @IsOptional()
   @IsString()

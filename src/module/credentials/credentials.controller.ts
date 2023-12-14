@@ -1,6 +1,6 @@
 import { Response } from 'express';
 
-import { Body, Controller, Get, Param, Patch, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Query, Req, Res, UseGuards } from '@nestjs/common';
 
 import { RolePolicyLevel } from '@entity';
 import { Request, SetRolePolicy } from '@server/common';
@@ -14,6 +14,7 @@ import {
   PasswordUpdateBodyDto,
   CredentialsUpdateStatusBodyDto,
   CredentialsUpdatePasswordBodyDto,
+  CredentialsListQueryDto,
 } from './dto';
 
 @Controller('credentials')
@@ -45,6 +46,20 @@ export class CredentialsController {
   @UseGuards(JwtGuard)
   async updatePassword(@Req() req: Request, @Body() body: PasswordUpdateBodyDto) {
     return this.credentialsService.updatePassword(req.userId, body);
+  }
+
+  @Get('stats')
+  @UseGuards(JwtGuard, CredentialsGuard, RoleGuard)
+  @SetRolePolicy({ credentials: RolePolicyLevel.Read })
+  async getCredentialsStats() {
+    return this.credentialsService.getCredentialsStats();
+  }
+
+  @Get('list')
+  @UseGuards(JwtGuard, CredentialsGuard, RoleGuard)
+  @SetRolePolicy({ credentials: RolePolicyLevel.Read })
+  async getCredentialsList(@Query() query: CredentialsListQueryDto) {
+    return this.credentialsService.getCredentialsList(query);
   }
 
   @Patch(':id(\\d+)/status')

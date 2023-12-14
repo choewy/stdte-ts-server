@@ -1,3 +1,4 @@
+import { CredentialsStatus } from '@entity';
 import { AppendOrRemove } from './enums';
 
 export type FindListArgs = {
@@ -8,6 +9,10 @@ export type FindListArgs = {
 export type AppendOrRemoveArgs = {
   id: number;
   action: AppendOrRemove;
+};
+
+export type CredentialsQueryFindListArgs = FindListArgs & {
+  status: CredentialsStatus;
 };
 
 export type RoleQueryFindListArgs = FindListArgs;

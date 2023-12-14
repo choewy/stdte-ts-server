@@ -5,3 +5,6 @@ export * from './signup.body.dto';
 export * from './password-update.body.dto';
 export * from './credentials-update-status.body.dto';
 export * from './credentials-update-password.body.dto';
+export * from './credentials-stats.dto';
+export * from './credentials-list.query.dto';
+export * from './credentials-row.dto';

@@ -39,6 +39,7 @@ export class RoleQuery extends EntityQuery<Role> {
       where: { onInit: false },
       skip: args.skip,
       take: args.take,
+      order: { createdAt: 'DESC' },
     });
   }
 
