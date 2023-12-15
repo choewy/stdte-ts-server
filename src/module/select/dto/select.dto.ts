@@ -1,9 +1,9 @@
 export class SelectDto {
-  value: string | number;
-  label: string;
+  id: number;
+  name: string;
 
-  constructor(value: number | string, label: string) {
-    this.value = value;
-    this.label = label;
+  constructor(id: number, name: string) {
+    this.id = id;
+    this.name = name;
   }
 }
