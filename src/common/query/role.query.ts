@@ -1,9 +1,9 @@
-import { DataSource, DeepPartial, EntityManager, Not } from 'typeorm';
+import { DataSource, DeepPartial, EntityManager, In, Not } from 'typeorm';
 
 import { Role } from '@entity';
 
 import { EntityQuery } from '../class';
-import { RoleQueryFindListArgs } from './types';
+import { FindListArgs, RoleQueryFindListArgs } from './types';
 
 export class RoleQuery extends EntityQuery<Role> {
   constructor(connection: DataSource | EntityManager) {
@@ -33,6 +33,25 @@ export class RoleQuery extends EntityQuery<Role> {
     });
   }
 
+  async findRoleInIdsWithUsers(ids: number[]) {
+    if (ids.length === 0) {
+      return [];
+    }
+
+    return this.repository.find({
+      relations: { users: true },
+      select: {
+        id: true,
+        name: true,
+        users: {
+          id: true,
+          name: true,
+        },
+      },
+      where: { id: In(ids) },
+    });
+  }
+
   async findRoleList(args: RoleQueryFindListArgs) {
     return this.repository.findAndCount({
       relations: { policy: true, users: true },
@@ -40,6 +59,16 @@ export class RoleQuery extends EntityQuery<Role> {
       skip: args.skip,
       take: args.take,
       order: { createdAt: 'DESC' },
+    });
+  }
+
+  async findRoleSelectListOrderByName(args: FindListArgs) {
+    return this.repository.findAndCount({
+      select: { id: true, name: true, onInit: true },
+      where: { onInit: false },
+      skip: args.skip,
+      take: args.take,
+      order: { name: 'ASC' },
     });
   }
 

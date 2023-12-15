@@ -1,11 +1,11 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query, UseGuards } from '@nestjs/common';
 
 import { RolePolicyLevel } from '@entity';
 import { SetRolePolicy } from '@server/common';
 import { CredentialsGuard, JwtGuard, RoleGuard } from '@server/core';
 
 import { RoleService } from './role.service';
-import { RoleCreateBodyDto, RoleListQueryDto, RoleParamDto, RoleUpdateBodyDto } from './dto';
+import { RoleCreateBodyDto, RoleListQueryDto, RoleParamDto, RoleUpdateBodyDto, RoleUpdateUsersBodyDto } from './dto';
 
 @UseGuards(JwtGuard, CredentialsGuard, RoleGuard)
 @Controller('roles')
@@ -18,12 +18,6 @@ export class RoleController {
     return this.roleService.getRoles(query);
   }
 
-  @Get(':id(\\d+)')
-  @SetRolePolicy({ roleAndPolicy: RolePolicyLevel.Read })
-  async getRole(@Param() param: RoleParamDto) {
-    return this.roleService.getRole(param);
-  }
-
   @Post()
   @SetRolePolicy({ roleAndPolicy: RolePolicyLevel.Create })
   async createRole(@Body() body: RoleCreateBodyDto) {
@@ -34,6 +28,12 @@ export class RoleController {
   @SetRolePolicy({ roleAndPolicy: RolePolicyLevel.Update })
   async updateRole(@Param() param: RoleParamDto, @Body() body: RoleUpdateBodyDto) {
     return this.roleService.updateRole(param, body);
+  }
+
+  @Put(':id(\\d+)/users')
+  @SetRolePolicy({ roleAndPolicy: RolePolicyLevel.Update })
+  async updateRoleUsers(@Param() param: RoleParamDto, @Body() body: RoleUpdateUsersBodyDto) {
+    return this.roleService.updateRoleUsers(param, body);
   }
 
   @Delete(':id(\\d+)')

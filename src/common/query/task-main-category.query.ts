@@ -3,7 +3,7 @@ import { DataSource, DeepPartial, EntityManager, Not } from 'typeorm';
 import { TaskMainCategory } from '@entity';
 
 import { EntityQuery } from '../class';
-import { TaskMainCategoryQueryFindListArgs } from './types';
+import { FindListArgs, TaskMainCategoryQueryFindListArgs } from './types';
 
 export class TaskMainCategoryQuery extends EntityQuery<TaskMainCategory> {
   constructor(connection: DataSource | EntityManager) {
@@ -49,6 +49,15 @@ export class TaskMainCategoryQuery extends EntityQuery<TaskMainCategory> {
       relations: { children: true },
       skip: args.skip,
       take: args.take,
+      order: { createdAt: 'DESC' },
+    });
+  }
+
+  async findTaskMainCategorySelectListOrderByName(args: FindListArgs) {
+    return this.repository.findAndCount({
+      take: args.take,
+      skip: args.skip,
+      order: { name: 'ASC' },
     });
   }
 

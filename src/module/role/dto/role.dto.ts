@@ -8,7 +8,7 @@ export class RoleDto {
   id: number;
   name: string;
   users: RoleUserDto[];
-  rolePolicy: RolePolicyDto;
+  rolePolicy?: RolePolicyDto;
   createdAt: string | null;
   updatedAt: string | null;
 
@@ -16,7 +16,11 @@ export class RoleDto {
     this.id = role.id;
     this.name = role.name;
     this.users = role.users.map((user) => new RoleUserDto(user));
-    this.rolePolicy = new RolePolicyDto(role.policy);
+
+    if (role.policy) {
+      this.rolePolicy = new RolePolicyDto(role.policy);
+    }
+
     this.createdAt = toISOString(role.createdAt);
     this.updatedAt = toISOString(role.updatedAt);
   }
