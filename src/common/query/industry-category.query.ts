@@ -3,7 +3,7 @@ import { DataSource, DeepPartial, EntityManager, Not } from 'typeorm';
 import { IndustryCategory } from '@entity';
 
 import { EntityQuery } from '../class';
-import { IndustryCategoryQueryFindListArgs } from './types';
+import { FindListArgs, IndustryCategoryQueryFindListArgs } from './types';
 
 export class IndustryCategoryQuery extends EntityQuery<IndustryCategory> {
   constructor(connection: DataSource | EntityManager) {
@@ -45,6 +45,15 @@ export class IndustryCategoryQuery extends EntityQuery<IndustryCategory> {
     return this.repository.findAndCount({
       take: args.take,
       skip: args.skip,
+      order: { createdAt: 'DESC' },
+    });
+  }
+
+  async findIndustryCategorySelectListOrderByName(args: FindListArgs) {
+    return this.repository.findAndCount({
+      take: args.take,
+      skip: args.skip,
+      order: { name: 'ASC' },
     });
   }
 

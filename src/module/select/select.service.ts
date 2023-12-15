@@ -2,9 +2,23 @@ import { DataSource } from 'typeorm';
 
 import { Injectable } from '@nestjs/common';
 
-import { ListDto, ListQueryDto, RoleQuery, UserQuery } from '@server/common';
+import {
+  BusinessCategoryQuery,
+  IndustryCategoryQuery,
+  ListDto,
+  ListQueryDto,
+  RoleQuery,
+  TaskMainCategoryQuery,
+  UserQuery,
+} from '@server/common';
 
-import { SelectUserDto, SelectRoleDto } from './dto';
+import {
+  SelectUserDto,
+  SelectRoleDto,
+  SelectBusinessCategoryDto,
+  SelectIndustryCategoryDto,
+  SelectTaskCategoryDto,
+} from './dto';
 
 @Injectable()
 export class SelectService {
@@ -20,5 +34,35 @@ export class SelectService {
     const roleQuery = new RoleQuery(this.dataSource);
 
     return new ListDto(query, await roleQuery.findRoleSelectListOrderByName(query), SelectRoleDto);
+  }
+
+  async getBusinessCategories(query: ListQueryDto) {
+    const businessCategoryQuery = new BusinessCategoryQuery(this.dataSource);
+
+    return new ListDto(
+      query,
+      await businessCategoryQuery.findBusinessCategorySelectListOrderByName(query),
+      SelectBusinessCategoryDto,
+    );
+  }
+
+  async getIndustryCategories(query: ListQueryDto) {
+    const industryCategoryQuery = new IndustryCategoryQuery(this.dataSource);
+
+    return new ListDto(
+      query,
+      await industryCategoryQuery.findIndustryCategorySelectListOrderByName(query),
+      SelectIndustryCategoryDto,
+    );
+  }
+
+  async getTaskCategories(query: ListQueryDto) {
+    const taskMainCategoryQuery = new TaskMainCategoryQuery(this.dataSource);
+
+    return new ListDto(
+      query,
+      await taskMainCategoryQuery.findTaskMainCategorySelectListOrderByName(query),
+      SelectTaskCategoryDto,
+    );
   }
 }

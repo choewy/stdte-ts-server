@@ -19,4 +19,19 @@ export class SelectController {
   async getRoles(@Query() query: ListQueryDto) {
     return this.selectService.getRoles(query);
   }
+
+  @Get('category/businesses')
+  async getBusinessCategories(@Query() query: ListQueryDto) {
+    return this.selectService.getBusinessCategories(query);
+  }
+
+  @Get('category/industries')
+  async getIndustryCategories(@Query() query: ListQueryDto) {
+    return this.selectService.getIndustryCategories(query);
+  }
+
+  @Get('category/tasks')
+  async getTaskCategories(@Query() query: ListQueryDto) {
+    return this.selectService.getTaskCategories(query);
+  }
 }
