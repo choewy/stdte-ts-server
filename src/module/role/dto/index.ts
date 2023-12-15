@@ -2,7 +2,6 @@ export * from './role.dto';
 export * from './role-user.dto';
 export * from './role.param.dto';
 export * from './role-list.query.dto';
-export * from './role-user.body.dto';
 export * from './role-create.body.dto';
 export * from './role-policy.dto';
 export * from './role-policy-create.body.dto';

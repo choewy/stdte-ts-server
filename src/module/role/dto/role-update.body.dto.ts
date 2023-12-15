@@ -1,10 +1,10 @@
 import { Transform } from 'class-transformer';
 import { IsArray, IsInstance, IsNotIn, IsOptional, IsString, MinLength } from 'class-validator';
 
-import { toTrim } from '@server/common';
+import { User } from '@entity';
+import { toEntities, toTrim } from '@server/common';
 
 import { RolePolicyUpdateBodyDto } from './role-policy-update.body.dto';
-import { RoleUserBodyDto } from './role-user.body.dto';
 
 export class RoleUpdateBodyDto {
   @IsOptional()
@@ -21,6 +21,7 @@ export class RoleUpdateBodyDto {
 
   @IsOptional()
   @IsArray()
-  @IsInstance(RoleUserBodyDto, { each: true })
-  users?: RoleUserBodyDto[];
+  @IsInstance(User, { each: true })
+  @Transform(({ value }) => toEntities(User, value))
+  users?: User[];
 }

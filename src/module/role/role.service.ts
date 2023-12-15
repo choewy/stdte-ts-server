@@ -10,7 +10,6 @@ import {
   RolePolicyQuery,
   RoleQuery,
   UserQuery,
-  extractAppendOrRemoveTarget,
 } from '@server/common';
 
 import { RoleCreateBodyDto, RoleDto, RoleListQueryDto, RoleParamDto, RoleUpdateBodyDto } from './dto';
@@ -52,15 +51,6 @@ export class RoleService {
       const insert = await roleQuery.insertRole(body.name);
       await rolePolicyQuery.insertRolePolicy(insert.raw.insertId, body.rolePolicy);
 
-      if (Array.isArray(body.users)) {
-        const target = extractAppendOrRemoveTarget(body.users);
-        const userQuery = new UserQuery(em);
-
-        if (target.appends.length > 0) {
-          await userQuery.updateUsers(target.appends, { role: { id: insert.raw.insertId } });
-        }
-      }
-
       return insert;
     });
 
@@ -96,16 +86,17 @@ export class RoleService {
       }
 
       if (Array.isArray(body.users)) {
-        const target = extractAppendOrRemoveTarget(body.users);
         const userQuery = new UserQuery(em);
+        await userQuery.deleteUsersRole(param.id);
 
-        if (target.appends.length > 0) {
-          await userQuery.updateUsers(target.appends, { role: { id: param.id } });
+        if (body.users.length === 0) {
+          return;
         }
 
-        if (target.removes.length > 0) {
-          await userQuery.updateUsers(target.removes, { role: null });
-        }
+        await userQuery.updateUsers(
+          body.users.map(({ id }) => id),
+          { role: { id: param.id } },
+        );
       }
     });
   }
