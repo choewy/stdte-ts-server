@@ -1,4 +1,4 @@
-import { DataSource, DeepPartial, EntityManager, Not } from 'typeorm';
+import { DataSource, DeepPartial, EntityManager, In, Not } from 'typeorm';
 
 import { Role } from '@entity';
 
@@ -30,6 +30,25 @@ export class RoleQuery extends EntityQuery<Role> {
     return this.repository.findOne({
       relations: { policy: true, users: true },
       where: { id },
+    });
+  }
+
+  async findRoleInIdsWithUsers(ids: number[]) {
+    if (ids.length === 0) {
+      return [];
+    }
+
+    return this.repository.find({
+      relations: { users: true },
+      select: {
+        id: true,
+        name: true,
+        users: {
+          id: true,
+          name: true,
+        },
+      },
+      where: { id: In(ids) },
     });
   }
 

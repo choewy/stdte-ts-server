@@ -7,3 +7,4 @@ export * from './role-policy.dto';
 export * from './role-policy-create.body.dto';
 export * from './role-update.body.dto';
 export * from './role-policy-update.body.dto';
+export * from './role-update-users.body.dto';

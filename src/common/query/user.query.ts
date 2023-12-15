@@ -1,4 +1,4 @@
-import { DataSource, DeepPartial, EntityManager, FindOptionsRelations, In } from 'typeorm';
+import { DataSource, DeepPartial, EntityManager, FindOptionsRelations, In, IsNull, Not } from 'typeorm';
 
 import { User } from '@entity';
 
@@ -25,6 +25,7 @@ export class UserQuery extends EntityQuery<User> {
 
   async findUserSelectListOrderByName(args: FindListArgs) {
     return this.repository.findAndCount({
+      relations: { role: true },
       select: { id: true, name: true, onInit: true },
       where: { onInit: false },
       skip: args.skip,
@@ -39,6 +40,20 @@ export class UserQuery extends EntityQuery<User> {
 
   async findUserById(id: number, relations?: FindOptionsRelations<User>) {
     return this.repository.findOne({ relations, where: { id } });
+  }
+
+  async findUsersInIdsByHasRole(ids: number[]) {
+    if (ids.length === 0) {
+      return [];
+    }
+
+    return this.repository.find({
+      relations: { role: true },
+      where: {
+        id: In(ids),
+        role: { id: Not(IsNull()) },
+      },
+    });
   }
 
   async findUserByEmail(email: string) {

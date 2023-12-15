@@ -4,7 +4,6 @@ import { Injectable } from '@nestjs/common';
 
 import {
   AlreadyExistRoleException,
-  InsertDto,
   ListDto,
   NotFoundRoleException,
   RolePolicyQuery,
@@ -12,7 +11,15 @@ import {
   UserQuery,
 } from '@server/common';
 
-import { RoleCreateBodyDto, RoleDto, RoleListQueryDto, RoleParamDto, RoleUpdateBodyDto } from './dto';
+import {
+  RoleCreateBodyDto,
+  RoleDto,
+  RoleListQueryDto,
+  RoleParamDto,
+  RoleUpdateBodyDto,
+  RoleUpdateUsersBodyDto,
+} from './dto';
+import { Role } from '@entity';
 
 @Injectable()
 export class RoleService {
@@ -24,17 +31,6 @@ export class RoleService {
     return new ListDto(query, await roleQuery.findRoleList(query), RoleDto);
   }
 
-  async getRole(param: RoleParamDto) {
-    const roleQuery = new RoleQuery(this.dataSource);
-    const role = await roleQuery.findRoleById(param.id);
-
-    if (role == null) {
-      throw new NotFoundRoleException();
-    }
-
-    return new RoleDto(role);
-  }
-
   async createRole(body: RoleCreateBodyDto) {
     const roleQuery = new RoleQuery(this.dataSource);
 
@@ -44,25 +40,35 @@ export class RoleService {
       throw new AlreadyExistRoleException();
     }
 
-    const insert = await this.dataSource.transaction(async (em) => {
+    const roleId = await this.dataSource.transaction(async (em) => {
       const roleQuery = new RoleQuery(em);
       const rolePolicyQuery = new RolePolicyQuery(em);
 
       const insert = await roleQuery.insertRole(body.name);
       await rolePolicyQuery.insertRolePolicy(insert.raw.insertId, body.rolePolicy);
 
-      return insert;
+      return insert.identifiers[0]?.id;
     });
 
-    return new InsertDto(insert);
+    if (roleId == null) {
+      throw new NotFoundRoleException();
+    }
+
+    const role = await roleQuery.findRoleById(roleId);
+
+    if (role == null) {
+      throw new NotFoundRoleException();
+    }
+
+    return new RoleDto(role);
   }
 
   async updateRole(param: RoleParamDto, body: RoleUpdateBodyDto) {
     const roleQuery = new RoleQuery(this.dataSource);
 
-    const hasRole = await roleQuery.hasRoleById(param.id);
+    const role = await roleQuery.findRoleById(param.id);
 
-    if (hasRole === false) {
+    if (role == null) {
       throw new NotFoundRoleException();
     }
 
@@ -76,29 +82,51 @@ export class RoleService {
 
     await this.dataSource.transaction(async (em) => {
       if (body.name) {
+        role.name = body.name;
+
         const roleQuery = new RoleQuery(em);
         await roleQuery.updateRole(param.id, { name: body.name });
       }
 
       if (body.rolePolicy) {
+        role.policy = { ...role.policy, ...body.rolePolicy };
+
         const rolePolicyQuery = new RolePolicyQuery(em);
         await rolePolicyQuery.updateRolePolicy(param.id, body.rolePolicy);
       }
-
-      if (Array.isArray(body.users)) {
-        const userQuery = new UserQuery(em);
-        await userQuery.deleteUsersRole(param.id);
-
-        if (body.users.length === 0) {
-          return;
-        }
-
-        await userQuery.updateUsers(
-          body.users.map(({ id }) => id),
-          { role: { id: param.id } },
-        );
-      }
     });
+
+    return new RoleDto(role);
+  }
+
+  async updateRoleUsers(param: RoleParamDto, body: RoleUpdateUsersBodyDto) {
+    const roleQuery = new RoleQuery(this.dataSource);
+    const role = await roleQuery.findRoleById(param.id);
+
+    if (role == null) {
+      throw new NotFoundRoleException();
+    }
+
+    const roleIds = await this.dataSource.transaction(async (em) => {
+      const roleIds = [param.id];
+
+      const userQuery = new UserQuery(em);
+      await userQuery.deleteUsersRole(param.id);
+
+      if (body.users.length === 0) {
+        return roleIds;
+      }
+
+      const userIds = body.users.map(({ id }) => id);
+      const users = await userQuery.findUsersInIdsByHasRole(userIds);
+      await userQuery.updateUsers(userIds, { role: { id: param.id } });
+
+      return roleIds.concat(users.map(({ role }) => (role as Role).id));
+    });
+
+    const roles = await roleQuery.findRoleInIdsWithUsers(roleIds);
+
+    return roles.map((role) => new RoleDto(role));
   }
 
   async deleteRole(param: RoleParamDto) {
