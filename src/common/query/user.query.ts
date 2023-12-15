@@ -63,4 +63,8 @@ export class UserQuery extends EntityQuery<User> {
   async upsertUsers(entities: DeepPartial<User>[]) {
     await this.repository.upsert(entities, { conflictPaths: { id: true } });
   }
+
+  async deleteUsersRole(roleId: number) {
+    await this.repository.update({ role: { id: roleId } }, { role: null });
+  }
 }

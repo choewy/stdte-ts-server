@@ -1,14 +1,8 @@
 import { CredentialsStatus } from '@entity';
-import { AppendOrRemove } from './enums';
 
 export type FindListArgs = {
   take: number;
   skip: number;
-};
-
-export type AppendOrRemoveArgs = {
-  id: number;
-  action: AppendOrRemove;
 };
 
 export type CredentialsQueryFindListArgs = FindListArgs & {
