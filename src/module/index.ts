@@ -8,3 +8,4 @@ export * from './customer';
 export * from './project';
 export * from './user';
 export * from './time';
+export * from './select';

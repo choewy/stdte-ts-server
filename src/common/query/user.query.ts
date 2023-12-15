@@ -3,7 +3,7 @@ import { DataSource, DeepPartial, EntityManager, FindOptionsRelations, In } from
 import { User } from '@entity';
 
 import { EntityQuery } from '../class';
-import { UserQueryFindListArgs } from './types';
+import { FindListArgs, UserQueryFindListArgs } from './types';
 
 export class UserQuery extends EntityQuery<User> {
   constructor(connection: DataSource | EntityManager) {
@@ -20,6 +20,16 @@ export class UserQuery extends EntityQuery<User> {
       where: { onInit: false },
       skip: args.skip,
       take: args.take,
+    });
+  }
+
+  async findUserSelectListOrderByName(args: FindListArgs) {
+    return this.repository.findAndCount({
+      select: { id: true, name: true, onInit: true },
+      where: { onInit: false },
+      skip: args.skip,
+      take: args.take,
+      order: { name: 'ASC' },
     });
   }
 
