@@ -2,7 +2,7 @@ import { DataSource } from 'typeorm';
 
 import { Injectable } from '@nestjs/common';
 
-import { CustomerQuery, InsertDto, ListDto, NotFoundCustomerException } from '@server/common';
+import { CustomerQuery, ListDto, NotFoundCustomerException } from '@server/common';
 
 import {
   CustomerCreateBodyDto,
@@ -36,7 +36,20 @@ export class CustomerService {
   async createCustomer(body: CustomerCreateBodyDto) {
     const customerQuery = new CustomerQuery(this.dataSource);
 
-    return new InsertDto(await customerQuery.insertCustomer(body));
+    const insert = await customerQuery.insertCustomer(body);
+    const customerId = insert.identifiers[0]?.id;
+
+    if (customerId == null) {
+      throw new NotFoundCustomerException();
+    }
+
+    const customer = await customerQuery.findCustomerById(customerId);
+
+    if (customer == null) {
+      throw new NotFoundCustomerException();
+    }
+
+    return new CustomerDto(customer);
   }
 
   async updateCustomer(param: CustomerParamDto, body: CustomerUpdateBodyDto) {
@@ -48,6 +61,13 @@ export class CustomerService {
     }
 
     await customerQuery.updateCustomer(param.id, body);
+    const customer = await customerQuery.findCustomerById(param.id);
+
+    if (customer == null) {
+      throw new NotFoundCustomerException();
+    }
+
+    return new CustomerDto(customer);
   }
 
   async deleteCustomer(param: CustomerParamDto) {

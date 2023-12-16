@@ -18,12 +18,6 @@ export class CustomerController {
     return this.customerService.getCustomers(query);
   }
 
-  @Get(':id(\\d+)')
-  @SetRolePolicy({ customer: RolePolicyLevel.Read })
-  async getCustomer(@Param() param: CustomerParamDto) {
-    return this.customerService.getCustomer(param);
-  }
-
   @Post()
   @SetRolePolicy({ customer: RolePolicyLevel.Create })
   async createCustomer(@Body() body: CustomerCreateBodyDto) {
