@@ -1,8 +1,8 @@
 import { Transform } from 'class-transformer';
-import { IsDate, IsEnum, IsNotIn, IsOptional, IsString } from 'class-validator';
+import { IsDate, IsEnum, IsInstance, IsNotIn, IsOptional, IsString } from 'class-validator';
 
-import { GenderCode, Degree } from '@entity';
-import { toDate, toEmptyNull, toTrim } from '@server/common';
+import { GenderCode, Degree, Role } from '@entity';
+import { toDate, toEmptyNull, toEntity, toTrim } from '@server/common';
 
 export class UserUpdateBodyDto {
   @IsOptional()
@@ -69,4 +69,9 @@ export class UserUpdateBodyDto {
   @IsDate()
   @Transform(({ value }) => toDate(value))
   resignationDay?: Date | null;
+
+  @IsOptional()
+  @IsInstance(Role)
+  @Transform(({ value }) => toEntity(Role, value))
+  role?: Role;
 }

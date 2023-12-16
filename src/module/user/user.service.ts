@@ -38,5 +38,16 @@ export class UserService {
     }
 
     await userQuery.updateUser(id, body);
+
+    const user = await userQuery.findUserById(id, {
+      credentials: true,
+      role: { policy: true },
+    });
+
+    if (user == null) {
+      throw new NotFoundUserException();
+    }
+
+    return new UserDto(user);
   }
 }
