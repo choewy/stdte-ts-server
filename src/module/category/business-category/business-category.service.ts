@@ -79,7 +79,7 @@ export class BusinessCategoryService {
     const businessCategoryQuery = new BusinessCategoryQuery(this.dataSource);
     const hasBusinessCategory = await businessCategoryQuery.hasBusinessCategoryById(param.id);
 
-    if (hasBusinessCategory) {
+    if (hasBusinessCategory == null) {
       throw new NotFoundBusinessCategoryException();
     }
 
