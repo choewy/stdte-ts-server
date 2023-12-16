@@ -23,12 +23,6 @@ export class BusinessCategoryController {
     return this.businessCategoryService.getBusinessCategories(query);
   }
 
-  @Get(':id(\\d+)')
-  @SetRolePolicy({ businessCategory: RolePolicyLevel.Read })
-  async getBusinessCategory(@Param() param: BusinessCategoryParamDto) {
-    return this.businessCategoryService.getBusinessCategory(param);
-  }
-
   @Post()
   @SetRolePolicy({ businessCategory: RolePolicyLevel.Create })
   async createBusinessCategory(@Body() body: BusinessCategoryCreateBodyDto) {
