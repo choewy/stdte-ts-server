@@ -80,7 +80,7 @@ export class BusinessCategoryService {
     const hasBusinessCategory = await businessCategoryQuery.hasBusinessCategoryById(param.id);
 
     if (hasBusinessCategory) {
-      throw new AlreadyExistBusinessCategoryException();
+      throw new NotFoundBusinessCategoryException();
     }
 
     await businessCategoryQuery.deleteBusinessCategory(param.id);
