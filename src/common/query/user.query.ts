@@ -1,6 +1,6 @@
 import { DataSource, DeepPartial, EntityManager, FindOptionsRelations, In, IsNull, Not } from 'typeorm';
 
-import { User } from '@entity';
+import { CredentialsStatus, User } from '@entity';
 
 import { EntityQuery } from '../class';
 import { FindListArgs, UserQueryFindListArgs } from './types';
@@ -17,9 +17,10 @@ export class UserQuery extends EntityQuery<User> {
   async findUserList(args: UserQueryFindListArgs) {
     return this.repository.findAndCount({
       relations: { credentials: true, role: { policy: true } },
-      where: { onInit: false },
+      where: { onInit: false, credentials: { status: CredentialsStatus.Active } },
       skip: args.skip,
       take: args.take,
+      order: { name: 'ASC' },
     });
   }
 

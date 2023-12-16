@@ -4,7 +4,6 @@ import { Injectable } from '@nestjs/common';
 import {
   AlreadyExistIndustryCategoryException,
   IndustryCategoryQuery,
-  InsertDto,
   ListDto,
   NotFoundIndustryCategoryException,
 } from '@server/common';
@@ -27,17 +26,6 @@ export class IndustryCategoryService {
     return new ListDto(query, await industryCategoryQuery.findIndustryCategoryList(query), IndustryCategoryDto);
   }
 
-  async getIndustryCategory(param: IndustryCategoryParamDto) {
-    const industryCategoryQuery = new IndustryCategoryQuery(this.dataSource);
-    const industryCategory = await industryCategoryQuery.findIndustryCategoryById(param.id);
-
-    if (industryCategory == null) {
-      throw new NotFoundIndustryCategoryException();
-    }
-
-    return new IndustryCategoryDto(industryCategory);
-  }
-
   async createIndustryCategory(body: IndustryCategoryCreateBodyDto) {
     const industryCategoryQuery = new IndustryCategoryQuery(this.dataSource);
     const hasIndustryCategory = await industryCategoryQuery.hasIndustryCategoryByName(body.name);
@@ -46,7 +34,20 @@ export class IndustryCategoryService {
       throw new AlreadyExistIndustryCategoryException();
     }
 
-    return new InsertDto(await industryCategoryQuery.insertIndustryCategory(body));
+    const insert = await industryCategoryQuery.insertIndustryCategory(body);
+    const industryCategoryId = insert.identifiers[0]?.id;
+
+    if (industryCategoryId == null) {
+      throw new NotFoundIndustryCategoryException();
+    }
+
+    const industryCategory = await industryCategoryQuery.findIndustryCategoryById(industryCategoryId);
+
+    if (industryCategory == null) {
+      throw new NotFoundIndustryCategoryException();
+    }
+
+    return new IndustryCategoryDto(industryCategory);
   }
 
   async updateIndustryCategory(param: IndustryCategoryParamDto, body: IndustryCategoryUpdateBodyDto) {
@@ -64,6 +65,13 @@ export class IndustryCategoryService {
     }
 
     await industryCategoryQuery.updateIndustryCategory(param.id, body);
+    const industryCategory = await industryCategoryQuery.findIndustryCategoryById(param.id);
+
+    if (industryCategory == null) {
+      throw new NotFoundIndustryCategoryException();
+    }
+
+    return new IndustryCategoryDto(industryCategory);
   }
 
   async deleteIndustryCategory(param: IndustryCategoryParamDto) {
