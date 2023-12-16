@@ -23,12 +23,6 @@ export class IndustryCategoryController {
     return this.industryCategoryService.getIndustryCategories(query);
   }
 
-  @Get(':id(\\d+)')
-  @SetRolePolicy({ industryCategory: RolePolicyLevel.Read })
-  async getIndustryCategory(@Param() param: IndustryCategoryParamDto) {
-    return this.industryCategoryService.getIndustryCategory(param);
-  }
-
   @Post()
   @SetRolePolicy({ industryCategory: RolePolicyLevel.Create })
   async createIndustryCategory(@Body() body: IndustryCategoryCreateBodyDto) {
