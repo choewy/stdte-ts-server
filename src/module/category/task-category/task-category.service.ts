@@ -60,7 +60,9 @@ export class TaskCategoryService {
       throw new NotFoundTaskMainCategoryException();
     }
 
-    const taskMainCategory = await taskMainCategoryQuery.findTaskMainCategoryById(taskMainCategoryId.id);
+    const taskMainCategory = await taskMainCategoryQuery.findTaskMainCategoryById(taskMainCategoryId.id, {
+      children: true,
+    });
 
     if (taskMainCategory == null) {
       throw new NotFoundTaskMainCategoryException();
@@ -84,7 +86,9 @@ export class TaskCategoryService {
     }
 
     await taskMainCategoryQuery.updateTaskMainCategory(param.id, body);
-    const taskMainCategory = await taskMainCategoryQuery.findTaskMainCategoryById(param.id);
+    const taskMainCategory = await taskMainCategoryQuery.findTaskMainCategoryById(param.id, {
+      children: true,
+    });
 
     if (taskMainCategory == null) {
       throw new NotFoundTaskMainCategoryException();
