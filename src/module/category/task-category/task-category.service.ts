@@ -80,7 +80,7 @@ export class TaskCategoryService {
     }
 
     if (body.name) {
-      if (await taskMainCategoryQuery.hasTaskMainCategoryByName(body.name)) {
+      if (await taskMainCategoryQuery.hasTaskMainCategoryByNameOmitId(param.id, body.name)) {
         throw new AlreadyExistTaskMainCategoryException();
       }
     }
