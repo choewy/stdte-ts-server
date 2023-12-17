@@ -33,6 +33,7 @@ export class ProjectDto {
   externalOwners: ProjectUserDto[];
   externalManagers: ProjectUserDto[];
   externalLeaders: ProjectUserDto[];
+  canExpose: boolean;
   createdAt: string | null;
   updatedAt: string | null;
 
@@ -59,6 +60,7 @@ export class ProjectDto {
     this.externalOwners = project.externalOwners.map((projectUser) => new ProjectUserDto(projectUser));
     this.externalManagers = project.externalManagers.map((projectUser) => new ProjectUserDto(projectUser));
     this.externalLeaders = project.externalLeaders.map((projectUser) => new ProjectUserDto(projectUser));
+    this.canExpose = project.canExpose;
     this.createdAt = toISOString(project.createdAt);
     this.updatedAt = toISOString(project.updatedAt);
   }
