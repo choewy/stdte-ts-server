@@ -3,6 +3,19 @@ import { DataSource } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 
 import {
+  AlreadyExistProjectCodeException,
+  BusinessCategoryQuery,
+  CustomerQuery,
+  IndustryCategoryQuery,
+  ListDto,
+  NotFoundProjectException,
+  ProjectQuery,
+  ProjectRecordQuery,
+  ProjectUsersQuery,
+  TaskMainCategoryQuery,
+} from '@server/common';
+
+import {
   ProjectCreateBodyDto,
   ProjectDto,
   ProjectListQueryDto,
@@ -11,19 +24,6 @@ import {
   ProjectSaleRecordUpdateBodyDto,
   ProjectUpdateBodyDto,
 } from './dto';
-import {
-  AlreadyExistProjectCodeException,
-  BusinessCategoryQuery,
-  CustomerQuery,
-  IndustryCategoryQuery,
-  InsertDto,
-  ListDto,
-  NotFoundProjectException,
-  ProjectQuery,
-  ProjectRecordQuery,
-  ProjectUsersQuery,
-  TaskMainCategoryQuery,
-} from '@server/common';
 
 @Injectable()
 export class ProjectService {
@@ -53,7 +53,7 @@ export class ProjectService {
       throw new AlreadyExistProjectCodeException();
     }
 
-    const insert = await this.dataSource.transaction(async (em) => {
+    const projectId = await this.dataSource.transaction(async (em) => {
       const projectQuery = new ProjectQuery(em);
       const projectRecordQuery = new ProjectRecordQuery(em);
       const projectUsersQuery = new ProjectUsersQuery(em);
@@ -62,7 +62,7 @@ export class ProjectService {
       const industryCategoryQuery = new IndustryCategoryQuery(em);
       const taskMainCategoryQuery = new TaskMainCategoryQuery(em);
 
-      const project = await projectQuery.insertProject({
+      const insert = await projectQuery.insertProject({
         ...body,
         customer: await customerQuery.findCustomerOnlyId(body.customer),
         businessCategory: await businessCategoryQuery.findBusinessCategoryOnlyId(body.businessCategory),
@@ -70,13 +70,20 @@ export class ProjectService {
         taskMainCategory: await taskMainCategoryQuery.findTaskMainCategoryOnlyId(body.taskMainCategory),
       });
 
-      await projectRecordQuery.insertProjectRecords(project.raw.insertId);
-      await projectUsersQuery.updateProjectUsers(project.raw.insertId, body);
+      const projectId = insert.raw.insertId;
+      await projectRecordQuery.insertProjectRecords(projectId);
+      await projectUsersQuery.updateProjectUsers(projectId, body);
 
-      return project;
+      return projectId;
     });
 
-    return new InsertDto(insert);
+    const project = await projectQuery.findProjectById(projectId);
+
+    if (project == null) {
+      throw new NotFoundProjectException();
+    }
+
+    return new ProjectDto(project);
   }
 
   async updateProject(param: ProjectParamDto, body: ProjectUpdateBodyDto) {
@@ -125,6 +132,14 @@ export class ProjectService {
 
       await projectUsersQuery.updateProjectUsers(param.id, body);
     });
+
+    const project = await projectQuery.findProjectById(param.id);
+
+    if (project == null) {
+      throw new NotFoundProjectException();
+    }
+
+    return new ProjectDto(project);
   }
 
   async updateProjectOrderRecord(param: ProjectParamDto, body: ProjectOrderRecordUpdateBodyDto) {
