@@ -1,4 +1,4 @@
-import { DataSource, DeepPartial, EntityManager } from 'typeorm';
+import { DataSource, DeepPartial, EntityManager, FindOptionsRelations } from 'typeorm';
 
 import { TaskSubCategory } from '@entity';
 
@@ -15,6 +15,13 @@ export class TaskSubCategoryQuery extends EntityQuery<TaskSubCategory> {
 
   async hasTaskSubCategoryById(id: number) {
     return this.repository.exist({ where: { id } });
+  }
+
+  async findTaskSubCategoryById(id: number, relations: FindOptionsRelations<TaskSubCategory> = {}) {
+    return this.repository.findOne({
+      relations,
+      where: { id },
+    });
   }
 
   async insertTaskSubCategory(entity: DeepPartial<TaskSubCategory>) {

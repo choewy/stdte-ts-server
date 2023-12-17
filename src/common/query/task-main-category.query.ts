@@ -1,4 +1,4 @@
-import { DataSource, DeepPartial, EntityManager, Not } from 'typeorm';
+import { DataSource, DeepPartial, EntityManager, FindOptionsRelations, Not } from 'typeorm';
 
 import { TaskMainCategory } from '@entity';
 
@@ -37,9 +37,9 @@ export class TaskMainCategoryQuery extends EntityQuery<TaskMainCategory> {
     });
   }
 
-  async findTaskMainCategoryById(id: number) {
+  async findTaskMainCategoryById(id: number, relations: FindOptionsRelations<TaskMainCategory> = {}) {
     return this.repository.findOne({
-      relations: { children: true },
+      relations,
       where: { id },
     });
   }
