@@ -60,7 +60,7 @@ export class TaskCategoryService {
       throw new NotFoundTaskMainCategoryException();
     }
 
-    const taskMainCategory = await taskMainCategoryQuery.findTaskMainCategoryById(taskMainCategoryId.id, {
+    const taskMainCategory = await taskMainCategoryQuery.findTaskMainCategoryById(taskMainCategoryId, {
       children: true,
     });
 
