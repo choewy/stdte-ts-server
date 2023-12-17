@@ -20,6 +20,11 @@ export class SelectController {
     return this.selectService.getRoles(query);
   }
 
+  @Get('customers')
+  async getCustomers(@Query() query: ListQueryDto) {
+    return this.selectService.getCustomers(query);
+  }
+
   @Get('category/businesses')
   async getBusinessCategories(@Query() query: ListQueryDto) {
     return this.selectService.getBusinessCategories(query);

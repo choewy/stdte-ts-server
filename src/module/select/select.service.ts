@@ -4,6 +4,7 @@ import { Injectable } from '@nestjs/common';
 
 import {
   BusinessCategoryQuery,
+  CustomerQuery,
   IndustryCategoryQuery,
   ListDto,
   ListQueryDto,
@@ -18,6 +19,7 @@ import {
   SelectBusinessCategoryDto,
   SelectIndustryCategoryDto,
   SelectTaskCategoryDto,
+  SelectCustomerDto,
 } from './dto';
 
 @Injectable()
@@ -34,6 +36,12 @@ export class SelectService {
     const roleQuery = new RoleQuery(this.dataSource);
 
     return new ListDto(query, await roleQuery.findRoleSelectListOrderByName(query), SelectRoleDto);
+  }
+
+  async getCustomers(query: ListQueryDto) {
+    const customerQuery = new CustomerQuery(this.dataSource);
+
+    return new ListDto(query, await customerQuery.findCustomerSelectList(query), SelectCustomerDto);
   }
 
   async getBusinessCategories(query: ListQueryDto) {
