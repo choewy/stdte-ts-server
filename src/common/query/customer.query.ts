@@ -27,15 +27,14 @@ export class CustomerQuery extends EntityQuery<Customer> {
 
   async findCustomerList(args: CustomerQueryFindListArgs) {
     return this.repository.findAndCount({
-      relations: { projects: true },
       skip: args.skip,
       take: args.take,
+      order: { createdAt: 'DESC' },
     });
   }
 
   async findCustomerById(id: number) {
     return this.repository.findOne({
-      relations: { projects: true },
       where: { id },
     });
   }
