@@ -86,7 +86,7 @@ export class ProjectUpdateBodyDto {
   @IsInstance(TaskMainCategory)
   @Transform(({ value }) => toEntity(TaskMainCategory, value))
   @Transform(({ value }) => toEmptyNull(value))
-  taskMainCategory?: TaskMainCategory | null;
+  taskCategory?: TaskMainCategory | null;
 
   @IsOptional()
   @IsInstance(Customer)

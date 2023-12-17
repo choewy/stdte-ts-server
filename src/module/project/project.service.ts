@@ -67,7 +67,7 @@ export class ProjectService {
         customer: await customerQuery.findCustomerOnlyId(body.customer),
         businessCategory: await businessCategoryQuery.findBusinessCategoryOnlyId(body.businessCategory),
         industryCategory: await industryCategoryQuery.findIndustryCategoryOnlyId(body.industryCategory),
-        taskMainCategory: await taskMainCategoryQuery.findTaskMainCategoryOnlyId(body.taskMainCategory),
+        taskMainCategory: await taskMainCategoryQuery.findTaskMainCategoryOnlyId(body.taskCategory),
       });
 
       const projectId = insert.raw.insertId;
@@ -125,8 +125,8 @@ export class ProjectService {
         industryCategory: body.industryCategory
           ? await industryCategoryQuery.findIndustryCategoryOnlyId(body.industryCategory)
           : undefined,
-        taskMainCategory: body.taskMainCategory
-          ? await taskMainCategoryQuery.findTaskMainCategoryOnlyId(body.taskMainCategory)
+        taskMainCategory: body.taskCategory
+          ? await taskMainCategoryQuery.findTaskMainCategoryOnlyId(body.taskCategory)
           : undefined,
       });
 
