@@ -19,49 +19,49 @@ import {
 export class TaskCategoryController {
   constructor(private taskCategoryService: TaskCategoryService) {}
 
-  @Get('main')
+  @Get()
   @SetRolePolicy({ taskCategory: RolePolicyLevel.Read })
   async getTaskMainCategories(@Query() query: TaskCategoryListQueryDto) {
     return this.taskCategoryService.getTaskMainCategories(query);
   }
 
-  @Get('main/:id(\\d+)')
+  @Get(':id(\\d+)')
   @SetRolePolicy({ taskCategory: RolePolicyLevel.Read })
   async getTaskMainCategory(@Param() param: TaskCategoryParamDto) {
     return this.taskCategoryService.getTaskMainCategory(param);
   }
 
-  @Post('main')
+  @Post()
   @SetRolePolicy({ taskCategory: RolePolicyLevel.Create })
   async createTaskMainCategory(@Body() body: TaskMainCategoryCreateBodyDto) {
     return this.taskCategoryService.createTaskMainCategory(body);
   }
 
-  @Patch('main/:id(\\d+)')
+  @Patch(':id(\\d+)')
   @SetRolePolicy({ taskCategory: RolePolicyLevel.Update })
   async updateTaskMainCategory(@Param() param: TaskCategoryParamDto, @Body() body: TaskMainCategoryUpdateBodyDto) {
     return this.taskCategoryService.updateTaskMainCategory(param, body);
   }
 
-  @Delete('main/:id(\\d+)')
+  @Delete(':id(\\d+)')
   @SetRolePolicy({ taskCategory: RolePolicyLevel.Delete })
   async deleteTaskMainCategory(@Param() param: TaskCategoryParamDto) {
     return this.taskCategoryService.deleteTaskMainCategory(param);
   }
 
-  @Post('sub')
+  @Post('child')
   @SetRolePolicy({ taskCategory: RolePolicyLevel.Create })
   async createTaskSubCategory(@Body() body: TaskSubCategoryCreateBodyDto) {
     return this.taskCategoryService.createTaskSubCategory(body);
   }
 
-  @Patch('sub/:id(\\d+)')
+  @Patch('child/:id(\\d+)')
   @SetRolePolicy({ taskCategory: RolePolicyLevel.Update })
   async updateTaskSubCategory(@Param() param: TaskCategoryParamDto, @Body() body: TaskSubCategoryUpdateBodyDto) {
     return this.taskCategoryService.updateTaskSubCategory(param, body);
   }
 
-  @Delete('sub/:id(\\d+)')
+  @Delete('child/:id(\\d+)')
   @SetRolePolicy({ taskCategory: RolePolicyLevel.Delete })
   async deleteTaskSubCategory(@Param() param: TaskCategoryParamDto) {
     return this.taskCategoryService.deleteTaskSubCategory(param);
