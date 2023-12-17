@@ -3,7 +3,7 @@ import { DataSource, DeepPartial, EntityManager } from 'typeorm';
 import { Customer } from '@entity';
 
 import { EntityQuery } from '../class';
-import { CustomerQueryFindListArgs } from './types';
+import { CustomerQueryFindListArgs, FindListArgs } from './types';
 
 export class CustomerQuery extends EntityQuery<Customer> {
   constructor(connection: DataSource | EntityManager) {
@@ -30,6 +30,15 @@ export class CustomerQuery extends EntityQuery<Customer> {
       skip: args.skip,
       take: args.take,
       order: { createdAt: 'DESC' },
+    });
+  }
+
+  async findCustomerSelectList(args: FindListArgs) {
+    return this.repository.findAndCount({
+      select: { id: true, kr: true, en: true, alias: true },
+      skip: args.skip,
+      take: args.take,
+      order: { id: 'ASC' },
     });
   }
 
