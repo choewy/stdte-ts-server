@@ -110,6 +110,10 @@ export const toEntity = <E extends { id: number }>(Entity: Type<E>, value?: numb
     return value;
   }
 
+  if (value == 0) {
+    return null;
+  }
+
   return plainToInstance(Entity, { id: value });
 };
 
@@ -118,7 +122,21 @@ export const toEntities = <E extends { id: number }>(Entity: Type<E>, value?: nu
     return [];
   }
 
-  return value.map((id) => plainToInstance(Entity, { id }));
+  const entities: E[] = [];
+
+  for (const id of value) {
+    if (id == null) {
+      continue;
+    }
+
+    if (id < 1) {
+      continue;
+    }
+
+    entities.push(plainToInstance(Entity, { id }));
+  }
+
+  return entities;
 };
 
 export const toStr = (value?: number | null | string | undefined) => {

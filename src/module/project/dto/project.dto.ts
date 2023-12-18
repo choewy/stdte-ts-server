@@ -18,14 +18,14 @@ export class ProjectDto {
   difficulty: string;
   amount: string;
   status: ProjectStatus;
-  startDate: string | null;
-  endDate: string | null;
-  keepDate: string | null;
+  startDate: string;
+  endDate: string;
+  keepDate: string;
   orderRecord: ProjectOrderRecordDto;
   saleRecord: ProjectSaleRecordDto;
   businessCategory: ProjectIndustryCategoryDto | null;
   industryCategory: ProjectBusinessCategoryDto | null;
-  taskMainCategory: ProjectTaskMainCategoryDto | null;
+  taskCategory: ProjectTaskMainCategoryDto | null;
   customer: ProjectCustomerDto | null;
   internalOwners: ProjectUserDto[];
   internalManagers: ProjectUserDto[];
@@ -33,6 +33,7 @@ export class ProjectDto {
   externalOwners: ProjectUserDto[];
   externalManagers: ProjectUserDto[];
   externalLeaders: ProjectUserDto[];
+  canExpose: boolean;
   createdAt: string | null;
   updatedAt: string | null;
 
@@ -44,21 +45,22 @@ export class ProjectDto {
     this.difficulty = project.difficulty;
     this.amount = project.amount;
     this.status = project.status;
-    this.startDate = toDateFormat(DateTimeFormat.YYYY_MM_DD, project.startDate);
-    this.endDate = toDateFormat(DateTimeFormat.YYYY_MM_DD, project.endDate);
-    this.keepDate = toDateFormat(DateTimeFormat.YYYY_MM_DD, project.keepDate);
+    this.startDate = toDateFormat(DateTimeFormat.YYYY_MM_DD, project.startDate) ?? '';
+    this.endDate = toDateFormat(DateTimeFormat.YYYY_MM_DD, project.endDate) ?? '';
+    this.keepDate = toDateFormat(DateTimeFormat.YYYY_MM_DD, project.keepDate) ?? '';
     this.orderRecord = new ProjectOrderRecordDto(project.orderRecord);
     this.saleRecord = new ProjectOrderRecordDto(project.saleRecord);
     this.customer = project.customer ? new ProjectCustomerDto(project.customer) : null;
     this.businessCategory = project.businessCategory ? new ProjectBusinessCategoryDto(project.businessCategory) : null;
     this.industryCategory = project.industryCategory ? new ProjectIndustryCategoryDto(project.industryCategory) : null;
-    this.taskMainCategory = project.taskMainCategory ? new ProjectTaskMainCategoryDto(project.taskMainCategory) : null;
+    this.taskCategory = project.taskMainCategory ? new ProjectTaskMainCategoryDto(project.taskMainCategory) : null;
     this.internalOwners = project.internalOwners.map((projectUser) => new ProjectUserDto(projectUser));
     this.internalManagers = project.internalManagers.map((projectUser) => new ProjectUserDto(projectUser));
     this.internalLeaders = project.internalLeaders.map((projectUser) => new ProjectUserDto(projectUser));
     this.externalOwners = project.externalOwners.map((projectUser) => new ProjectUserDto(projectUser));
     this.externalManagers = project.externalManagers.map((projectUser) => new ProjectUserDto(projectUser));
     this.externalLeaders = project.externalLeaders.map((projectUser) => new ProjectUserDto(projectUser));
+    this.canExpose = project.canExpose;
     this.createdAt = toISOString(project.createdAt);
     this.updatedAt = toISOString(project.updatedAt);
   }
