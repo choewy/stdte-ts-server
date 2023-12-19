@@ -60,6 +60,7 @@ export class ProjectQuery extends EntityQuery<Project> {
       },
       skip: args.skip,
       take: args.take,
+      order: { createdAt: 'DESC' },
     });
   }
 

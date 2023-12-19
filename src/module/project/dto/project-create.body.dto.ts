@@ -64,6 +64,30 @@ export class ProjectCreateBodyDto {
   keepDate: Date | null;
 
   @IsOptional()
+  @IsDate()
+  @Transform(({ value }) => toDate(value))
+  @Transform(({ value }) => toEmptyNull(value))
+  orderRecordDate: Date | null;
+
+  @IsOptional()
+  @IsNumberString()
+  @Transform(({ value }) => toStr(value))
+  @Transform(({ value }) => toEmptyNull(value))
+  orderRecordAmount: string;
+
+  @IsOptional()
+  @IsDate()
+  @Transform(({ value }) => toDate(value))
+  @Transform(({ value }) => toEmptyNull(value))
+  saleRecordDate: Date | null;
+
+  @IsOptional()
+  @IsNumberString()
+  @Transform(({ value }) => toStr(value))
+  @Transform(({ value }) => toEmptyNull(value))
+  saleRecordAmount: string;
+
+  @IsOptional()
   @IsInstance(Customer)
   @Transform(({ value }) => toEntity(Customer, value))
   @Transform(({ value }) => toEmptyNull(value))

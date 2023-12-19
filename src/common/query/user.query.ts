@@ -28,7 +28,7 @@ export class UserQuery extends EntityQuery<User> {
     return this.repository.findAndCount({
       relations: { role: true },
       select: { id: true, name: true, onInit: true },
-      where: { onInit: false },
+      where: { onInit: false, credentials: { status: Not(CredentialsStatus.Wating) } },
       skip: args.skip,
       take: args.take,
       order: { name: 'ASC' },

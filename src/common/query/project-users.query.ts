@@ -56,40 +56,58 @@ export class ProjectUsersQuery {
       >
     >,
   ) {
-    if (args.internalOwners && args.internalOwners.length > 0) {
+    if (args.internalOwners) {
       const users = await this.findUsersOnlyId(args.internalOwners);
       await this.deleteProjectInternalOwners({ projectId });
-      await this.upsertProjectInternalOwners(users.map((user) => ({ projectId, userId: user.id })));
+
+      if (args.internalOwners.length > 0) {
+        await this.upsertProjectInternalOwners(users.map((user) => ({ projectId, userId: user.id })));
+      }
     }
 
-    if (args.internalManagers && args.internalManagers.length > 0) {
+    if (args.internalManagers) {
       const users = await this.findUsersOnlyId(args.internalManagers);
       await this.deleteProjectInternalManagers({ projectId });
-      await this.upsertProjectInternalManagers(users.map((user) => ({ projectId, userId: user.id })));
+
+      if (args.internalManagers.length > 0) {
+        await this.upsertProjectInternalManagers(users.map((user) => ({ projectId, userId: user.id })));
+      }
     }
 
-    if (args.internalLeaders && args.internalLeaders.length > 0) {
+    if (args.internalLeaders) {
       const users = await this.findUsersOnlyId(args.internalLeaders);
       await this.deleteProjectInternalLeaders({ projectId });
-      await this.upsertProjectInternalLeaders(users.map((user) => ({ projectId, userId: user.id })));
+
+      if (args.internalLeaders.length > 0) {
+        await this.upsertProjectInternalLeaders(users.map((user) => ({ projectId, userId: user.id })));
+      }
     }
 
-    if (args.externalOwners && args.externalOwners.length > 0) {
+    if (args.externalOwners) {
       const users = await this.findUsersOnlyId(args.externalOwners);
       await this.deleteProjectExternalOwners({ projectId });
-      await this.upsertProjectExternalOwners(users.map((user) => ({ projectId, userId: user.id })));
+
+      if (args.externalOwners.length > 0) {
+        await this.upsertProjectExternalOwners(users.map((user) => ({ projectId, userId: user.id })));
+      }
     }
 
-    if (args.externalManagers && args.externalManagers.length > 0) {
+    if (args.externalManagers) {
       const users = await this.findUsersOnlyId(args.externalManagers);
       await this.deleteProjectExternalManagers({ projectId });
-      await this.upsertProjectExternalManagers(users.map((user) => ({ projectId, userId: user.id })));
+
+      if (args.externalManagers.length > 0) {
+        await this.upsertProjectExternalManagers(users.map((user) => ({ projectId, userId: user.id })));
+      }
     }
 
-    if (args.externalLeaders && args.externalLeaders.length > 0) {
+    if (args.externalLeaders) {
       const users = await this.findUsersOnlyId(args.externalLeaders);
       await this.deleteProjectExternalLeaders({ projectId });
-      await this.upsertProjectExternalLeaders(users.map((user) => ({ projectId, userId: user.id })));
+
+      if (args.externalLeaders.length > 0) {
+        await this.upsertProjectExternalLeaders(users.map((user) => ({ projectId, userId: user.id })));
+      }
     }
   }
 
