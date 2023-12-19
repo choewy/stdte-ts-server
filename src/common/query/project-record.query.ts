@@ -16,7 +16,7 @@ export class ProjectRecordQuery {
   }
 
   async insertProjectSaleRecord(projectId: number, entity: DeepPartial<ProjectSaleRecord>) {
-    await this.projectOrderRecordRepository.insert(this.projectOrderRecordRepository.create({ projectId, ...entity }));
+    await this.projectSaleRecordRepository.insert(this.projectSaleRecordRepository.create({ projectId, ...entity }));
   }
 
   async updateProjectOrderRecord(projectId: number, entity: DeepPartial<ProjectOrderRecord>) {
