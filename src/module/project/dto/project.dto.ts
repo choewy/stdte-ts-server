@@ -50,8 +50,8 @@ export class ProjectDto {
     if (project.startDate == null || project.endDate == null) {
       this.months = 0;
     } else {
-      const startDate = DateTime.fromJSDate(project.startDate);
-      const endDate = DateTime.fromJSDate(project.endDate);
+      const startDate = DateTime.fromJSDate(new Date(project.startDate));
+      const endDate = DateTime.fromJSDate(new Date(project.endDate));
 
       this.months = endDate.diff(startDate, 'months').get('months');
     }
