@@ -10,3 +10,4 @@ export * from './project.param.dto';
 export * from './project-list.query.dto';
 export * from './project-create.body.dto';
 export * from './project-update.body.dto';
+export * from './project-xlsx-row.dto';

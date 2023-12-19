@@ -6,6 +6,8 @@ import {
   AlreadyExistProjectCodeException,
   BusinessCategoryQuery,
   CustomerQuery,
+  DownloadDto,
+  DownloadFormat,
   IndustryCategoryQuery,
   ListDto,
   NotFoundProjectException,
@@ -15,7 +17,15 @@ import {
   TaskMainCategoryQuery,
 } from '@server/common';
 
-import { ProjectCreateBodyDto, ProjectDto, ProjectListQueryDto, ProjectParamDto, ProjectUpdateBodyDto } from './dto';
+import {
+  ProjectCreateBodyDto,
+  ProjectDto,
+  ProjectListQueryDto,
+  ProjectParamDto,
+  ProjectUpdateBodyDto,
+  ProjectXlsxRowDto,
+} from './dto';
+import { XlsxService } from '@server/core';
 
 @Injectable()
 export class ProjectService {
@@ -25,6 +35,17 @@ export class ProjectService {
     const projectQuery = new ProjectQuery(this.dataSource);
 
     return new ListDto(query, await projectQuery.findProjectList(query), ProjectDto);
+  }
+
+  async downloadProjects() {
+    const projectQuery = new ProjectQuery(this.dataSource);
+    const projects = await projectQuery.findAll();
+
+    const xlsxService = new XlsxService();
+    const worksheet = xlsxService.fromObjects(projects.map((project) => new ProjectXlsxRowDto(project)));
+    const buffer = xlsxService.save([{ sheet: worksheet, name: '사업목록' }]);
+
+    return new DownloadDto(buffer, DownloadFormat.Xlsx, '사업목록');
   }
 
   async createProject(body: ProjectCreateBodyDto) {

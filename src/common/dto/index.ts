@@ -3,6 +3,7 @@ export * from './response.dto';
 export * from './exception.dto';
 export * from './error.dto';
 
+export * from './download.dto';
 export * from './list.dto';
 export * from './list.query.dto';
 export * from './insert.dto';

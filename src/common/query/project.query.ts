@@ -42,6 +42,25 @@ export class ProjectQuery extends EntityQuery<Project> {
     });
   }
 
+  async findAll() {
+    return this.repository.find({
+      relations: {
+        orderRecord: true,
+        saleRecord: true,
+        businessCategory: true,
+        industryCategory: true,
+        taskMainCategory: true,
+        customer: true,
+        internalOwners: { user: true },
+        internalManagers: { user: true },
+        internalLeaders: { user: true },
+        externalOwners: { user: true },
+        externalManagers: { user: true },
+        externalLeaders: { user: true },
+      },
+    });
+  }
+
   async findProjectList(args: ProjectQueryFindListArgs) {
     return this.repository.findAndCount({
       relations: {

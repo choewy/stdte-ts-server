@@ -24,6 +24,12 @@ export class ProjectController {
     return this.projectService.createProject(body);
   }
 
+  @Post('download')
+  @SetRolePolicy({ project: RolePolicyLevel.Read })
+  async downloadProjects() {
+    return this.projectService.downloadProjects();
+  }
+
   @Patch(':id(\\d+)')
   @SetRolePolicy({ project: RolePolicyLevel.Update })
   async updateProject(@Param() param: ProjectParamDto, @Body() body: ProjectUpdateBodyDto) {

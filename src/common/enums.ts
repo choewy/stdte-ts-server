@@ -4,6 +4,18 @@ export enum NodeEnv {
   Product = 'product',
 }
 
+export enum DownloadFormat {
+  Xlsx = 'xlsx',
+  Json = 'json',
+  Csv = 'csv',
+}
+
+export enum DownloadMimetype {
+  Xlsx = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  Json = 'application/json',
+  Csv = 'text/csv',
+}
+
 export enum MetadataKey {
   RolePolicy = 'role-policy',
 }
