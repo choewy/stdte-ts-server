@@ -15,15 +15,7 @@ import {
   TaskMainCategoryQuery,
 } from '@server/common';
 
-import {
-  ProjectCreateBodyDto,
-  ProjectDto,
-  ProjectListQueryDto,
-  ProjectOrderRecordUpdateBodyDto,
-  ProjectParamDto,
-  ProjectSaleRecordUpdateBodyDto,
-  ProjectUpdateBodyDto,
-} from './dto';
+import { ProjectCreateBodyDto, ProjectDto, ProjectListQueryDto, ProjectParamDto, ProjectUpdateBodyDto } from './dto';
 
 @Injectable()
 export class ProjectService {
@@ -33,17 +25,6 @@ export class ProjectService {
     const projectQuery = new ProjectQuery(this.dataSource);
 
     return new ListDto(query, await projectQuery.findProjectList(query), ProjectDto);
-  }
-
-  async getProject(param: ProjectParamDto) {
-    const projectQuery = new ProjectQuery(this.dataSource);
-    const project = await projectQuery.findProjectById(param.id);
-
-    if (project == null) {
-      throw new NotFoundProjectException();
-    }
-
-    return new ProjectDto(project);
   }
 
   async createProject(body: ProjectCreateBodyDto) {
@@ -180,30 +161,6 @@ export class ProjectService {
     }
 
     return new ProjectDto(project);
-  }
-
-  async updateProjectOrderRecord(param: ProjectParamDto, body: ProjectOrderRecordUpdateBodyDto) {
-    const projectQuery = new ProjectQuery(this.dataSource);
-    const hasProject = await projectQuery.hasProjectById(param.id);
-
-    if (hasProject === false) {
-      throw new NotFoundProjectException();
-    }
-
-    const projectRecordQuery = new ProjectRecordQuery(this.dataSource);
-    await projectRecordQuery.updateProjectOrderRecord(param.id, body);
-  }
-
-  async updateProjectSaleRecord(param: ProjectParamDto, body: ProjectSaleRecordUpdateBodyDto) {
-    const projectQuery = new ProjectQuery(this.dataSource);
-    const hasProject = await projectQuery.hasProjectById(param.id);
-
-    if (hasProject === false) {
-      throw new NotFoundProjectException();
-    }
-
-    const projectRecordQuery = new ProjectRecordQuery(this.dataSource);
-    await projectRecordQuery.updateProjectSaleRecord(param.id, body);
   }
 
   async deleteProject(param: ProjectParamDto) {
