@@ -1,4 +1,4 @@
-import { UserStatus, GenderCode, User, Degree } from '@entity';
+import { UserStatus, User, Degree } from '@entity';
 import { DateTimeFormat, toDateFormat, toISOString } from '@server/common';
 
 import { UserRoleDto } from './user-role.dto';
@@ -8,7 +8,6 @@ export class UserDto {
   id: number;
   name: string;
   phone: string;
-  gender: GenderCode | string;
   birthday: string;
   scienceNumber: string;
   degree: Degree | string;
@@ -28,7 +27,6 @@ export class UserDto {
     this.id = user.id;
     this.name = user.name;
     this.phone = user.phone ?? '';
-    this.gender = user.gender ?? '';
     this.birthday = toDateFormat(DateTimeFormat.YYYY_MM_DD, user.birthday) ?? '';
     this.scienceNumber = user.scienceNumber ?? '';
     this.degree = user.degree ?? '';

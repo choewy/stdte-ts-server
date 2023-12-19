@@ -16,7 +16,6 @@ export class ProjectXlsxRowDto {
   비고: string;
   시작일자: string;
   종료일자: string;
-  보존기한: string;
   'PO(대외)': string;
   'PM(대외)': string;
   'PL(대외)': string;
@@ -59,7 +58,6 @@ export class ProjectXlsxRowDto {
     this.비고 = project.description ?? '';
     this.시작일자 = toDateFormat(DateTimeFormat.YYYY_MM_DD, project.startDate) ?? '';
     this.종료일자 = toDateFormat(DateTimeFormat.YYYY_MM_DD, project.endDate) ?? '';
-    this.보존기한 = toDateFormat(DateTimeFormat.YYYY_MM_DD, project.keepDate) ?? '';
     this['PO(대외)'] = project.externalOwners.map(({ user }) => user.name).join(', ');
     this['PM(대외)'] = project.externalManagers.map(({ user }) => user.name).join(', ');
     this['PL(대외)'] = project.externalLeaders.map(({ user }) => user.name).join(', ');

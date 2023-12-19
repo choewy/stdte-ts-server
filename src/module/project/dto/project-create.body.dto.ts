@@ -58,12 +58,6 @@ export class ProjectCreateBodyDto {
   endDate: Date | null;
 
   @IsOptional()
-  @IsDate()
-  @Transform(({ value }) => toDate(value))
-  @Transform(({ value }) => toEmptyNull(value))
-  keepDate: Date | null;
-
-  @IsOptional()
   @IsInstance(Customer)
   @Transform(({ value }) => toEntity(Customer, value))
   @Transform(({ value }) => toEmptyNull(value))

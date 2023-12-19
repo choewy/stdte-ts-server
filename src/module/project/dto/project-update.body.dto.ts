@@ -65,12 +65,6 @@ export class ProjectUpdateBodyDto {
   endDate?: Date | null;
 
   @IsOptional()
-  @IsDate()
-  @Transform(({ value }) => toDate(value))
-  @Transform(({ value }) => toEmptyNull(value))
-  keepDate?: Date | null;
-
-  @IsOptional()
   @IsInstance(BusinessCategory)
   @Transform(({ value }) => toEntity(BusinessCategory, value))
   @Transform(({ value }) => toEmptyNull(value))

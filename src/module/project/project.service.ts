@@ -72,7 +72,6 @@ export class ProjectService {
         status: body.status,
         startDate: body.startDate,
         endDate: body.endDate,
-        keepDate: body.keepDate,
         customer: await customerQuery.findCustomerOnlyId(body.customer),
         businessCategory: await businessCategoryQuery.findBusinessCategoryOnlyId(body.businessCategory),
         industryCategory: await industryCategoryQuery.findIndustryCategoryOnlyId(body.industryCategory),
@@ -133,7 +132,6 @@ export class ProjectService {
         status: body.status,
         startDate: body.startDate,
         endDate: body.endDate,
-        keepDate: body.keepDate,
         customer: body.customer ? await customerQuery.findCustomerOnlyId(body.customer) : undefined,
         businessCategory: body.businessCategory
           ? await businessCategoryQuery.findBusinessCategoryOnlyId(body.businessCategory)

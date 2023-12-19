@@ -43,7 +43,6 @@ export class ProjectDto {
     this.status = project.status;
     this.startDate = toDateFormat(DateTimeFormat.YYYY_MM_DD, project.startDate) ?? '';
     this.endDate = toDateFormat(DateTimeFormat.YYYY_MM_DD, project.endDate) ?? '';
-    this.keepDate = toDateFormat(DateTimeFormat.YYYY_MM_DD, project.keepDate) ?? '';
     this.customer = project.customer ? new ProjectCustomerDto(project.customer) : null;
     this.businessCategory = project.businessCategory ? new ProjectBusinessCategoryDto(project.businessCategory) : null;
     this.industryCategory = project.industryCategory ? new ProjectIndustryCategoryDto(project.industryCategory) : null;
