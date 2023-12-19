@@ -12,7 +12,6 @@ import {
   ListDto,
   NotFoundProjectException,
   ProjectQuery,
-  ProjectRecordQuery,
   ProjectUsersQuery,
   TaskMainCategoryQuery,
 } from '@server/common';
@@ -27,6 +26,7 @@ import {
 } from './dto';
 import { XlsxService } from '@server/core';
 
+/** @todo project records insert, update */
 @Injectable()
 export class ProjectService {
   constructor(private readonly dataSource: DataSource) {}
@@ -57,7 +57,6 @@ export class ProjectService {
 
     const projectId = await this.dataSource.transaction(async (em) => {
       const projectQuery = new ProjectQuery(em);
-      const projectRecordQuery = new ProjectRecordQuery(em);
       const projectUsersQuery = new ProjectUsersQuery(em);
       const customerQuery = new CustomerQuery(em);
       const businessCategoryQuery = new BusinessCategoryQuery(em);
@@ -82,14 +81,6 @@ export class ProjectService {
       });
 
       const projectId = insert.raw.insertId;
-      await projectRecordQuery.insertProjectOrderRecord(projectId, {
-        date: body.orderRecordDate,
-        amount: body.orderRecordAmount,
-      });
-      await projectRecordQuery.insertProjectSaleRecord(projectId, {
-        date: body.saleRecordDate,
-        amount: body.saleRecordAmount,
-      });
       await projectUsersQuery.updateProjectUsers(projectId, {
         externalOwners: body.externalOwners,
         externalManagers: body.externalManagers,
@@ -127,7 +118,6 @@ export class ProjectService {
 
     await this.dataSource.transaction(async (em) => {
       const projectQuery = new ProjectQuery(em);
-      const projectRecordQuery = new ProjectRecordQuery(em);
       const projectUsersQuery = new ProjectUsersQuery(em);
       const customerQuery = new CustomerQuery(em);
       const businessCategoryQuery = new BusinessCategoryQuery(em);
@@ -157,14 +147,6 @@ export class ProjectService {
         canExpose: body.canExpose,
       });
 
-      await projectRecordQuery.updateProjectOrderRecord(param.id, {
-        date: body.orderRecordDate,
-        amount: body.orderRecordAmount,
-      });
-      await projectRecordQuery.updateProjectSaleRecord(param.id, {
-        date: body.saleRecordDate,
-        amount: body.saleRecordAmount,
-      });
       await projectUsersQuery.updateProjectUsers(param.id, {
         externalOwners: body.externalOwners,
         externalManagers: body.externalManagers,

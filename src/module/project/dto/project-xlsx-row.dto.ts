@@ -17,10 +17,6 @@ export class ProjectXlsxRowDto {
   시작일자: string;
   종료일자: string;
   보존기한: string;
-  수주일자: string;
-  수주금액: number;
-  매출발생일자: string;
-  매출발생금액: number;
   'PO(대외)': string;
   'PM(대외)': string;
   'PL(대외)': string;
@@ -64,10 +60,6 @@ export class ProjectXlsxRowDto {
     this.시작일자 = toDateFormat(DateTimeFormat.YYYY_MM_DD, project.startDate) ?? '';
     this.종료일자 = toDateFormat(DateTimeFormat.YYYY_MM_DD, project.endDate) ?? '';
     this.보존기한 = toDateFormat(DateTimeFormat.YYYY_MM_DD, project.keepDate) ?? '';
-    this.수주일자 = toDateFormat(DateTimeFormat.YYYY_MM_DD, project.orderRecord.date) ?? '';
-    this.수주금액 = Number(project.orderRecord.amount);
-    this.매출발생일자 = toDateFormat(DateTimeFormat.YYYY_MM_DD, project.saleRecord.date) ?? '';
-    this.매출발생금액 = Number(project.saleRecord.amount);
     this['PO(대외)'] = project.externalOwners.map(({ user }) => user.name).join(', ');
     this['PM(대외)'] = project.externalManagers.map(({ user }) => user.name).join(', ');
     this['PL(대외)'] = project.externalLeaders.map(({ user }) => user.name).join(', ');

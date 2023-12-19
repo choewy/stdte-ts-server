@@ -12,18 +12,22 @@ export class ProjectRecordQuery {
   }
 
   async insertProjectOrderRecord(projectId: number, entity: DeepPartial<ProjectOrderRecord>) {
-    await this.projectOrderRecordRepository.insert(this.projectOrderRecordRepository.create({ projectId, ...entity }));
+    await this.projectOrderRecordRepository.insert(
+      this.projectOrderRecordRepository.create({ project: { id: projectId }, ...entity }),
+    );
   }
 
   async insertProjectSaleRecord(projectId: number, entity: DeepPartial<ProjectSaleRecord>) {
-    await this.projectSaleRecordRepository.insert(this.projectSaleRecordRepository.create({ projectId, ...entity }));
+    await this.projectSaleRecordRepository.insert(
+      this.projectSaleRecordRepository.create({ project: { id: projectId }, ...entity }),
+    );
   }
 
-  async updateProjectOrderRecord(projectId: number, entity: DeepPartial<ProjectOrderRecord>) {
-    return this.projectOrderRecordRepository.update({ projectId }, this.projectOrderRecordRepository.create(entity));
+  async updateProjectOrderRecord(id: number, entity: DeepPartial<ProjectOrderRecord>) {
+    return this.projectOrderRecordRepository.update({ id }, this.projectOrderRecordRepository.create(entity));
   }
 
-  async updateProjectSaleRecord(projectId: number, entity: DeepPartial<ProjectOrderRecord>) {
-    return this.projectSaleRecordRepository.update({ projectId }, this.projectSaleRecordRepository.create(entity));
+  async updateProjectSaleRecord(id: number, entity: DeepPartial<ProjectOrderRecord>) {
+    return this.projectSaleRecordRepository.update({ id }, this.projectSaleRecordRepository.create(entity));
   }
 }

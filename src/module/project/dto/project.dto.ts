@@ -7,8 +7,6 @@ import { ProjectCustomerDto } from './project-customer.dto';
 import { ProjectIndustryCategoryDto } from './project-industry-category.dto';
 import { ProjectBusinessCategoryDto } from './project-business-category.dto';
 import { ProjectTaskMainCategoryDto } from './project-task-main-category.dto';
-import { ProjectOrderRecordDto } from './project-order-record.dto';
-import { ProjectSaleRecordDto } from './project-sale-record.dto';
 
 export class ProjectDto {
   id: number;
@@ -21,8 +19,6 @@ export class ProjectDto {
   startDate: string;
   endDate: string;
   keepDate: string;
-  orderRecord: ProjectOrderRecordDto;
-  saleRecord: ProjectSaleRecordDto;
   businessCategory: ProjectIndustryCategoryDto | null;
   industryCategory: ProjectBusinessCategoryDto | null;
   taskCategory: ProjectTaskMainCategoryDto | null;
@@ -48,8 +44,6 @@ export class ProjectDto {
     this.startDate = toDateFormat(DateTimeFormat.YYYY_MM_DD, project.startDate) ?? '';
     this.endDate = toDateFormat(DateTimeFormat.YYYY_MM_DD, project.endDate) ?? '';
     this.keepDate = toDateFormat(DateTimeFormat.YYYY_MM_DD, project.keepDate) ?? '';
-    this.orderRecord = new ProjectOrderRecordDto(project.orderRecord);
-    this.saleRecord = new ProjectOrderRecordDto(project.saleRecord);
     this.customer = project.customer ? new ProjectCustomerDto(project.customer) : null;
     this.businessCategory = project.businessCategory ? new ProjectBusinessCategoryDto(project.businessCategory) : null;
     this.industryCategory = project.industryCategory ? new ProjectIndustryCategoryDto(project.industryCategory) : null;

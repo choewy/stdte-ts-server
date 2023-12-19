@@ -25,8 +25,6 @@ export class ProjectQuery extends EntityQuery<Project> {
   async findProjectById(id: number) {
     return this.repository.findOne({
       relations: {
-        orderRecord: true,
-        saleRecord: true,
         businessCategory: true,
         industryCategory: true,
         taskMainCategory: true,
@@ -45,8 +43,6 @@ export class ProjectQuery extends EntityQuery<Project> {
   async findAll() {
     return this.repository.find({
       relations: {
-        orderRecord: true,
-        saleRecord: true,
         businessCategory: true,
         industryCategory: true,
         taskMainCategory: true,
@@ -64,8 +60,6 @@ export class ProjectQuery extends EntityQuery<Project> {
   async findProjectList(args: ProjectQueryFindListArgs) {
     return this.repository.findAndCount({
       relations: {
-        orderRecord: true,
-        saleRecord: true,
         businessCategory: true,
         industryCategory: true,
         taskMainCategory: true,
