@@ -1,3 +1,5 @@
+import { DateTime } from 'luxon';
+
 import { Project, ProjectStatus } from '@entity';
 
 import { DateTimeFormat, toDateFormat, toISOString } from '@server/common';
@@ -19,6 +21,7 @@ export class ProjectDto {
   startDate: string;
   endDate: string;
   keepDate: string;
+  months: number;
   businessCategory: ProjectIndustryCategoryDto | null;
   industryCategory: ProjectBusinessCategoryDto | null;
   taskCategory: ProjectTaskMainCategoryDto | null;
@@ -43,6 +46,16 @@ export class ProjectDto {
     this.status = project.status;
     this.startDate = toDateFormat(DateTimeFormat.YYYY_MM_DD, project.startDate) ?? '';
     this.endDate = toDateFormat(DateTimeFormat.YYYY_MM_DD, project.endDate) ?? '';
+
+    if (project.startDate == null || project.endDate == null) {
+      this.months = 0;
+    } else {
+      const startDate = DateTime.fromJSDate(project.startDate);
+      const endDate = DateTime.fromJSDate(project.endDate);
+
+      this.months = endDate.diff(startDate, 'months').get('months');
+    }
+
     this.customer = project.customer ? new ProjectCustomerDto(project.customer) : null;
     this.businessCategory = project.businessCategory ? new ProjectBusinessCategoryDto(project.businessCategory) : null;
     this.industryCategory = project.industryCategory ? new ProjectIndustryCategoryDto(project.industryCategory) : null;
