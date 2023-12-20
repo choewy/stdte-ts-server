@@ -12,6 +12,7 @@ import {
   ProjectRecordCreateBodyDto,
   ProjectRecordListQueryDto,
   ProjectRecordParamDto,
+  ProjectRecordUpdateBodyDto,
   ProjectUpdateBodyDto,
 } from './dto';
 
@@ -64,7 +65,7 @@ export class ProjectController {
 
   @Patch('records/:type/:id(\\d+)')
   @SetRolePolicy({ project: RolePolicyLevel.Update })
-  async updateProjectRecord(@Param() param: ProjectRecordParamDto, @Body() body: ProjectRecordCreateBodyDto) {
+  async updateProjectRecord(@Param() param: ProjectRecordParamDto, @Body() body: ProjectRecordUpdateBodyDto) {
     return this.projectService.updateProjectRecord(param, body);
   }
 
