@@ -62,13 +62,13 @@ export class ProjectController {
     return this.projectService.createProjectRecord(body);
   }
 
-  @Patch('records/:id(\\d+)/:type')
+  @Patch('records/:type/:id(\\d+)')
   @SetRolePolicy({ project: RolePolicyLevel.Update })
   async updateProjectRecord(@Param() param: ProjectRecordParamDto, @Body() body: ProjectRecordCreateBodyDto) {
     return this.projectService.updateProjectRecord(param, body);
   }
 
-  @Delete('records/:id(\\d+)/:type')
+  @Delete('records/:type/:id(\\d+)')
   @SetRolePolicy({ project: RolePolicyLevel.Update })
   async deleteProjectRecord(@Param() param: ProjectRecordParamDto) {
     return this.projectService.deleteProjectRecord(param);
