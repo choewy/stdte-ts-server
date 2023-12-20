@@ -67,6 +67,8 @@ export class NotFoundTaskMainCategoryException extends NotFoundException {}
 export class NotFoundTaskSubCategoryException extends NotFoundException {}
 export class NotFoundCustomerException extends NotFoundException {}
 export class NotFoundProjectException extends NotFoundException {}
+export class NotFoundProjectOrderRecordException extends NotFoundException {}
+export class NotFoundProjectSaleRecordException extends NotFoundException {}
 export class NotFoundTimeRecordException extends NotFoundException {}
 export class NotFoundTimeMemoException extends NotFoundException {}
 export class CannotUpdateTimeRecordException extends ForbiddenException {}
