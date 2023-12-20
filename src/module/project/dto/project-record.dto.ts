@@ -3,6 +3,7 @@ import { ProjectOrderRecord, ProjectSaleRecord } from '@entity';
 import { DateTimeFormat, toDateFormat, toISOString } from '@server/common';
 
 export class ProjectRecordDto {
+  id: number;
   date: string;
   amount: string;
   description: string;
@@ -10,6 +11,7 @@ export class ProjectRecordDto {
   updatedAt: string | null;
 
   constructor(projectRecord: ProjectOrderRecord | ProjectSaleRecord) {
+    this.id = projectRecord.id;
     this.date = toDateFormat(DateTimeFormat.YYYY_MM_DD, projectRecord.date) ?? '';
     this.amount = projectRecord.amount;
     this.description = projectRecord.description ?? '';
