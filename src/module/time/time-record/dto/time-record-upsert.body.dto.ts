@@ -4,7 +4,7 @@ import { IsDateString, IsInstance, IsNotEmpty, IsNumberString } from 'class-vali
 import { Project, TaskMainCategory, TaskSubCategory, User } from '@entity';
 import { toEntity, toSQLDate, toStr } from '@server/common';
 
-export class TimeRecordUpdateBodyDto {
+export class TimeRecordUpsertBodyDto {
   @IsNotEmpty()
   @IsDateString()
   @Transform(({ value }) => toSQLDate(value))

@@ -19,7 +19,7 @@ import {
   TimeRecordSumMap,
   TimeRecordListBodyDto,
   TimeRecordParamDto,
-  TimeRecordUpdateBodyDto,
+  TimeRecordUpsertBodyDto,
   TimeRecordListDto,
   TimeRecordRowDto,
 } from './dto';
@@ -63,7 +63,7 @@ export class TimeRecordService {
     return new TimeRecordListDto(this.getTimeRecordsTimeTotal(body.s, body.e, timeRecords), timeRecords);
   }
 
-  async updateTimeRecord(userId: number, body: TimeRecordUpdateBodyDto) {
+  async upsertTimeRecord(userId: number, body: TimeRecordUpsertBodyDto) {
     if (userId !== body.user.id) {
       throw new CannotUpdateTimeRecordException();
     }

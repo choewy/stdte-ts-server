@@ -4,7 +4,7 @@ import { Request } from '@server/common';
 import { CredentialsGuard, JwtGuard, RoleGuard } from '@server/core';
 
 import { TimeRecordService } from './time-record.service';
-import { TimeRecordListBodyDto, TimeRecordParamDto, TimeRecordUpdateBodyDto } from './dto';
+import { TimeRecordListBodyDto, TimeRecordParamDto, TimeRecordUpsertBodyDto } from './dto';
 
 @UseGuards(JwtGuard, CredentialsGuard, RoleGuard)
 @Controller('record/time')
@@ -17,8 +17,8 @@ export class TimeRecordController {
   }
 
   @Patch()
-  async updateTimeRecord(@Req() req: Request, @Body() body: TimeRecordUpdateBodyDto) {
-    return this.timeRecordService.updateTimeRecord(req.userId, body);
+  async upsertTimeRecord(@Req() req: Request, @Body() body: TimeRecordUpsertBodyDto) {
+    return this.timeRecordService.upsertTimeRecord(req.userId, body);
   }
 
   @Delete(':id')
