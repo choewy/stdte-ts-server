@@ -1,17 +1,12 @@
 import { TimeRecord } from '@entity';
 import { DateTimeFormat, toDateFormat, toISOString } from '@server/common';
 
-import { TimeRecordProjectDto } from './time-record-project.dto';
-import { TImeRecordTaskMainCategoryDto } from './time-record-task-main-category.dto';
-import { TimeRecordTaskSubCategoryDto } from './time-record-task-sub-category.dto';
-
 export class TimeRecordDto {
   id: string;
   date: string;
   time: string;
-  project: TimeRecordProjectDto;
-  taskMainCategory: TImeRecordTaskMainCategoryDto;
-  taskSubCategory: TimeRecordTaskSubCategoryDto;
+  project: number;
+  category: { parent: number; child: number };
   createdAt: string | null;
   updatedAt: string | null;
 
@@ -19,9 +14,11 @@ export class TimeRecordDto {
     this.id = timeRecord.id;
     this.date = toDateFormat(DateTimeFormat.YYYY_MM_DD, timeRecord.date) as string;
     this.time = timeRecord.time;
-    this.project = new TimeRecordProjectDto(timeRecord.project);
-    this.taskMainCategory = new TImeRecordTaskMainCategoryDto(timeRecord.taskMainCategory);
-    this.taskSubCategory = new TimeRecordTaskSubCategoryDto(timeRecord.taskSubCategory);
+    this.project = timeRecord.project.id;
+    this.category = {
+      parent: timeRecord.taskMainCategory?.id ?? 0,
+      child: timeRecord.taskSubCategory?.id ?? 0,
+    };
     this.createdAt = toISOString(timeRecord.createdAt);
     this.updatedAt = toISOString(timeRecord.updatedAt);
   }
