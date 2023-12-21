@@ -46,6 +46,7 @@ export class TimeLogQuery extends EntityQuery<TimeLog> {
           credentials: { status: CredentialsStatus.Active },
         },
       },
+      order: { id: 'ASC' },
     });
   }
 

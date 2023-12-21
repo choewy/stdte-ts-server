@@ -1,4 +1,4 @@
-import { DataSource, DeepPartial, EntityManager, IsNull, Not } from 'typeorm';
+import { DataSource, DeepPartial, EntityManager, Not } from 'typeorm';
 
 import { Project } from '@entity';
 
@@ -91,13 +91,8 @@ export class ProjectQuery extends EntityQuery<Project> {
           children: { id: true, name: true },
         },
       },
-      where: {
-        taskMainCategory: {
-          id: Not(IsNull()),
-          children: { id: Not(IsNull()) },
-        },
-        canExpose: true,
-      },
+      where: { canExpose: true },
+      order: { id: 'ASC' },
     });
   }
 

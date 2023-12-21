@@ -3,7 +3,7 @@ import { DataSource } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { ListDto, NotFoundUserException, UserQuery } from '@server/common';
 
-import { UserDto, UserListQueryDto, UserUpdateBodyDto } from './dto';
+import { UserDto, UserListQueryDto, UserParamDto, UserUpdateBodyDto } from './dto';
 
 @Injectable()
 export class UserService {
@@ -27,6 +27,15 @@ export class UserService {
     }
 
     return new UserDto(user);
+  }
+
+  async existUser(param: UserParamDto) {
+    const userQuery = new UserQuery(this.dataSource);
+    const hasUser = await userQuery.hasUserById(param.id);
+
+    if (hasUser === false) {
+      throw new NotFoundUserException();
+    }
   }
 
   async updateUser(id: number, body: UserUpdateBodyDto) {

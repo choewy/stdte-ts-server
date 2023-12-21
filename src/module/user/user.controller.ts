@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Patch, Query, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Head, Param, Patch, Query, Req, UseGuards } from '@nestjs/common';
 
 import { RolePolicyLevel } from '@entity';
 import { Request, SetRolePolicy } from '@server/common';
@@ -24,6 +24,12 @@ export class UserController {
   @SetRolePolicy({ user: RolePolicyLevel.Read })
   async getUser(@Param() param: UserParamDto) {
     return this.userService.getUser(param.id);
+  }
+
+  @Head('id(\\d+)')
+  @UseGuards(CredentialsGuard)
+  async existUser(@Param() param: UserParamDto) {
+    return this.userService.existUser(param);
   }
 
   @Patch(':id(\\d+)')
