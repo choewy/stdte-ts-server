@@ -38,8 +38,8 @@ export class InitializeMap {
     const repository = this.connection.getRepository(Role);
 
     return [
-      repository.create({ id: 1, onInit: true, name: '개발자' }),
-      repository.create({ id: 2, onInit: true, name: '관리자' }),
+      repository.create({ id: 1, onInit: true, name: 'developer' }),
+      repository.create({ id: 2, onInit: true, name: 'administrator' }),
     ];
   }
 
