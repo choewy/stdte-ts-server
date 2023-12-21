@@ -6,12 +6,12 @@ export class TimeProjectDto {
   id: number;
   name: string;
   code: string;
-  taskMainCategory: TimeProjectTaskMainCategoryDto;
+  category: TimeProjectTaskMainCategoryDto;
 
   constructor(project: Project) {
     this.id = project.id;
     this.name = project.name;
     this.code = project.code;
-    this.taskMainCategory = new TimeProjectTaskMainCategoryDto(project.taskMainCategory as TaskMainCategory);
+    this.category = new TimeProjectTaskMainCategoryDto(project.taskMainCategory as TaskMainCategory);
   }
 }
