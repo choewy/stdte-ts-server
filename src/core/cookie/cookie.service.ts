@@ -13,14 +13,8 @@ export class CookieService {
     sameSite: 'none',
   };
 
-  private getExpires(key: CookieKey) {
-    switch (key) {
-      case CookieKey.Access:
-        return DateTime.local().plus({ days: 1 }).toJSDate();
-
-      case CookieKey.Refresh:
-        return DateTime.local().plus({ days: 14 }).toJSDate();
-    }
+  private getExpires() {
+    return DateTime.local().plus({ days: 14 }).toJSDate();
   }
 
   get(req: Request, key: CookieKey) {
@@ -28,7 +22,7 @@ export class CookieService {
   }
 
   set(res: Response, key: CookieKey, value: string) {
-    res.cookie(key, value, { expires: this.getExpires(key), ...this.options });
+    res.cookie(key, value, { expires: this.getExpires(), ...this.options });
   }
 
   delete(res: Response, key: CookieKey) {
