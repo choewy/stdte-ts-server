@@ -74,7 +74,7 @@ export class TimeRecordService {
       date: body.date,
       project: body.project.id,
       main: body.taskMainCategory.id,
-      sub: body.taskMainCategory.id,
+      sub: body.taskSubCategory.id,
     });
 
     if (await timeRecordQuery.hasOverDailyTimeRecords(timeRecordId, body)) {
