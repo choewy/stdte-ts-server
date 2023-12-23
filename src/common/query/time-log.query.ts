@@ -11,18 +11,13 @@ export class TimeLogQuery extends EntityQuery<TimeLog> {
 
   async findTimeLogById(id: number) {
     return this.repository.findOne({
-      relations: { user: { credentials: true } },
+      relations: { user: true },
       select: {
+        id: true,
+        user: { id: true, name: true },
         lastUpdatedAt: true,
-        user: {
-          id: true,
-          name: true,
-          onInit: true,
-          status: true,
-          credentials: { status: true },
-        },
       },
-      where: { user: { id, onInit: false } },
+      where: { id },
     });
   }
 
@@ -67,6 +62,6 @@ export class TimeLogQuery extends EntityQuery<TimeLog> {
   }
 
   async upsertTimeLog(id: number) {
-    return this.repository.upsert({ id, lastUpdatedAt: new Date() }, { conflictPaths: { id: true } });
+    return this.repository.upsert({ id, user: { id }, lastUpdatedAt: new Date() }, { conflictPaths: { id: true } });
   }
 }

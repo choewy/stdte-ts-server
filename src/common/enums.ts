@@ -27,7 +27,7 @@ export enum DateTimeFormat {
 }
 
 export enum TimeRecordEvent {
-  Update = 'timerecord.update',
+  Upsert = 'timerecord.upsert',
   Delete = 'timerecord.delete',
 }
 
