@@ -16,8 +16,4 @@ export class SettingQuery extends EntityQuery<Setting> {
   async updateSetting(entity: DeepPartial<Setting>) {
     await this.repository.update({ id: 1 }, entity);
   }
-
-  async upsertSetting(entity: DeepPartial<Setting>) {
-    await this.repository.upsert(entity, { conflictPaths: { id: true } });
-  }
 }

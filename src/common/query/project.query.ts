@@ -1,6 +1,6 @@
 import { DataSource, DeepPartial, EntityManager, Not } from 'typeorm';
 
-import { Project } from '@entity';
+import { Project, ProjectPriority } from '@entity';
 
 import { EntityQuery } from '../class';
 import { ProjectQueryFindListArgs } from './types';
@@ -54,6 +54,7 @@ export class ProjectQuery extends EntityQuery<Project> {
         externalManagers: { user: true },
         externalLeaders: { user: true },
       },
+      where: { priority: ProjectPriority.Business },
     });
   }
 
@@ -73,6 +74,7 @@ export class ProjectQuery extends EntityQuery<Project> {
       },
       skip: args.skip,
       take: args.take,
+      where: { priority: ProjectPriority.Business },
       order: { createdAt: 'DESC' },
     });
   }
@@ -85,6 +87,7 @@ export class ProjectQuery extends EntityQuery<Project> {
         name: true,
         code: true,
         canExpose: true,
+        priority: true,
         taskMainCategory: {
           id: true,
           name: true,
@@ -92,7 +95,7 @@ export class ProjectQuery extends EntityQuery<Project> {
         },
       },
       where: { canExpose: true },
-      order: { id: 'ASC' },
+      order: { priority: 'ASC', id: 'ASC' },
     });
   }
 

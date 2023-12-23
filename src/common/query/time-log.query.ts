@@ -1,4 +1,4 @@
-import { DataSource, DeepPartial, EntityManager, In } from 'typeorm';
+import { DataSource, EntityManager } from 'typeorm';
 
 import { CredentialsStatus, TimeLog, UserStatus } from '@entity';
 
@@ -45,20 +45,8 @@ export class TimeLogQuery extends EntityQuery<TimeLog> {
     });
   }
 
-  async findTimeLogsInUsers(userIds: number[]) {
-    return this.repository.find({
-      relations: { user: true },
-      select: { user: { id: true } },
-      where: { user: { id: In(userIds) } },
-    });
-  }
-
   async insertTimeLog(userId: number) {
     return this.repository.insert(this.repository.create({ id: userId, user: { id: userId } }));
-  }
-
-  async insertTimeLogs(entities: DeepPartial<TimeLog>[]) {
-    return this.repository.insert(this.repository.create(entities));
   }
 
   async upsertTimeLog(id: number) {

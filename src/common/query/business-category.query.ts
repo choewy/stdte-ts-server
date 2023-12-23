@@ -10,10 +10,6 @@ export class BusinessCategoryQuery extends EntityQuery<BusinessCategory> {
     super(connection, BusinessCategory);
   }
 
-  async countBusinessCategories() {
-    return this.repository.count();
-  }
-
   async hasBusinessCategoryById(id: number) {
     return this.repository.exist({ where: { id } });
   }
@@ -59,10 +55,6 @@ export class BusinessCategoryQuery extends EntityQuery<BusinessCategory> {
 
   async insertBusinessCategory(entity: DeepPartial<BusinessCategory>) {
     return this.repository.insert(this.repository.create(entity));
-  }
-
-  async insertBusinessCategories(entities: DeepPartial<BusinessCategory>[]) {
-    return this.repository.insert(this.repository.create(entities));
   }
 
   async updateBusinessCategory(id: number, entity: DeepPartial<BusinessCategory>) {

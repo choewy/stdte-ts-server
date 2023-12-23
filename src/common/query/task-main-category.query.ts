@@ -10,10 +10,6 @@ export class TaskMainCategoryQuery extends EntityQuery<TaskMainCategory> {
     super(connection, TaskMainCategory);
   }
 
-  async countTaskMainCategory() {
-    return this.repository.count();
-  }
-
   async hasTaskMainCategoryById(id: number) {
     return this.repository.exist({ where: { id } });
   }
@@ -63,10 +59,6 @@ export class TaskMainCategoryQuery extends EntityQuery<TaskMainCategory> {
 
   async insertTaskMainCategory(entity: DeepPartial<TaskMainCategory>) {
     return this.repository.insert(this.repository.create(entity));
-  }
-
-  async insertTaskMainCategories(entities: DeepPartial<TaskMainCategory>[]) {
-    return this.repository.insert(this.repository.create(entities));
   }
 
   async updateTaskMainCategory(id: number, entity: DeepPartial<TaskMainCategory>) {

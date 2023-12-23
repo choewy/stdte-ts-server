@@ -1,4 +1,4 @@
-import { DataSource, DeepPartial, EntityManager } from 'typeorm';
+import { DataSource, EntityManager } from 'typeorm';
 
 import { UploadLogBatch } from '@entity';
 
@@ -14,10 +14,6 @@ export class UploadLogBatchQuery extends EntityQuery<UploadLogBatch> {
       where: { id: 1 },
       lock: { mode: 'pessimistic_write' },
     });
-  }
-
-  async upsertLogBatch(entity: DeepPartial<UploadLogBatch>) {
-    await this.repository.upsert(entity, { conflictPaths: { id: true } });
   }
 
   async updateLogBatch(working: boolean) {

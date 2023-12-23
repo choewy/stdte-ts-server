@@ -9,10 +9,6 @@ export class TaskSubCategoryQuery extends EntityQuery<TaskSubCategory> {
     super(connection, TaskSubCategory);
   }
 
-  async countTaskSubCategory() {
-    return this.repository.count();
-  }
-
   async hasTaskSubCategoryById(id: number) {
     return this.repository.exist({ where: { id } });
   }
@@ -26,10 +22,6 @@ export class TaskSubCategoryQuery extends EntityQuery<TaskSubCategory> {
 
   async insertTaskSubCategory(entity: DeepPartial<TaskSubCategory>) {
     return this.repository.insert(this.repository.create(entity));
-  }
-
-  async insertTaskSubCategories(entities: DeepPartial<TaskSubCategory>[]) {
-    return this.repository.insert(this.repository.create(entities));
   }
 
   async updateTaskSubCategory(id: number, entity: DeepPartial<TaskSubCategory>) {

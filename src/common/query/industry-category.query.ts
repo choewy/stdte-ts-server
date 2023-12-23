@@ -10,10 +10,6 @@ export class IndustryCategoryQuery extends EntityQuery<IndustryCategory> {
     super(connection, IndustryCategory);
   }
 
-  async countIndustryCategories() {
-    return this.repository.count();
-  }
-
   async hasIndustryCategoryById(id: number) {
     return this.repository.exist({ where: { id } });
   }
@@ -59,10 +55,6 @@ export class IndustryCategoryQuery extends EntityQuery<IndustryCategory> {
 
   async insertIndustryCategory(entity: DeepPartial<IndustryCategory>) {
     return this.repository.insert(this.repository.create(entity));
-  }
-
-  async insertIndustryCategories(entities: DeepPartial<IndustryCategory>[]) {
-    return this.repository.insert(this.repository.create(entities));
   }
 
   async updateIndustryCategory(id: number, entity: DeepPartial<IndustryCategory>) {

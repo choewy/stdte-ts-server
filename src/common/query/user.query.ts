@@ -35,10 +35,6 @@ export class UserQuery extends EntityQuery<User> {
     });
   }
 
-  async findUsersByOnInit() {
-    return this.repository.find({ where: { onInit: true } });
-  }
-
   async findUserById(id: number, relations?: FindOptionsRelations<User>) {
     return this.repository.findOne({ relations, where: { id } });
   }
@@ -74,10 +70,6 @@ export class UserQuery extends EntityQuery<User> {
 
   async createUser(entity: DeepPartial<User>) {
     return this.repository.save(this.repository.create(entity));
-  }
-
-  async upsertUsers(entities: DeepPartial<User>[]) {
-    await this.repository.upsert(entities, { conflictPaths: { id: true } });
   }
 
   async deleteUsersRole(roleId: number) {

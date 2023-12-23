@@ -18,10 +18,6 @@ export class CredentialsQuery extends EntityQuery<Credentials> {
     return this.repository.exist({ where: { id } });
   }
 
-  async findCredentialsByOnInit() {
-    return this.repository.find({ where: { onInit: true } });
-  }
-
   async findCredentialsByUserId(userId: number) {
     return this.repository.findOne({ where: { user: { id: userId } } });
   }
@@ -66,9 +62,5 @@ export class CredentialsQuery extends EntityQuery<Credentials> {
 
   async updateCredentialsPassword(userId: number, password: string) {
     await this.repository.update({ user: { id: userId } }, { password });
-  }
-
-  async upsertCredentials(entities: DeepPartial<Credentials>[]) {
-    await this.repository.upsert(entities, { conflictPaths: { id: true } });
   }
 }
