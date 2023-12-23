@@ -1,4 +1,4 @@
 export enum TimeRecordGatewayEvent {
-  Update = 'update',
+  Upsert = 'upsert',
   Delete = 'delete',
 }

@@ -91,7 +91,7 @@ export class TimeRecordService {
     const timeRecordSum = await timeRecordQuery.sumTimeRecordsByDate(userId, body.date);
     const timeRecordRow = new TimeRecordRowDto(timeRecordSum.sum, timeRecord);
 
-    this.eventEmitter.emit(TimeRecordEvent.Update, userId, timeRecordRow);
+    this.eventEmitter.emit(TimeRecordEvent.Upsert, userId, timeRecordRow);
     this.eventEmitter.emit(TimeLogEvent.Update, userId);
 
     return timeRecordRow;
@@ -107,7 +107,7 @@ export class TimeRecordService {
     const timeRecordQuery = new TimeRecordQuery(this.dataSource);
     await timeRecordQuery.deleteTimeRecord(param.id);
 
-    this.eventEmitter.emit(TimeRecordEvent.Update, userId, timeRecord);
+    this.eventEmitter.emit(TimeRecordEvent.Upsert, userId, timeRecord);
     this.eventEmitter.emit(TimeLogEvent.Update, userId);
   }
 }

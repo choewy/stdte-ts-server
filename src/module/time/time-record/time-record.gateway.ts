@@ -51,9 +51,9 @@ export class TimeRecordGateway implements OnGatewayConnection {
     await client.join(this.generateRoom(id));
   }
 
-  @OnEvent(TimeRecordEvent.Update)
-  onUpdateTimeRecord(userId: number, payload: TimeRecordRowDto) {
-    this.server.in(this.generateRoom(userId)).emit(TimeRecordGatewayEvent.Update, payload);
+  @OnEvent(TimeRecordEvent.Upsert)
+  onUpsertTimeRecord(userId: number, payload: TimeRecordRowDto) {
+    this.server.in(this.generateRoom(userId)).emit(TimeRecordGatewayEvent.Upsert, payload);
   }
 
   @OnEvent(TimeRecordEvent.Delete)
