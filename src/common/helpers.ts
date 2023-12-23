@@ -1,13 +1,14 @@
 import { DateTime } from 'luxon';
 
-import { SetMetadata, Type } from '@nestjs/common';
+import { SetMetadata, Type, applyDecorators } from '@nestjs/common';
 
 import { RolePolicyProperty } from '@entity';
 
 import { MetadataKey } from './enums';
 import { plainToInstance } from 'class-transformer';
 
-export const SetRolePolicy = (value: Partial<RolePolicyProperty>) => SetMetadata(MetadataKey.RolePolicy, value);
+export const SetRolePolicy = (value: Partial<RolePolicyProperty>, nullable: boolean = false) =>
+  applyDecorators(SetMetadata(MetadataKey.RolePolicy, value), SetMetadata(MetadataKey.RoleNullable, nullable));
 
 export const toDateFormat = (format: string, date?: string | DateTime | Date | null) => {
   if (typeof date === 'string') {

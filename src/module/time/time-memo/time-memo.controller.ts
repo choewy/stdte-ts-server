@@ -1,13 +1,13 @@
 import { Body, Controller, Delete, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
 
-import { CredentialsGuard, JwtGuard, RoleGuard } from '@server/core';
+import { CredentialsGuard, JwtGuard } from '@server/core';
 
 import { Request } from '@server/common';
 
 import { TimeMemoService } from './time-memo.service';
 import { TimeMemoListBodyDto, TimeMemoParamDto, TimeMemoUpdateBodyDto } from './dto';
 
-@UseGuards(JwtGuard, CredentialsGuard, RoleGuard)
+@UseGuards(JwtGuard, CredentialsGuard)
 @Controller('record/memo')
 export class TimeMemoController {
   constructor(private readonly timeMemoService: TimeMemoService) {}

@@ -18,6 +18,7 @@ export enum DownloadMimetype {
 
 export enum MetadataKey {
   RolePolicy = 'role-policy',
+  RoleNullable = 'role-nullable',
 }
 
 export enum DateTimeFormat {

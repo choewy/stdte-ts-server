@@ -20,8 +20,7 @@ export class UserController {
   }
 
   @Get(':id(\\d+)')
-  @UseGuards(CredentialsGuard, RoleGuard)
-  @SetRolePolicy({ user: RolePolicyLevel.Read })
+  @UseGuards(CredentialsGuard)
   async getUser(@Param() param: UserParamDto) {
     return this.userService.getUser(param.id);
   }

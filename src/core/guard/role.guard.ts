@@ -31,7 +31,16 @@ export class RoleGuard implements CanActivate {
       throw new CannotAccessException({ policy: null });
     }
 
+    const nullable = this.reflector.getAllAndOverride<boolean>(MetadataKey.RoleNullable, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
+
     if (user.role == null) {
+      if (nullable === true) {
+        return true;
+      }
+
       throw new CannotAccessException({ policy: null });
     }
 
