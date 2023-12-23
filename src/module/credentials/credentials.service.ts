@@ -4,7 +4,7 @@ import { compareSync, hashSync } from 'bcrypt';
 
 import { Injectable } from '@nestjs/common';
 
-import { User } from '@entity';
+import { CredentialsStatus, User } from '@entity';
 import {
   UserQuery,
   CredentialsQuery,
@@ -17,6 +17,7 @@ import {
   TimeLogQuery,
   ListDto,
   CREDENTIALS_STATUS_VALUES,
+  RoleQuery,
 } from '@server/common';
 import { CookieKey, CookieService, JwtService, JwtTokenType } from '@server/core';
 
@@ -171,7 +172,24 @@ export class CredentialsService {
       throw new NotFoundUserException();
     }
 
-    await credentialsQuery.updateCredentialsStatus(id, body.status);
+    await this.dataSource.transaction(async () => {
+      const credentialsQuery = new CredentialsQuery(this.dataSource);
+      await credentialsQuery.updateCredentialsStatus(id, body.status);
+
+      if (body.status === CredentialsStatus.Reject) {
+        return;
+      }
+
+      const userQuery = new UserQuery(this.dataSource);
+      const roleQuery = new RoleQuery(this.dataSource);
+
+      if (body.status === CredentialsStatus.Active) {
+        const role = await roleQuery.findRoleByDefault();
+        await userQuery.updateUser(id, { role: role == null ? null : { id: role.id } });
+      } else {
+        await userQuery.updateUser(id, { role: null });
+      }
+    });
   }
 
   async updateCredentialsPassword(id: number, body: CredentialsUpdatePasswordBodyDto) {
