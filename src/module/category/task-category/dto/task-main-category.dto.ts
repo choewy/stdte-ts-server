@@ -7,6 +7,7 @@ export class TaskMainCategoryDto {
   id: number;
   name: string;
   description: string;
+  isReadonly: boolean;
   children: TaskSubCategoryDto[];
   createdAt: string | null;
   updatedAt: string | null;
@@ -15,6 +16,7 @@ export class TaskMainCategoryDto {
     this.id = taskMainCategory.id;
     this.name = taskMainCategory.name;
     this.description = taskMainCategory.description ?? '';
+    this.isReadonly = taskMainCategory.isReadonly;
     this.children = taskMainCategory.children.map((subCategory) => new TaskSubCategoryDto(subCategory));
     this.createdAt = toISOString(taskMainCategory.createdAt);
     this.updatedAt = toISOString(taskMainCategory.updatedAt);

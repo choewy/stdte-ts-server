@@ -4,6 +4,8 @@ import { Injectable } from '@nestjs/common';
 
 import {
   AlreadyExistTaskMainCategoryException,
+  CannotDeleteTaskMainCategoryException,
+  CannotUpdateTaskMainCategoryException,
   ListDto,
   NotFoundTaskMainCategoryException,
   NotFoundTaskSubCategoryException,
@@ -73,10 +75,15 @@ export class TaskCategoryService {
 
   async updateTaskMainCategory(param: TaskCategoryParamDto, body: TaskMainCategoryUpdateBodyDto) {
     const taskMainCategoryQuery = new TaskMainCategoryQuery(this.dataSource);
-    const hasTaskMainCategory = await taskMainCategoryQuery.hasTaskMainCategoryById(param.id);
 
-    if (hasTaskMainCategory === false) {
+    let taskMainCategory = await taskMainCategoryQuery.findTaskMainCategoryById(param.id);
+
+    if (taskMainCategory == null) {
       throw new NotFoundTaskMainCategoryException();
+    }
+
+    if (taskMainCategory.isReadonly) {
+      throw new CannotUpdateTaskMainCategoryException();
     }
 
     if (body.name) {
@@ -86,7 +93,8 @@ export class TaskCategoryService {
     }
 
     await taskMainCategoryQuery.updateTaskMainCategory(param.id, body);
-    const taskMainCategory = await taskMainCategoryQuery.findTaskMainCategoryById(param.id, {
+
+    taskMainCategory = await taskMainCategoryQuery.findTaskMainCategoryById(param.id, {
       children: true,
     });
 
@@ -99,10 +107,14 @@ export class TaskCategoryService {
 
   async deleteTaskMainCategory(param: TaskCategoryParamDto) {
     const taskMainCategoryQuery = new TaskMainCategoryQuery(this.dataSource);
-    const hasTaskMainCategory = await taskMainCategoryQuery.hasTaskMainCategoryById(param.id);
+    const taskMainCategory = await taskMainCategoryQuery.findTaskMainCategoryById(param.id);
 
-    if (hasTaskMainCategory === false) {
+    if (taskMainCategory == null) {
       throw new NotFoundTaskMainCategoryException();
+    }
+
+    if (taskMainCategory.isReadonly) {
+      throw new CannotDeleteTaskMainCategoryException();
     }
 
     await taskMainCategoryQuery.deleteTaskMainCategory(param.id);
