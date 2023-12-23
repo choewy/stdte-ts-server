@@ -2,8 +2,11 @@ import { DataSource } from 'typeorm';
 
 import { Injectable } from '@nestjs/common';
 
+import { Role } from '@entity';
 import {
   AlreadyExistRoleException,
+  CannotDeleteRoleException,
+  CannotUpdateRoleException,
   ListDto,
   NotFoundRoleException,
   RolePolicyQuery,
@@ -19,7 +22,6 @@ import {
   RoleUpdateBodyDto,
   RoleUpdateUsersBodyDto,
 } from './dto';
-import { Role } from '@entity';
 
 @Injectable()
 export class RoleService {
@@ -65,11 +67,14 @@ export class RoleService {
 
   async updateRole(param: RoleParamDto, body: RoleUpdateBodyDto) {
     const roleQuery = new RoleQuery(this.dataSource);
-
     const role = await roleQuery.findRoleById(param.id);
 
     if (role == null) {
       throw new NotFoundRoleException();
+    }
+
+    if (role.isReadonly) {
+      throw new CannotUpdateRoleException();
     }
 
     if (body.name) {
@@ -131,11 +136,14 @@ export class RoleService {
 
   async deleteRole(param: RoleParamDto) {
     const roleQuery = new RoleQuery(this.dataSource);
+    const role = await roleQuery.findRoleById(param.id);
 
-    const hasRole = await roleQuery.hasRoleById(param.id);
-
-    if (hasRole === false) {
+    if (role == null) {
       throw new NotFoundRoleException();
+    }
+
+    if (role.isReadonly) {
+      throw new CannotDeleteRoleException();
     }
 
     await roleQuery.deleteRole(param.id);

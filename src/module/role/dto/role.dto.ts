@@ -8,6 +8,7 @@ export class RoleDto {
   id: number;
   name: string;
   users: RoleUserDto[];
+  isReadonly: boolean;
   rolePolicy?: RolePolicyDto;
   createdAt: string | null;
   updatedAt: string | null;
@@ -21,6 +22,7 @@ export class RoleDto {
       this.rolePolicy = new RolePolicyDto(role.policy);
     }
 
+    this.isReadonly = role.isReadonly;
     this.createdAt = toISOString(role.createdAt);
     this.updatedAt = toISOString(role.updatedAt);
   }
