@@ -71,6 +71,10 @@ export class NotFoundProjectOrderRecordException extends NotFoundException {}
 export class NotFoundProjectSaleRecordException extends NotFoundException {}
 export class NotFoundTimeRecordException extends NotFoundException {}
 export class NotFoundTimeMemoException extends NotFoundException {}
+export class CannotUpdateRoleException extends ConflictException {}
+export class CannotDeleteRoleException extends ConflictException {}
+export class CannotUpdateTaskMainCategoryException extends ConflictException {}
+export class CannotDeleteTaskMainCategoryException extends ConflictException {}
 export class CannotUpdateTimeRecordException extends ForbiddenException {}
 export class CannotDeleteTimeRecordException extends ForbiddenException {}
 export class CannotUpdateTimeMemoException extends ForbiddenException {}
