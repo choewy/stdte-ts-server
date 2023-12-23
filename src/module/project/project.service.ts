@@ -5,7 +5,6 @@ import { Injectable } from '@nestjs/common';
 import { ProjectOrderRecord, ProjectSaleRecord } from '@entity';
 import { XlsxService } from '@server/core';
 import {
-  AlreadyExistProjectCodeException,
   BusinessCategoryQuery,
   CustomerQuery,
   DownloadDto,
@@ -58,12 +57,6 @@ export class ProjectService {
   }
 
   async createProject(body: ProjectCreateBodyDto) {
-    const projectQuery = new ProjectQuery(this.dataSource);
-
-    if (await projectQuery.hasProjectByCode(body.code)) {
-      throw new AlreadyExistProjectCodeException();
-    }
-
     const projectId = await this.dataSource.transaction(async (em) => {
       const projectQuery = new ProjectQuery(em);
       const projectUsersQuery = new ProjectUsersQuery(em);
@@ -101,6 +94,7 @@ export class ProjectService {
       return projectId;
     });
 
+    const projectQuery = new ProjectQuery(this.dataSource);
     const project = await projectQuery.findProjectById(projectId);
 
     if (project == null) {
@@ -116,12 +110,6 @@ export class ProjectService {
 
     if (hasProject === false) {
       throw new NotFoundProjectException();
-    }
-
-    if (body.code) {
-      if (await projectQuery.hasProjectByCodeOmitId(param.id, body.code)) {
-        throw new AlreadyExistProjectCodeException();
-      }
     }
 
     await this.dataSource.transaction(async (em) => {

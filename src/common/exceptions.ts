@@ -56,7 +56,6 @@ export class AlreadyExistRoleException extends ConflictException {}
 export class AlreadyExistBusinessCategoryException extends ConflictException {}
 export class AlreadyExistIndustryCategoryException extends ConflictException {}
 export class AlreadyExistTaskMainCategoryException extends ConflictException {}
-export class AlreadyExistProjectCodeException extends ConflictException {}
 export class OverTimeRecordSumException extends ConflictException {}
 export class IncorrectPasswordException extends BadRequestException {}
 export class NotFoundUserException extends NotFoundException {}

@@ -25,7 +25,7 @@ export class ProjectXlsxRowDto {
 
   constructor(project: Project) {
     this.ID = project.id;
-    this.사업코드 = project.code;
+    this.사업코드 = project.code ?? '';
     this.사업명 = project.name;
     this.난이도 = Number(project.difficulty);
     this.산업분야 = project.industryCategory?.name ?? '';

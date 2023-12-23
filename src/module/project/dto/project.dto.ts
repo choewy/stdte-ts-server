@@ -39,7 +39,7 @@ export class ProjectDto {
   constructor(project: Project) {
     this.id = project.id;
     this.name = project.name;
-    this.code = project.code;
+    this.code = project.code ?? '';
     this.description = project.description ?? '';
     this.difficulty = project.difficulty;
     this.amount = project.amount;

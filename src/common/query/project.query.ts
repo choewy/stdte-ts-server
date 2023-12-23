@@ -1,4 +1,4 @@
-import { DataSource, DeepPartial, EntityManager, Not } from 'typeorm';
+import { DataSource, DeepPartial, EntityManager } from 'typeorm';
 
 import { Project, ProjectPriority } from '@entity';
 
@@ -12,14 +12,6 @@ export class ProjectQuery extends EntityQuery<Project> {
 
   async hasProjectById(id: number) {
     return this.repository.exist({ where: { id } });
-  }
-
-  async hasProjectByCode(code: string) {
-    return this.repository.exist({ where: { code } });
-  }
-
-  async hasProjectByCodeOmitId(id: number, code: string) {
-    return this.repository.exist({ where: { id: Not(id), code } });
   }
 
   async findProjectById(id: number) {

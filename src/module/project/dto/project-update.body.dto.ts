@@ -24,10 +24,9 @@ export class ProjectUpdateBodyDto {
 
   @IsOptional()
   @IsString()
-  @IsNotIn([null])
   @Transform(({ value }) => toTrim(value))
   @Transform(({ value }) => toEmptyNull(value))
-  code?: string;
+  code?: string | null;
 
   @IsOptional()
   @IsString()
