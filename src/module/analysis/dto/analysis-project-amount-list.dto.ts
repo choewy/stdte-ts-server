@@ -2,19 +2,22 @@ import { AnalysisProjectAmountRowDto } from './analysis-project-amount-row.dto';
 
 export class AnalysisProjectAmountListDto {
   total: string;
-  customers: AnalysisProjectAmountRowDto[];
-  businessCategories: AnalysisProjectAmountRowDto[];
-  industryCategories: AnalysisProjectAmountRowDto[];
+  years: { year: string; amount: string }[];
+  customer: AnalysisProjectAmountRowDto[];
+  businessCategory: AnalysisProjectAmountRowDto[];
+  industryCategory: AnalysisProjectAmountRowDto[];
 
   constructor(
     total: string,
-    customers: AnalysisProjectAmountRowDto[],
-    businessCategories: AnalysisProjectAmountRowDto[],
-    industryCategories: AnalysisProjectAmountRowDto[],
+    years: { year: string; amount: string }[],
+    customer: AnalysisProjectAmountRowDto[],
+    businessCategory: AnalysisProjectAmountRowDto[],
+    industryCategory: AnalysisProjectAmountRowDto[],
   ) {
     this.total = total;
-    this.customers = customers;
-    this.businessCategories = businessCategories;
-    this.industryCategories = industryCategories;
+    this.years = years;
+    this.customer = customer;
+    this.businessCategory = businessCategory;
+    this.industryCategory = industryCategory;
   }
 }

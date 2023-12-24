@@ -1,3 +1,4 @@
+import { DateTime } from 'luxon';
 import { DataSource } from 'typeorm';
 
 import { Injectable } from '@nestjs/common';
@@ -16,11 +17,23 @@ export class AnalysisService {
 
   async getProjectOrders(query: AnalysisDateRangeQuery) {
     const projectRecordQuery = new ProjectRecordQuery(this.dataSource);
-    const [total, customerRaws, businessCategoryRaws, industryCategoryRaws] =
+    const [total, yearRaws, customerRaws, businessCategoryRaws, industryCategoryRaws] =
       await projectRecordQuery.findProjectOrderRecordAnalysis(query);
 
     const amount = total?.amount ?? '0';
 
+    const s = DateTime.fromJSDate(new Date(query.s));
+    const e = DateTime.fromJSDate(new Date(query.e));
+    const yearRange = e.diff(s, 'years').get('years');
+    const yearRows: { year: string; amount: string }[] = [];
+
+    for (let i = 0; i <= yearRange; i++) {
+      const year = s.plus({ year: i }).toFormat('yyyy');
+      const amount = yearRaws.find((raw) => raw.year === year)?.amount ?? '0';
+
+      yearRows.push({ year, amount });
+    }
+
     const customerQuery = new CustomerQuery(this.dataSource);
     const customers = await customerQuery.findAll();
     const customerRows: AnalysisProjectAmountRowDto[] = [];
@@ -69,15 +82,27 @@ export class AnalysisService {
       );
     }
 
-    return new AnalysisProjectAmountListDto(amount, customerRows, businessCategoryRows, industryCategoryRows);
+    return new AnalysisProjectAmountListDto(amount, yearRows, customerRows, businessCategoryRows, industryCategoryRows);
   }
 
   async getProjectSales(query: AnalysisDateRangeQuery) {
     const projectRecordQuery = new ProjectRecordQuery(this.dataSource);
-    const [total, customerRaws, businessCategoryRaws, industryCategoryRaws] =
+    const [total, yearRaws, customerRaws, businessCategoryRaws, industryCategoryRaws] =
       await projectRecordQuery.findProjectSaleRecordAnalysis(query);
 
     const amount = total?.amount ?? '0';
+
+    const s = DateTime.fromJSDate(new Date(query.s));
+    const e = DateTime.fromJSDate(new Date(query.e));
+    const yearRange = e.diff(s, 'years').get('years');
+    const yearRows: { year: string; amount: string }[] = [];
+
+    for (let i = 0; i <= yearRange; i++) {
+      const year = s.plus({ year: i }).toFormat('yyyy');
+      const amount = yearRaws.find((raw) => raw.year === year)?.amount ?? '0';
+
+      yearRows.push({ year, amount });
+    }
 
     const customerQuery = new CustomerQuery(this.dataSource);
     const customers = await customerQuery.findAll();
@@ -127,6 +152,6 @@ export class AnalysisService {
       );
     }
 
-    return new AnalysisProjectAmountListDto(amount, customerRows, businessCategoryRows, industryCategoryRows);
+    return new AnalysisProjectAmountListDto(amount, yearRows, customerRows, businessCategoryRows, industryCategoryRows);
   }
 }

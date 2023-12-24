@@ -43,6 +43,7 @@ export class ProjectRecordQuery {
       .andWhere('row.date <= :e', { e: args.e });
 
     const totalQueryBuilder = queryBuilder.clone();
+    const yearQueryBuilder = queryBuilder.clone().addSelect('DATE_FORMAT(row.date, "%Y" )', 'year').groupBy('year');
 
     const customerQueryBuilder = queryBuilder
       .clone()
@@ -73,6 +74,7 @@ export class ProjectRecordQuery {
 
     return Promise.all([
       totalQueryBuilder.getRawOne<{ amount: string }>(),
+      yearQueryBuilder.getRawMany<{ year: string; amount: string }>(),
       customerQueryBuilder.getRawMany<ProjectRecordAnalysisRaw>(),
       businessCategoryQueryBuilder.getRawMany<ProjectRecordAnalysisRaw>(),
       industryCategoryQueryBuilder.getRawMany<ProjectRecordAnalysisRaw>(),
@@ -109,6 +111,7 @@ export class ProjectRecordQuery {
       .andWhere('row.date <= :e', { e: args.e });
 
     const totalQueryBuilder = queryBuilder.clone();
+    const yearQueryBuilder = queryBuilder.clone().addSelect('DATE_FORMAT(row.date, "%Y" )', 'year').groupBy('year');
 
     const customerQueryBuilder = queryBuilder
       .clone()
@@ -139,6 +142,7 @@ export class ProjectRecordQuery {
 
     return Promise.all([
       totalQueryBuilder.getRawOne<{ amount: string }>(),
+      yearQueryBuilder.getRawMany<{ year: string; amount: string }>(),
       customerQueryBuilder.getRawMany<ProjectRecordAnalysisRaw>(),
       businessCategoryQueryBuilder.getRawMany<ProjectRecordAnalysisRaw>(),
       industryCategoryQueryBuilder.getRawMany<ProjectRecordAnalysisRaw>(),
