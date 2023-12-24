@@ -2,7 +2,7 @@ import { DataSource, DeepPartial, EntityManager, Repository } from 'typeorm';
 
 import { ProjectOrderRecord, ProjectSaleRecord } from '@entity';
 
-import { ProjectRecordQueryFindListArgs } from './types';
+import { DateRangeArgs, ProjectRecordAnalysisRaw, ProjectRecordQueryFindListArgs } from './types';
 
 export class ProjectRecordQuery {
   private readonly projectOrderRecordRepository: Repository<ProjectOrderRecord>;
@@ -34,6 +34,51 @@ export class ProjectRecordQuery {
     });
   }
 
+  async findProjectOrderRecordAnalysis(args: DateRangeArgs) {
+    const queryBuilder = this.projectOrderRecordRepository
+      .createQueryBuilder('row')
+      .innerJoin('row.project', 'project')
+      .select('SUM(row.amount)', 'amount')
+      .where('row.date >= :s', { s: args.s })
+      .andWhere('row.date <= :e', { e: args.e });
+
+    const totalQueryBuilder = queryBuilder.clone();
+
+    const customerQueryBuilder = queryBuilder
+      .clone()
+      .innerJoin('project.customer', 'customer')
+      .addSelect('DATE_FORMAT(row.date, "%Y" )', 'year')
+      .addSelect('customer.id', 'id')
+      .addSelect('customer.alias', 'row')
+      .groupBy('customer.id')
+      .addGroupBy('year');
+
+    const businessCategoryQueryBuilder = queryBuilder
+      .clone()
+      .innerJoin('project.businessCategory', 'businessCategory')
+      .addSelect('DATE_FORMAT(row.date, "%Y" )', 'year')
+      .addSelect('businessCategory.id', 'id')
+      .addSelect('businessCategory.name', 'row')
+      .groupBy('businessCategory.id')
+      .addGroupBy('year');
+
+    const industryCategoryQueryBuilder = queryBuilder
+      .clone()
+      .innerJoin('project.industryCategory', 'industryCategory')
+      .addSelect('DATE_FORMAT(row.date, "%Y" )', 'year')
+      .addSelect('industryCategory.id', 'id')
+      .addSelect('industryCategory.name', 'row')
+      .groupBy('industryCategory.id')
+      .addGroupBy('year');
+
+    return Promise.all([
+      totalQueryBuilder.getRawOne<{ amount: string }>(),
+      customerQueryBuilder.getRawMany<ProjectRecordAnalysisRaw>(),
+      businessCategoryQueryBuilder.getRawMany<ProjectRecordAnalysisRaw>(),
+      industryCategoryQueryBuilder.getRawMany<ProjectRecordAnalysisRaw>(),
+    ]);
+  }
+
   async hasProjectSaleRecordById(id: number) {
     return this.projectSaleRecordRepository.exist({
       where: { id },
@@ -53,6 +98,51 @@ export class ProjectRecordQuery {
       take: args.take,
       order: { date: 'ASC' },
     });
+  }
+
+  async findProjectSaleRecordAnalysis(args: DateRangeArgs) {
+    const queryBuilder = this.projectSaleRecordRepository
+      .createQueryBuilder('row')
+      .innerJoin('row.project', 'project')
+      .select('SUM(row.amount)', 'amount')
+      .where('row.date >= :s', { s: args.s })
+      .andWhere('row.date <= :e', { e: args.e });
+
+    const totalQueryBuilder = queryBuilder.clone();
+
+    const customerQueryBuilder = queryBuilder
+      .clone()
+      .innerJoin('project.customer', 'customer')
+      .addSelect('DATE_FORMAT(row.date, "%Y" )', 'year')
+      .addSelect('customer.id', 'id')
+      .addSelect('customer.alias', 'row')
+      .groupBy('customer.id')
+      .addGroupBy('year');
+
+    const businessCategoryQueryBuilder = queryBuilder
+      .clone()
+      .innerJoin('project.businessCategory', 'businessCategory')
+      .addSelect('DATE_FORMAT(row.date, "%Y" )', 'year')
+      .addSelect('businessCategory.id', 'id')
+      .addSelect('businessCategory.name', 'row')
+      .groupBy('businessCategory.id')
+      .addGroupBy('year');
+
+    const industryCategoryQueryBuilder = queryBuilder
+      .clone()
+      .innerJoin('project.industryCategory', 'industryCategory')
+      .addSelect('DATE_FORMAT(row.date, "%Y" )', 'year')
+      .addSelect('industryCategory.id', 'id')
+      .addSelect('industryCategory.name', 'row')
+      .groupBy('industryCategory.id')
+      .addGroupBy('year');
+
+    return Promise.all([
+      totalQueryBuilder.getRawOne<{ amount: string }>(),
+      customerQueryBuilder.getRawMany<ProjectRecordAnalysisRaw>(),
+      businessCategoryQueryBuilder.getRawMany<ProjectRecordAnalysisRaw>(),
+      industryCategoryQueryBuilder.getRawMany<ProjectRecordAnalysisRaw>(),
+    ]);
   }
 
   async insertProjectOrderRecord(entity: DeepPartial<ProjectOrderRecord>) {

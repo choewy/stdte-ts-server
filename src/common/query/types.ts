@@ -5,6 +5,11 @@ export type FindListArgs = {
   skip: number;
 };
 
+export type DateRangeArgs = {
+  s: string;
+  e: string;
+};
+
 export type CredentialsQueryFindListArgs = FindListArgs & {
   status: CredentialsStatus;
 };
@@ -26,10 +31,8 @@ export type ProjectQueryFindListArgs = FindListArgs & {
 
 export type ProjectRecordQueryFindListArgs = FindListArgs;
 
-export type TimeRecordQueryFindsArgs = {
+export type TimeRecordQueryFindsArgs = DateRangeArgs & {
   userId: number;
-  s: string;
-  e: string;
 };
 
 export type TimeRecordQueryHasOverTimeArgs = {
@@ -38,8 +41,13 @@ export type TimeRecordQueryHasOverTimeArgs = {
   time: string;
 };
 
-export type TimeMemoQueryFindsArgs = {
+export type TimeMemoQueryFindsArgs = DateRangeArgs & {
   userId: number;
-  s: string;
-  e: string;
+};
+
+export type ProjectRecordAnalysisRaw = {
+  id: number;
+  row: string;
+  year: string;
+  amount: string;
 };

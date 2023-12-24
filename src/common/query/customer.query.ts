@@ -14,6 +14,10 @@ export class CustomerQuery extends EntityQuery<Customer> {
     return this.repository.exist({ where: { id } });
   }
 
+  async findAll() {
+    return this.repository.find();
+  }
+
   async findCustomerOnlyId(entity?: Customer | null) {
     if (entity == null) {
       return entity;

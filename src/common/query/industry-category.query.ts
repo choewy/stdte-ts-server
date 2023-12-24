@@ -22,6 +22,10 @@ export class IndustryCategoryQuery extends EntityQuery<IndustryCategory> {
     return this.repository.exist({ where: { id: Not(id), name } });
   }
 
+  async findAll() {
+    return this.repository.find();
+  }
+
   async findIndustryCategoryOnlyId(entity?: IndustryCategory | null) {
     if (entity == null) {
       return entity;

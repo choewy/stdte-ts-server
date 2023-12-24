@@ -22,6 +22,10 @@ export class BusinessCategoryQuery extends EntityQuery<BusinessCategory> {
     return this.repository.exist({ where: { id: Not(id), name } });
   }
 
+  async findAll() {
+    return this.repository.find();
+  }
+
   async findBusinessCategoryOnlyId(entity?: BusinessCategory | null) {
     if (entity == null) {
       return entity;
