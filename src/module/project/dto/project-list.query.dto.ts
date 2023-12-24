@@ -1,3 +1,11 @@
-import { ListQueryDto } from '@server/common';
+import { ListQueryDto, ProjectQueryFindListArgs } from '@server/common';
 
-export class ProjectListQueryDto extends ListQueryDto {}
+import { ProjectStatus } from '@entity';
+
+export class ProjectListQueryDto extends ListQueryDto implements ProjectQueryFindListArgs {
+  businessCategory?: number;
+  industryCategory?: number;
+  taskMainCategory?: number;
+  customer?: number;
+  status?: ProjectStatus;
+}

@@ -1,4 +1,4 @@
-import { CredentialsStatus } from '@entity';
+import { CredentialsStatus, ProjectStatus } from '@entity';
 
 export type FindListArgs = {
   take: number;
@@ -15,7 +15,15 @@ export type BusinessCategoryQueryFindListArgs = FindListArgs;
 export type IndustryCategoryQueryFindListArgs = FindListArgs;
 export type TaskMainCategoryQueryFindListArgs = FindListArgs;
 export type CustomerQueryFindListArgs = FindListArgs;
-export type ProjectQueryFindListArgs = FindListArgs;
+
+export type ProjectQueryFindListArgs = FindListArgs & {
+  businessCategory?: number;
+  industryCategory?: number;
+  taskMainCategory?: number;
+  customer?: number;
+  status?: ProjectStatus;
+};
+
 export type ProjectRecordQueryFindListArgs = FindListArgs;
 
 export type TimeRecordQueryFindsArgs = {

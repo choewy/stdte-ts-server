@@ -33,6 +33,7 @@ import {
   ProjectRecordUpdateBodyDto,
   ProjectUpdateBodyDto,
   ProjectXlsxRowDto,
+  ProjectListDto,
 } from './dto';
 
 @Injectable()
@@ -41,8 +42,9 @@ export class ProjectService {
 
   async getProjects(query: ProjectListQueryDto) {
     const projectQuery = new ProjectQuery(this.dataSource);
+    const [list, sum] = await projectQuery.findProjectList(query);
 
-    return new ListDto(query, await projectQuery.findProjectList(query), ProjectDto);
+    return new ProjectListDto(query, list, ProjectDto, sum?.amounts);
   }
 
   async downloadProjects() {
