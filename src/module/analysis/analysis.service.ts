@@ -4,34 +4,50 @@ import { DataSource } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { BusinessCategoryQuery, CustomerQuery, IndustryCategoryQuery, ProjectRecordQuery } from '@server/common';
 
-import {
-  AnalysisDateRangeQuery,
-  AnalysisProjectAmountListDto,
-  AnalysisProjectAmountRowDto,
-  AnalysisProjectAmountColDto,
-} from './dto';
+import { AnalysisDateRangeQuery, AnalysisProjectAmountRowDto, AnalysisProjectAmountColDto } from './dto';
 
 @Injectable()
 export class AnalysisService {
   constructor(private readonly dataSource: DataSource) {}
 
-  async getProjectOrders(query: AnalysisDateRangeQuery) {
+  async getProjectRecords(type: 'orders' | 'sales', query: AnalysisDateRangeQuery) {
     const projectRecordQuery = new ProjectRecordQuery(this.dataSource);
-    const [total, yearRaws, customerRaws, businessCategoryRaws, industryCategoryRaws] =
-      await projectRecordQuery.findProjectOrderRecordAnalysis(query);
+    const res = await projectRecordQuery.findProjectOrderRecordAnalysis(type, query);
 
-    const amount = total?.amount ?? '0';
+    const [
+      customerYearRaws,
+      customerRowRaws,
+      businessCategoryYearRaws,
+      businessCategoryRowRaws,
+      industryCategoryYearRaws,
+      industryCategoryRowRaws,
+    ] = res;
 
     const s = DateTime.fromJSDate(new Date(query.s));
     const e = DateTime.fromJSDate(new Date(query.e));
     const yearRange = e.diff(s, 'years').get('years');
-    const yearRows: { year: string; amount: string }[] = [];
+
+    const customerYears: { year: string; amount: string }[] = [];
+    const businessCategoryYears: { year: string; amount: string }[] = [];
+    const industryCategoryYears: { year: string; amount: string }[] = [];
 
     for (let i = 0; i <= yearRange; i++) {
       const year = s.plus({ year: i }).toFormat('yyyy');
-      const amount = yearRaws.find((raw) => raw.year === year)?.amount ?? '0';
 
-      yearRows.push({ year, amount });
+      customerYears.push({
+        year,
+        amount: customerYearRaws.find((raw) => raw.year === year)?.amount ?? '0',
+      });
+
+      businessCategoryYears.push({
+        year,
+        amount: businessCategoryYearRaws.find((raw) => raw.year === year)?.amount ?? '0',
+      });
+
+      industryCategoryYears.push({
+        year,
+        amount: industryCategoryYearRaws.find((raw) => raw.year === year)?.amount ?? '0',
+      });
     }
 
     const customerQuery = new CustomerQuery(this.dataSource);
@@ -43,9 +59,13 @@ export class AnalysisService {
         new AnalysisProjectAmountRowDto(
           customer.id,
           customer.alias,
-          customerRaws
+          customerRowRaws
             .filter(({ id }) => id === customer.id)
-            .map((raw) => new AnalysisProjectAmountColDto(amount, raw)),
+            .map((raw) => {
+              const total = customerYears.find((row) => row.year === raw.year)?.amount ?? '0';
+
+              return new AnalysisProjectAmountColDto(total, raw);
+            }),
         ),
       );
     }
@@ -59,9 +79,13 @@ export class AnalysisService {
         new AnalysisProjectAmountRowDto(
           businessCategory.id,
           businessCategory.name,
-          businessCategoryRaws
+          businessCategoryRowRaws
             .filter(({ id }) => id === businessCategory.id)
-            .map((raw) => new AnalysisProjectAmountColDto(amount, raw)),
+            .map((raw) => {
+              const total = businessCategoryYears.find((row) => row.year === raw.year)?.amount ?? '0';
+
+              return new AnalysisProjectAmountColDto(total, raw);
+            }),
         ),
       );
     }
@@ -75,83 +99,21 @@ export class AnalysisService {
         new AnalysisProjectAmountRowDto(
           industryCategory.id,
           industryCategory.name,
-          industryCategoryRaws
+          industryCategoryRowRaws
             .filter(({ id }) => id === industryCategory.id)
-            .map((raw) => new AnalysisProjectAmountColDto(amount, raw)),
+            .map((raw) => {
+              const total = industryCategoryYears.find((row) => row.year === raw.year)?.amount ?? '0';
+
+              return new AnalysisProjectAmountColDto(total, raw);
+            }),
         ),
       );
     }
 
-    return new AnalysisProjectAmountListDto(amount, yearRows, customerRows, businessCategoryRows, industryCategoryRows);
-  }
-
-  async getProjectSales(query: AnalysisDateRangeQuery) {
-    const projectRecordQuery = new ProjectRecordQuery(this.dataSource);
-    const [total, yearRaws, customerRaws, businessCategoryRaws, industryCategoryRaws] =
-      await projectRecordQuery.findProjectSaleRecordAnalysis(query);
-
-    const amount = total?.amount ?? '0';
-
-    const s = DateTime.fromJSDate(new Date(query.s));
-    const e = DateTime.fromJSDate(new Date(query.e));
-    const yearRange = e.diff(s, 'years').get('years');
-    const yearRows: { year: string; amount: string }[] = [];
-
-    for (let i = 0; i <= yearRange; i++) {
-      const year = s.plus({ year: i }).toFormat('yyyy');
-      const amount = yearRaws.find((raw) => raw.year === year)?.amount ?? '0';
-
-      yearRows.push({ year, amount });
-    }
-
-    const customerQuery = new CustomerQuery(this.dataSource);
-    const customers = await customerQuery.findAll();
-    const customerRows: AnalysisProjectAmountRowDto[] = [];
-
-    for (const customer of customers) {
-      customerRows.push(
-        new AnalysisProjectAmountRowDto(
-          customer.id,
-          customer.alias,
-          customerRaws
-            .filter(({ id }) => id === customer.id)
-            .map((raw) => new AnalysisProjectAmountColDto(amount, raw)),
-        ),
-      );
-    }
-
-    const businessCategoryQuery = new BusinessCategoryQuery(this.dataSource);
-    const businessCategories = await businessCategoryQuery.findAll();
-    const businessCategoryRows: AnalysisProjectAmountRowDto[] = [];
-
-    for (const businessCategory of businessCategories) {
-      businessCategoryRows.push(
-        new AnalysisProjectAmountRowDto(
-          businessCategory.id,
-          businessCategory.name,
-          businessCategoryRaws
-            .filter(({ id }) => id === businessCategory.id)
-            .map((raw) => new AnalysisProjectAmountColDto(amount, raw)),
-        ),
-      );
-    }
-
-    const industryCategoryQuery = new IndustryCategoryQuery(this.dataSource);
-    const industryCategories = await industryCategoryQuery.findAll();
-    const industryCategoryRows: AnalysisProjectAmountRowDto[] = [];
-
-    for (const industryCategory of industryCategories) {
-      industryCategoryRows.push(
-        new AnalysisProjectAmountRowDto(
-          industryCategory.id,
-          industryCategory.name,
-          industryCategoryRaws
-            .filter(({ id }) => id === industryCategory.id)
-            .map((raw) => new AnalysisProjectAmountColDto(amount, raw)),
-        ),
-      );
-    }
-
-    return new AnalysisProjectAmountListDto(amount, yearRows, customerRows, businessCategoryRows, industryCategoryRows);
+    return {
+      customer: { years: customerYears, rows: customerRows },
+      businessCategory: { years: businessCategoryYears, rows: businessCategoryRows },
+      industryCategory: { years: industryCategoryYears, rows: industryCategoryRows },
+    };
   }
 }

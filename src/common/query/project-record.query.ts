@@ -2,7 +2,13 @@ import { DataSource, DeepPartial, EntityManager, Repository } from 'typeorm';
 
 import { ProjectOrderRecord, ProjectSaleRecord } from '@entity';
 
-import { DateRangeArgs, ProjectRecordAnalysisRaw, ProjectRecordQueryFindListArgs } from './types';
+import {
+  DateRangeArgs,
+  ProjectRecordAnalysisRaw,
+  ProjectRecordAnalysisResults,
+  ProjectRecordAnalysisYear,
+  ProjectRecordQueryFindListArgs,
+} from './types';
 
 export class ProjectRecordQuery {
   private readonly projectOrderRecordRepository: Repository<ProjectOrderRecord>;
@@ -34,21 +40,37 @@ export class ProjectRecordQuery {
     });
   }
 
-  async findProjectOrderRecordAnalysis(args: DateRangeArgs) {
-    const queryBuilder = this.projectOrderRecordRepository
+  async findProjectOrderRecordAnalysis(
+    type: 'orders' | 'sales',
+    args: DateRangeArgs,
+  ): Promise<ProjectRecordAnalysisResults> {
+    let repository: Repository<ProjectOrderRecord> | Repository<ProjectSaleRecord>;
+
+    switch (type) {
+      case 'orders':
+        repository = this.projectOrderRecordRepository;
+        break;
+
+      case 'sales':
+        repository = this.projectSaleRecordRepository;
+        break;
+    }
+
+    const queryBuilder = repository
       .createQueryBuilder('row')
       .innerJoin('row.project', 'project')
       .select('SUM(row.amount)', 'amount')
       .where('row.date >= :s', { s: args.s })
       .andWhere('row.date <= :e', { e: args.e });
 
-    const totalQueryBuilder = queryBuilder.clone();
-    const yearQueryBuilder = queryBuilder.clone().addSelect('DATE_FORMAT(row.date, "%Y" )', 'year').groupBy('year');
-
     const customerQueryBuilder = queryBuilder
       .clone()
       .innerJoin('project.customer', 'customer')
-      .addSelect('DATE_FORMAT(row.date, "%Y" )', 'year')
+      .addSelect('DATE_FORMAT(row.date, "%Y" )', 'year');
+
+    const customerYearsQueryBuilder = customerQueryBuilder.clone().groupBy('year');
+    const customerRowsQueryBuilder = customerQueryBuilder
+      .clone()
       .addSelect('customer.id', 'id')
       .addSelect('customer.alias', 'row')
       .groupBy('customer.id')
@@ -57,7 +79,11 @@ export class ProjectRecordQuery {
     const businessCategoryQueryBuilder = queryBuilder
       .clone()
       .innerJoin('project.businessCategory', 'businessCategory')
-      .addSelect('DATE_FORMAT(row.date, "%Y" )', 'year')
+      .addSelect('DATE_FORMAT(row.date, "%Y" )', 'year');
+
+    const businessCategoryYearsQueryBuilder = businessCategoryQueryBuilder.clone().groupBy('year');
+    const businessCategoryRowsQueryBuilder = businessCategoryQueryBuilder
+      .clone()
       .addSelect('businessCategory.id', 'id')
       .addSelect('businessCategory.name', 'row')
       .groupBy('businessCategory.id')
@@ -66,18 +92,23 @@ export class ProjectRecordQuery {
     const industryCategoryQueryBuilder = queryBuilder
       .clone()
       .innerJoin('project.industryCategory', 'industryCategory')
-      .addSelect('DATE_FORMAT(row.date, "%Y" )', 'year')
+      .addSelect('DATE_FORMAT(row.date, "%Y" )', 'year');
+
+    const industryCategoryYearsQueryBuilder = industryCategoryQueryBuilder.clone().groupBy('year');
+    const industryCategoryRowsQueryBuilder = industryCategoryQueryBuilder
+      .clone()
       .addSelect('industryCategory.id', 'id')
       .addSelect('industryCategory.name', 'row')
       .groupBy('industryCategory.id')
       .addGroupBy('year');
 
     return Promise.all([
-      totalQueryBuilder.getRawOne<{ amount: string }>(),
-      yearQueryBuilder.getRawMany<{ year: string; amount: string }>(),
-      customerQueryBuilder.getRawMany<ProjectRecordAnalysisRaw>(),
-      businessCategoryQueryBuilder.getRawMany<ProjectRecordAnalysisRaw>(),
-      industryCategoryQueryBuilder.getRawMany<ProjectRecordAnalysisRaw>(),
+      customerYearsQueryBuilder.getRawMany<ProjectRecordAnalysisYear>(),
+      customerRowsQueryBuilder.getRawMany<ProjectRecordAnalysisRaw>(),
+      businessCategoryYearsQueryBuilder.getRawMany<ProjectRecordAnalysisYear>(),
+      businessCategoryRowsQueryBuilder.getRawMany<ProjectRecordAnalysisRaw>(),
+      industryCategoryYearsQueryBuilder.getRawMany<ProjectRecordAnalysisYear>(),
+      industryCategoryRowsQueryBuilder.getRawMany<ProjectRecordAnalysisRaw>(),
     ]);
   }
 

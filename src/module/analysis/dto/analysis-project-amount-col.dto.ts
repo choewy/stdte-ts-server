@@ -8,6 +8,6 @@ export class AnalysisProjectAmountColDto {
   constructor(total: string, row: ProjectRecordAnalysisRaw) {
     this.year = row.year;
     this.amount = row.amount;
-    this.rate = (Math.round((Number(row.amount) / Number(total)) * 1000) / 100).toFixed(1);
+    this.rate = (Math.round((Number(row.amount) / Number(total)) * 1000) / 10).toFixed(1);
   }
 }

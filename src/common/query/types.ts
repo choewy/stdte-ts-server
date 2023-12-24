@@ -45,9 +45,23 @@ export type TimeMemoQueryFindsArgs = DateRangeArgs & {
   userId: number;
 };
 
+export type ProjectRecordAnalysisYear = {
+  year: string;
+  amount: string;
+};
+
 export type ProjectRecordAnalysisRaw = {
   id: number;
   row: string;
   year: string;
   amount: string;
 };
+
+export type ProjectRecordAnalysisResults = [
+  ProjectRecordAnalysisYear[],
+  ProjectRecordAnalysisRaw[],
+  ProjectRecordAnalysisYear[],
+  ProjectRecordAnalysisRaw[],
+  ProjectRecordAnalysisYear[],
+  ProjectRecordAnalysisRaw[],
+];

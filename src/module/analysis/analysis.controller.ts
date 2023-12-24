@@ -16,13 +16,13 @@ export class AnalysisController {
   @UseGuards(RoleGuard)
   @SetRolePolicy({ project: RolePolicyLevel.Read })
   async getProjectOrders(@Query() query: AnalysisDateRangeQuery) {
-    return this.analysisService.getProjectOrders(query);
+    return this.analysisService.getProjectRecords('orders', query);
   }
 
   @Get('project/sales')
   @UseGuards(RoleGuard)
   @SetRolePolicy({ project: RolePolicyLevel.Read })
   async getProjectSales(@Query() query: AnalysisDateRangeQuery) {
-    return this.analysisService.getProjectSales(query);
+    return this.analysisService.getProjectRecords('sales', query);
   }
 }
