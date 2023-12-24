@@ -11,7 +11,7 @@
     "init": "npm run submodule && npm run env",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "start": "npm run init && env-cmd -f .env.local nest start",
+    "start": "npm run init && env-cmd -f .env.local nest start --watch",
     "start:dev": "npm run init && env-cmd -f .env.local nest start --watch",
     "start:debug": "npm run init && env-cmd -f .env.local nest start --debug --watch",
     "start:prod": "node start dist/src/main.js",
