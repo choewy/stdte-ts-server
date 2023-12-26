@@ -250,7 +250,12 @@ export class AnalysisService {
           yearRow.leave += 1;
         }
 
-        userRow.cols.push(new AnalysisuserRecordUserColDto(year, months, days));
+        userRow.cols.push(
+          new AnalysisuserRecordUserColDto(year, months, days, {
+            entered: enterDiff === 0,
+            leaved: leaveDiff === 0,
+          }),
+        );
       }
 
       if (yearRow.months > 0 && yearRow.days > 0 && yearRow.active > 0) {
