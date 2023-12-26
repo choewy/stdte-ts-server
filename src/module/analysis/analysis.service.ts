@@ -1,3 +1,4 @@
+import ExcelJS from 'exceljs';
 import { DateTime } from 'luxon';
 import { DataSource } from 'typeorm';
 
@@ -5,6 +6,8 @@ import { Injectable } from '@nestjs/common';
 import {
   BusinessCategoryQuery,
   CustomerQuery,
+  DownloadDto,
+  DownloadFormat,
   IndustryCategoryQuery,
   ProjectQuery,
   ProjectRecordQuery,
@@ -265,5 +268,81 @@ export class AnalysisService {
     }
 
     return { years: yearRows, users: userRows };
+  }
+
+  async getUserRecordsFile(query: AnalysisDateRangeQuery) {
+    const results = await this.getUserRecords(query);
+
+    const rows: Array<string | number>[] = [
+      ['', '', ''],
+      ['연간통계', '', ''],
+      ['', '', ''],
+      ['이름', '입사일자', '퇴사일자'],
+    ];
+
+    for (const year of results.years) {
+      rows[0].push(`${year.year}년`, '', '', '', '', '');
+      rows[1].push('총일수', '평균일수', '총개월수', '평균개월수', '입사자수', '퇴사자수');
+      rows[2].push(year.days, year.avgDays, year.months, year.avgMonths, year.enter, year.leave);
+      rows[3].push('누적근속일수', '', '누적근속개월수', '', '비고', '');
+    }
+
+    for (const user of results.users) {
+      const row: Array<string | number> = [user.name, user.enteringDay, user.resignationDay];
+
+      for (const year of results.years) {
+        const values = new Array(6).fill('');
+        const col = user.cols.find((col) => col.year === year.year);
+
+        if (col) {
+          values[0] = col.days;
+          values[2] = col.months;
+          values[4] = [col.descriptions.entered && '입사', col.descriptions.leaved && '퇴사']
+            .filter((v) => v)
+            .join(', ');
+        }
+
+        row.push(...values);
+      }
+
+      rows.push(row);
+    }
+
+    const wb = new ExcelJS.Workbook();
+    const ws = wb.addWorksheet('인력변동현황', {
+      views: [{ state: 'frozen', xSplit: 3, ySplit: 3 }],
+    });
+
+    for (let i = 0; i < rows.length; i++) {
+      ws.insertRow(i + 1, rows[i]);
+      ws.getRow(i + 1).alignment = { vertical: 'middle', horizontal: 'center' };
+      ws.getRow(i + 1).border = {
+        top: { style: 'thin' },
+        left: { style: 'thin' },
+        bottom: { style: 'thin' },
+        right: { style: 'thin' },
+      };
+
+      if (i < 3) {
+        continue;
+      }
+
+      for (let c = 4; c <= rows[i].length; c += 2) {
+        ws.mergeCells(i + 1, c, i + 1, c + 1);
+      }
+    }
+
+    ws.mergeCells(1, 1, 1, 3);
+    ws.mergeCells(2, 1, 3, 3);
+
+    for (let c = 4; c <= rows[0].length; c += 6) {
+      ws.mergeCells(1, c, 1, c + 5);
+    }
+
+    ws.getColumn(1).width = 10;
+    ws.getColumn(2).width = 10;
+    ws.getColumn(3).width = 10;
+
+    return new DownloadDto((await wb.xlsx.writeBuffer()) as Buffer, DownloadFormat.Xlsx, '인력변동현황');
   }
 }

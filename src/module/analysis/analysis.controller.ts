@@ -39,4 +39,11 @@ export class AnalysisController {
   async getUserRecords(@Query() query: AnalysisDateRangeQuery) {
     return this.analysisService.getUserRecords(query);
   }
+
+  @Get('users/download')
+  @UseGuards(RoleGuard)
+  @SetRolePolicy({ user: RolePolicyLevel.Read })
+  async getUserRecordsFile(@Query() query: AnalysisDateRangeQuery) {
+    return this.analysisService.getUserRecordsFile(query);
+  }
 }
