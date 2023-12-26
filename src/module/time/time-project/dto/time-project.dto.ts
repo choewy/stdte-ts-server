@@ -11,7 +11,7 @@ export class TimeProjectDto {
   constructor(project: Project) {
     this.id = project.id;
     this.name = project.name;
-    this.code = project.code;
+    this.code = project.code ?? '';
 
     this.category = project.taskMainCategory ? new TimeProjectTaskMainCategoryDto(project.taskMainCategory) : null;
   }

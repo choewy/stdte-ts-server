@@ -20,10 +20,11 @@ export class ProjectCreateBodyDto {
   @Transform(({ value }) => toTrim(value))
   name: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   @Transform(({ value }) => toTrim(value))
-  code: string;
+  @Transform(({ value }) => toEmptyNull(value))
+  code: string | null;
 
   @IsOptional()
   @IsString()

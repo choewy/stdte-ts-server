@@ -1,6 +1,6 @@
-import { DataSource, DeepPartial, EntityManager, Not } from 'typeorm';
+import { DataSource, DeepPartial, EntityManager } from 'typeorm';
 
-import { Project, ProjectPriority } from '@entity';
+import { Project, ProjectPriority, ProjectStatus } from '@entity';
 
 import { EntityQuery } from '../class';
 import { ProjectQueryFindListArgs } from './types';
@@ -12,14 +12,6 @@ export class ProjectQuery extends EntityQuery<Project> {
 
   async hasProjectById(id: number) {
     return this.repository.exist({ where: { id } });
-  }
-
-  async hasProjectByCode(code: string) {
-    return this.repository.exist({ where: { code } });
-  }
-
-  async hasProjectByCodeOmitId(id: number, code: string) {
-    return this.repository.exist({ where: { id: Not(id), code } });
   }
 
   async findProjectById(id: number) {
@@ -54,29 +46,75 @@ export class ProjectQuery extends EntityQuery<Project> {
         externalManagers: { user: true },
         externalLeaders: { user: true },
       },
-      where: { priority: ProjectPriority.Business },
+      order: { priority: 'ASC' },
+    });
+  }
+
+  async findAllByActive() {
+    return this.repository.find({
+      where: { status: ProjectStatus.Active },
+      order: { priority: 'ASC' },
     });
   }
 
   async findProjectList(args: ProjectQueryFindListArgs) {
-    return this.repository.findAndCount({
-      relations: {
-        businessCategory: true,
-        industryCategory: true,
-        taskMainCategory: true,
-        customer: true,
-        internalOwners: { user: true },
-        internalManagers: { user: true },
-        internalLeaders: { user: true },
-        externalOwners: { user: true },
-        externalManagers: { user: true },
-        externalLeaders: { user: true },
-      },
-      skip: args.skip,
-      take: args.take,
-      where: { priority: ProjectPriority.Business },
-      order: { createdAt: 'DESC' },
-    });
+    const queryBuilder = this.repository
+      .createQueryBuilder('project')
+      .leftJoinAndMapOne('project.businessCategory', 'project.businessCategory', 'businessCategory')
+      .leftJoinAndMapOne('project.industryCategory', 'project.industryCategory', 'industryCategory')
+      .leftJoinAndMapOne('project.taskMainCategory', 'project.taskMainCategory', 'taskMainCategory')
+      .leftJoinAndMapOne('project.customer', 'project.customer', 'customer')
+      .leftJoinAndMapMany('project.internalOwners', 'project.internalOwners', 'internalOwners')
+      .leftJoinAndMapMany('project.internalManagers', 'project.internalManagers', 'internalManagers')
+      .leftJoinAndMapMany('project.internalLeaders', 'project.internalLeaders', 'internalLeaders')
+      .leftJoinAndMapMany('project.externalOwners', 'project.externalOwners', 'externalOwners')
+      .leftJoinAndMapMany('project.externalManagers', 'project.externalManagers', 'externalManagers')
+      .leftJoinAndMapMany('project.externalLeaders', 'project.externalLeaders', 'externalLeaders')
+      .leftJoinAndMapOne('internalOwners.user', 'internalOwners.user', 'internalOwner')
+      .leftJoinAndMapOne('internalManagers.user', 'internalManagers.user', 'internalManager')
+      .leftJoinAndMapOne('internalLeaders.user', 'internalLeaders.user', 'internalLeader')
+      .leftJoinAndMapOne('externalOwners.user', 'externalOwners.user', 'externalOwner')
+      .leftJoinAndMapOne('externalManagers.user', 'externalManagers.user', 'externalManager')
+      .leftJoinAndMapOne('externalLeaders.user', 'externalLeaders.user', 'externalLeader')
+      .where({ priority: ProjectPriority.Business });
+
+    if (args.businessCategory) {
+      queryBuilder.andWhere('businessCategory.id = :businessCategory', {
+        businessCategory: args.businessCategory,
+      });
+    }
+
+    if (args.industryCategory) {
+      queryBuilder.andWhere('industryCategory.id = :industryCategory', {
+        industryCategory: args.industryCategory,
+      });
+    }
+
+    if (args.taskMainCategory) {
+      queryBuilder.andWhere('taskMainCategory.id = :taskMainCategory', {
+        taskMainCategory: args.taskMainCategory,
+      });
+    }
+
+    if (args.status) {
+      queryBuilder.andWhere('project.status = :status', {
+        status: args.status,
+      });
+    }
+
+    if (args.customer) {
+      queryBuilder.andWhere('project.customer = :customer', {
+        customer: args.customer,
+      });
+    }
+
+    const listQueryBuilder = queryBuilder.clone();
+    const sumQueryBuilder = queryBuilder.clone();
+
+    return Promise.all([
+      listQueryBuilder.skip(args.skip).take(args.take).orderBy('project.createdAt', 'DESC').getManyAndCount(),
+      sumQueryBuilder.select('SUM(project.amount)', 'amounts').getRawOne<{ amounts: string }>(),
+    ]);
   }
 
   async findProjectListByCanExpose() {
