@@ -3,7 +3,7 @@ import { TimeMemo } from '@entity';
 import { toISOString } from '@server/common';
 
 export class TimeMemoDto {
-  id: string;
+  id: number;
   date: string;
   text: string;
   createdAt: string | null;

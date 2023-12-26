@@ -10,7 +10,7 @@ export class TimeMemoQuery extends EntityQuery<TimeMemo> {
     super(connection, TimeMemo);
   }
 
-  async findTimeMemoById(id: string) {
+  async findTimeMemoById(id: number) {
     return this.repository.findOne({ where: { id } });
   }
 
@@ -23,13 +23,17 @@ export class TimeMemoQuery extends EntityQuery<TimeMemo> {
     });
   }
 
-  async upsertTimeMemo(id: string, entity: DeepPartial<TimeMemo>) {
+  async insertTimeMemo(entity: DeepPartial<TimeMemo>) {
+    return this.repository.insert(this.repository.create(entity));
+  }
+
+  async upsertTimeMemo(id: number, entity: DeepPartial<TimeMemo>) {
     return this.repository.upsert(this.repository.create({ ...entity, id }), {
       conflictPaths: { id: true },
     });
   }
 
-  async deleteTimeMemo(id: string) {
+  async deleteTimeMemo(id: number) {
     return this.repository.delete({ id });
   }
 }

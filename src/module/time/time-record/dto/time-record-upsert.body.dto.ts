@@ -1,10 +1,15 @@
 import { Transform } from 'class-transformer';
-import { IsDateString, IsInstance, IsNotEmpty, IsNumberString } from 'class-validator';
+import { IsDateString, IsInstance, IsInt, IsNotEmpty, IsNumberString, IsOptional } from 'class-validator';
 
 import { Project, TaskMainCategory, TaskSubCategory, User } from '@entity';
 import { toEntity, toSQLDate, toStr } from '@server/common';
 
 export class TimeRecordUpsertBodyDto {
+  @IsOptional()
+  @IsInt()
+  @Transform(({ value }) => value ?? null)
+  id: number | null;
+
   @IsNotEmpty()
   @IsDateString()
   @Transform(({ value }) => toSQLDate(value))

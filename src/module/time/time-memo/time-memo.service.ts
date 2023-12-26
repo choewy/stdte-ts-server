@@ -3,7 +3,6 @@ import { DataSource } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 
-import { TimeMemoIdProperty, decodeEntityId, encodeEntityId } from '@entity';
 import {
   CannotDeleteTimeMemoException,
   CannotUpdateTimeMemoException,
@@ -43,13 +42,32 @@ export class TimeMemoService {
     }
 
     const timeMemoQuery = new TimeMemoQuery(this.dataSource);
-    const timeMemoId = encodeEntityId<TimeMemoIdProperty>({
-      user: userId,
-      date: body.date,
-    });
 
-    await timeMemoQuery.upsertTimeMemo(timeMemoId, body);
-    const timeMemo = await timeMemoQuery.findTimeMemoById(timeMemoId);
+    let id: number;
+
+    if (body.id) {
+      const upsert = await timeMemoQuery.upsertTimeMemo(body.id, {
+        user: body.user,
+        date: body.date,
+        text: body.text,
+      });
+
+      id = upsert.identifiers[0]?.id;
+    } else {
+      const insert = await timeMemoQuery.insertTimeMemo({
+        user: body.user,
+        date: body.date,
+        text: body.text,
+      });
+
+      id = insert.identifiers[0]?.id;
+    }
+
+    if (id == null) {
+      throw new NotFoundTimeMemoException();
+    }
+
+    const timeMemo = await timeMemoQuery.findTimeMemoById(id);
 
     if (timeMemo == null) {
       throw new NotFoundTimeMemoException();
@@ -64,13 +82,17 @@ export class TimeMemoService {
   }
 
   async deleteTimeMemo(userId: number, param: TimeMemoParamDto) {
-    const timeMemo = decodeEntityId<TimeMemoIdProperty>(param.id);
+    const timeMemoQuery = new TimeMemoQuery(this.dataSource);
+    const timeMemo = await timeMemoQuery.findTimeMemoById(param.id);
 
-    if (userId !== timeMemo.user) {
+    if (timeMemo == null) {
+      throw new NotFoundTimeMemoException();
+    }
+
+    if (timeMemo.user.id !== userId) {
       throw new CannotDeleteTimeMemoException();
     }
 
-    const timeMemoQuery = new TimeMemoQuery(this.dataSource);
     await timeMemoQuery.deleteTimeMemo(param.id);
 
     this.eventEmitter.emit(TimeMemoEvent.Delete, userId, timeMemo);

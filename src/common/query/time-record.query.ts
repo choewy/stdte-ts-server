@@ -27,14 +27,18 @@ export class TimeRecordQuery extends EntityQuery<TimeRecord> {
     return result ?? { sum: '0' };
   }
 
-  async hasOverDailyTimeRecords(id: string, args: TimeRecordQueryHasOverTimeArgs) {
-    const result = await this.repository
+  async hasOverDailyTimeRecords(id: number | null, args: TimeRecordQueryHasOverTimeArgs) {
+    const queryBuilder = this.repository
       .createQueryBuilder('timeRecord')
       .select('SUM(timeRecord.time)', 'sum')
-      .where('timeRecord.id != :id', { id })
-      .andWhere('timeRecord.userId = :userId', { userId: args.user.id })
-      .andWhere('timeRecord.date = :date', { date: args.date })
-      .getRawOne<{ sum: string }>();
+      .where('timeRecord.userId = :userId', { userId: args.user.id })
+      .andWhere('timeRecord.date = :date', { date: args.date });
+
+    if (typeof id === 'number') {
+      queryBuilder.andWhere('timeRecord.id != :id', { id });
+    }
+
+    const result = await queryBuilder.getRawOne<{ sum: string }>();
 
     return Number(result?.sum ?? '0') + Number(args.time) > 24;
   }
@@ -56,7 +60,7 @@ export class TimeRecordQuery extends EntityQuery<TimeRecord> {
       .getRawMany<TimeRecordAnalysisRaw>();
   }
 
-  async findTimeRecordById(id: string) {
+  async findTimeRecordById(id: number) {
     return this.repository.findOne({
       relations: {
         user: true,
@@ -106,11 +110,15 @@ export class TimeRecordQuery extends EntityQuery<TimeRecord> {
     });
   }
 
-  async upsertTimeRecord(id: string, entity: DeepPartial<TimeRecord>) {
+  async insertTimeRecord(entity: DeepPartial<TimeRecord>) {
+    return this.repository.insert(this.repository.create(entity));
+  }
+
+  async upsertTimeRecord(id: number, entity: DeepPartial<TimeRecord>) {
     return this.repository.upsert({ ...entity, id }, { conflictPaths: { id: true } });
   }
 
-  async deleteTimeRecord(id: string) {
+  async deleteTimeRecord(id: number) {
     return this.repository.delete({ id });
   }
 }

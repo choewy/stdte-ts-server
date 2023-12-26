@@ -4,9 +4,8 @@ import { DataSource } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 
-import { TimeRecord, TimeRecordIdProperty, decodeEntityId, encodeEntityId } from '@entity';
+import { TimeRecord } from '@entity';
 import {
-  CannotDeleteTimeRecordException,
   CannotUpdateTimeRecordException,
   NotFoundTimeRecordException,
   OverTimeRecordSumException,
@@ -18,7 +17,6 @@ import {
 import {
   TimeRecordSumMap,
   TimeRecordListBodyDto,
-  TimeRecordParamDto,
   TimeRecordUpsertBodyDto,
   TimeRecordListDto,
   TimeRecordRowDto,
@@ -69,20 +67,42 @@ export class TimeRecordService {
     }
 
     const timeRecordQuery = new TimeRecordQuery(this.dataSource);
-    const timeRecordId = encodeEntityId<TimeRecordIdProperty>({
-      user: userId,
-      date: body.date,
-      project: body.project.id,
-      main: body.taskMainCategory.id,
-      sub: body.taskSubCategory.id,
-    });
 
-    if (await timeRecordQuery.hasOverDailyTimeRecords(timeRecordId, body)) {
+    if (await timeRecordQuery.hasOverDailyTimeRecords(body.id, body)) {
       throw new OverTimeRecordSumException();
     }
 
-    await timeRecordQuery.upsertTimeRecord(timeRecordId, body);
-    const timeRecord = await timeRecordQuery.findTimeRecordById(timeRecordId);
+    let id: number;
+
+    if (body.id) {
+      const upsert = await timeRecordQuery.upsertTimeRecord(body.id, {
+        user: body.user,
+        project: body.project,
+        taskMainCategory: body.taskMainCategory,
+        taskSubCategory: body.taskSubCategory,
+        date: body.date,
+        time: body.time,
+      });
+
+      id = upsert.identifiers[0]?.id;
+    } else {
+      const insert = await timeRecordQuery.insertTimeRecord({
+        user: body.user,
+        project: body.project,
+        taskMainCategory: body.taskMainCategory,
+        taskSubCategory: body.taskSubCategory,
+        date: body.date,
+        time: body.time,
+      });
+
+      id = insert.identifiers[0]?.id;
+    }
+
+    if (id == null) {
+      throw new NotFoundTimeRecordException();
+    }
+
+    const timeRecord = await timeRecordQuery.findTimeRecordById(id);
 
     if (timeRecord == null) {
       throw new NotFoundTimeRecordException();
@@ -95,19 +115,5 @@ export class TimeRecordService {
     this.eventEmitter.emit(TimeLogEvent.Update, userId);
 
     return timeRecordRow;
-  }
-
-  async deleteTimeRecord(userId: number, param: TimeRecordParamDto) {
-    const timeRecord = decodeEntityId<TimeRecordIdProperty>(param.id);
-
-    if (userId !== timeRecord.user) {
-      throw new CannotDeleteTimeRecordException();
-    }
-
-    const timeRecordQuery = new TimeRecordQuery(this.dataSource);
-    await timeRecordQuery.deleteTimeRecord(param.id);
-
-    this.eventEmitter.emit(TimeRecordEvent.Upsert, userId, timeRecord);
-    this.eventEmitter.emit(TimeLogEvent.Update, userId);
   }
 }

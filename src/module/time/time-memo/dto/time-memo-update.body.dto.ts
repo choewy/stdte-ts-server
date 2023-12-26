@@ -1,10 +1,15 @@
 import { Transform } from 'class-transformer';
-import { IsDateString, IsInstance, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsDateString, IsInstance, IsInt, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 import { User } from '@entity';
 import { toEmptyNull, toEntity, toSQLDate } from '@server/common';
 
 export class TimeMemoUpdateBodyDto {
+  @IsOptional()
+  @IsInt()
+  @Transform(({ value }) => value ?? null)
+  id: number | null;
+
   @IsNotEmpty()
   @IsInstance(User)
   @Transform(({ value }) => toEntity(User, value))

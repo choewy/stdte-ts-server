@@ -1,10 +1,10 @@
-import { Body, Controller, Delete, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Patch, Post, Req, UseGuards } from '@nestjs/common';
 
 import { Request } from '@server/common';
 import { CredentialsGuard, JwtGuard } from '@server/core';
 
 import { TimeRecordService } from './time-record.service';
-import { TimeRecordListBodyDto, TimeRecordParamDto, TimeRecordUpsertBodyDto } from './dto';
+import { TimeRecordListBodyDto, TimeRecordUpsertBodyDto } from './dto';
 
 @UseGuards(JwtGuard, CredentialsGuard)
 @Controller('record/time')
@@ -19,10 +19,5 @@ export class TimeRecordController {
   @Patch()
   async upsertTimeRecord(@Req() req: Request, @Body() body: TimeRecordUpsertBodyDto) {
     return this.timeRecordService.upsertTimeRecord(req.userId, body);
-  }
-
-  @Delete(':id')
-  async deleteTimeRecord(@Req() req: Request, @Param() param: TimeRecordParamDto) {
-    return this.timeRecordService.deleteTimeRecord(req.userId, param);
   }
 }

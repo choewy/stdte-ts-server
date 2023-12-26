@@ -2,7 +2,7 @@ import { TimeRecord } from '@entity';
 import { DateTimeFormat, toDateFormat, toISOString } from '@server/common';
 
 export class TimeRecordDto {
-  id: string;
+  id: number;
   date: string;
   time: string;
   project: number;
