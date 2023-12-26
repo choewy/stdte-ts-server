@@ -5,3 +5,6 @@ export * from './analysis-time-record-col.dto';
 export * from './analysis-time-record-year-row.dto';
 export * from './analysis-time-record-project-row.dto';
 export * from './analysis-time-record-user-row.dto';
+export * from './analysis-user-record-year-row.dto';
+export * from './analysis-user-record-user-row.dto';
+export * from './analysis-user-record-user-col.dto';

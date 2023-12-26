@@ -22,6 +22,18 @@ export class UserQuery extends EntityQuery<User> {
       where: {
         onInit: false,
         credentials: { status: CredentialsStatus.Active },
+      },
+    });
+  }
+
+  async findAllByActive() {
+    return this.repository.find({
+      relations: {
+        credentials: true,
+      },
+      where: {
+        onInit: false,
+        credentials: { status: CredentialsStatus.Active },
         status: UserStatus.Active,
       },
     });

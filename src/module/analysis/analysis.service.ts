@@ -20,6 +20,9 @@ import {
   AnalysisTimeRecordProjectRowDto,
   AnalysisTimeRecordUserRowDto,
   AnalysisTimeRecordColDto,
+  AnalysisUserRecordYearRowDto,
+  AnalysisUserRecordUserRowDto,
+  AnalysisuserRecordUserColDto,
 } from './dto';
 
 @Injectable()
@@ -133,12 +136,12 @@ export class AnalysisService {
     };
   }
 
-  async getTimesRecords(query: AnalysisDateRangeQuery) {
+  async getTimeRecords(query: AnalysisDateRangeQuery) {
     const projectQuery = new ProjectQuery(this.dataSource);
-    const projects = await projectQuery.findAll();
+    const projects = await projectQuery.findAllByActive();
 
     const userQuery = new UserQuery(this.dataSource);
-    const users = await userQuery.findAll();
+    const users = await userQuery.findAllByActive();
 
     const timeRecordQuery = new TimeRecordQuery(this.dataSource);
     const timeRecordRaws = await timeRecordQuery.findTimeRecordAnalysis(
@@ -187,5 +190,75 @@ export class AnalysisService {
     }
 
     return { years: yearRows, projects: projectRows, users: userRows };
+  }
+
+  async getUserRecords(query: AnalysisDateRangeQuery) {
+    const userQuery = new UserQuery(this.dataSource);
+    const users = await userQuery.findAll();
+
+    const s = DateTime.fromJSDate(new Date(query.s));
+    const e = DateTime.fromJSDate(new Date(query.e));
+    const yearRange = e.diff(s, 'years').get('years');
+
+    const yearRows: AnalysisUserRecordYearRowDto[] = [];
+    const userRows: AnalysisUserRecordUserRowDto[] = [];
+
+    for (const user of users) {
+      if (user.enteringDay == null) {
+        continue;
+      }
+
+      userRows.push(new AnalysisUserRecordUserRowDto(user));
+    }
+
+    const today = DateTime.local();
+
+    for (let i = 0; i <= yearRange; i++) {
+      const datetime = s.plus({ year: i });
+      const year = datetime.toFormat('yyyy');
+      const yearRow = new AnalysisUserRecordYearRowDto(year);
+
+      yearRows.push(yearRow);
+
+      if (datetime.diff(today, 'days').get('days') > 0) {
+        continue;
+      }
+
+      for (const userRow of userRows) {
+        const enterDatetime = DateTime.fromJSDate(new Date(userRow.enteringDay ?? ''));
+        const leaveDatetime = DateTime.fromJSDate(new Date(userRow.resignationDay ?? ''));
+
+        const enterDiff = enterDatetime.startOf('year').diff(datetime.startOf('year'), 'years').get('years');
+        const leaveDiff = leaveDatetime.startOf('year').diff(datetime.startOf('year'), 'years').get('years');
+
+        if (enterDiff > 0 || leaveDiff < 0) {
+          continue;
+        }
+
+        const months = Math.floor(datetime.endOf('year').diff(enterDatetime, 'months').get('months'));
+        const days = Math.floor(datetime.endOf('year').diff(enterDatetime, 'days').get('days'));
+
+        yearRow.months += months;
+        yearRow.days += days;
+        yearRow.active += 1;
+
+        if (enterDiff === 0) {
+          yearRow.enter += 1;
+        }
+
+        if (leaveDiff === 0) {
+          yearRow.leave += 1;
+        }
+
+        userRow.cols.push(new AnalysisuserRecordUserColDto(year, months, days));
+      }
+
+      if (yearRow.months > 0 && yearRow.days > 0 && yearRow.active > 0) {
+        yearRow.avgMonths = Math.round(yearRow.months / yearRow.active);
+        yearRow.avgDays = Math.round(yearRow.days / yearRow.active);
+      }
+    }
+
+    return { years: yearRows, users: userRows };
   }
 }

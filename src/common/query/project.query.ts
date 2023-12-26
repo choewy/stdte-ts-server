@@ -1,6 +1,6 @@
 import { DataSource, DeepPartial, EntityManager } from 'typeorm';
 
-import { Project, ProjectPriority } from '@entity';
+import { Project, ProjectPriority, ProjectStatus } from '@entity';
 
 import { EntityQuery } from '../class';
 import { ProjectQueryFindListArgs } from './types';
@@ -46,6 +46,13 @@ export class ProjectQuery extends EntityQuery<Project> {
         externalManagers: { user: true },
         externalLeaders: { user: true },
       },
+      order: { priority: 'ASC' },
+    });
+  }
+
+  async findAllByActive() {
+    return this.repository.find({
+      where: { status: ProjectStatus.Active },
       order: { priority: 'ASC' },
     });
   }

@@ -29,7 +29,14 @@ export class AnalysisController {
   @Get('times')
   @UseGuards(RoleGuard)
   @SetRolePolicy({ project: RolePolicyLevel.Read })
-  async getTimesRecords(@Query() query: AnalysisDateRangeQuery) {
-    return this.analysisService.getTimesRecords(query);
+  async getTimeRecords(@Query() query: AnalysisDateRangeQuery) {
+    return this.analysisService.getTimeRecords(query);
+  }
+
+  @Get('users')
+  @UseGuards(RoleGuard)
+  @SetRolePolicy({ user: RolePolicyLevel.Read })
+  async getUserRecords(@Query() query: AnalysisDateRangeQuery) {
+    return this.analysisService.getUserRecords(query);
   }
 }
