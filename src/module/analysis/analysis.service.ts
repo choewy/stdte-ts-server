@@ -16,7 +16,10 @@ import {
   AnalysisDateRangeQuery,
   AnalysisProjectAmountRowDto,
   AnalysisProjectAmountColDto,
-  AnalysisTimeRecordDto,
+  AnalysisTimeRecordYearRow,
+  AnalysisTimeRecordProjectRowDto,
+  AnalysisTimeRecordUserRowDto,
+  AnalysisTimeRecordColDto,
 } from './dto';
 
 @Injectable()
@@ -137,12 +140,6 @@ export class AnalysisService {
     const userQuery = new UserQuery(this.dataSource);
     const users = await userQuery.findAll();
 
-    const s = DateTime.fromJSDate(new Date(query.s));
-    const e = DateTime.fromJSDate(new Date(query.e));
-    const years = new Array(Math.ceil(e.diff(s, 'years').get('years')) + 1)
-      .fill(null)
-      .map((_, year) => s.plus({ year }).toFormat('yyyy'));
-
     const timeRecordQuery = new TimeRecordQuery(this.dataSource);
     const timeRecordRaws = await timeRecordQuery.findTimeRecordAnalysis(
       [0].concat(projects.map((project) => project.id)),
@@ -150,6 +147,45 @@ export class AnalysisService {
       query,
     );
 
-    return projects.map((project) => new AnalysisTimeRecordDto(project, years, timeRecordRaws));
+    const s = DateTime.fromJSDate(new Date(query.s));
+    const e = DateTime.fromJSDate(new Date(query.e));
+    const yearRange = e.diff(s, 'years').get('years');
+
+    const yearRows: AnalysisTimeRecordYearRow[] = [];
+    const projectRows = projects.map((project) => new AnalysisTimeRecordProjectRowDto(project));
+    const userRows = users.map((user) => new AnalysisTimeRecordUserRowDto(user));
+
+    for (let i = 0; i <= yearRange; i++) {
+      const year = s.plus({ year: i }).toFormat('yyyy');
+      const raws = timeRecordRaws.filter((raw) => raw.year === year);
+      const time = raws
+        .reduce<number>((t, v) => {
+          t += Number(v.time);
+          return t;
+        }, 0)
+        .toFixed(2);
+
+      yearRows.push(new AnalysisTimeRecordYearRow(year, time));
+
+      for (const projectRow of projectRows) {
+        const time = raws
+          .filter((raw) => raw.pid === projectRow.id)
+          .reduce<number>((t, v) => {
+            t += Number(v.time);
+            return t;
+          }, 0)
+          .toFixed(2);
+
+        projectRow.cols.push(new AnalysisTimeRecordColDto(year, time));
+      }
+    }
+
+    for (const userRow of userRows) {
+      userRow.cols = timeRecordRaws
+        .filter((raw) => raw.uid === userRow.id)
+        .map((raw) => new AnalysisTimeRecordColDto(raw.year, raw.time));
+    }
+
+    return { years: yearRows, projects: projectRows, users: userRows };
   }
 }

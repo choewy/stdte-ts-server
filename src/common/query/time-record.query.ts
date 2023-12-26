@@ -48,7 +48,6 @@ export class TimeRecordQuery extends EntityQuery<TimeRecord> {
       .addSelect('SUM(timeRecord.time)', 'time')
       .addSelect('project.id', 'pid')
       .addSelect('user.id', 'uid')
-      .addSelect('user.name', 'uname')
       .where('timeRecord.date >= :s', { s: args.s })
       .andWhere('timeRecord.date <= :e', { e: args.e })
       .groupBy('pid')

@@ -69,7 +69,6 @@ export type ProjectRecordAnalysisResults = [
 export type TimeRecordAnalysisRaw = {
   pid: number;
   uid: number;
-  uname: string;
   year: string;
   time: string;
 };
