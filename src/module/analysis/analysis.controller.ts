@@ -33,6 +33,13 @@ export class AnalysisController {
     return this.analysisService.getTimeRecords(query);
   }
 
+  @Get('times/download')
+  @UseGuards(RoleGuard)
+  @SetRolePolicy({ project: RolePolicyLevel.Read })
+  async getTimeRecordsFile(@Query() query: AnalysisDateRangeQuery) {
+    return this.analysisService.getTimeRecordsFile(query);
+  }
+
   @Get('users')
   @UseGuards(RoleGuard)
   @SetRolePolicy({ user: RolePolicyLevel.Read })

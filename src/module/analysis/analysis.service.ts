@@ -270,6 +270,46 @@ export class AnalysisService {
     return { years: yearRows, users: userRows };
   }
 
+  async getTimeRecordsFile(query: AnalysisDateRangeQuery) {
+    const results = await this.getTimeRecords(query);
+    const wb = new ExcelJS.Workbook();
+
+    const header: Array<string | number> = ['이름'];
+
+    for (const year of results.years) {
+      header.push(`${year.year}년`);
+    }
+
+    for (const project of results.projects) {
+      const ws = wb.addWorksheet(project.name, {
+        views: [{ state: 'frozen', xSplit: 1, ySplit: 1 }],
+      });
+
+      const rows = [header];
+
+      for (const user of results.users) {
+        const row: Array<string | number> = [user.name];
+
+        for (const year of results.years) {
+          row.push(Number(user.cols.find((col) => col.pid === project.id && col.year === year.year)?.time ?? '0.00'));
+        }
+
+        rows.push(row);
+      }
+
+      const row: Array<string | number> = ['합계'];
+
+      for (const year of results.years) {
+        row.push(Number(project.cols.find((col) => col.year === year.year)?.time ?? '0.00'));
+      }
+
+      rows.push(row);
+      ws.insertRows(1, rows);
+    }
+
+    return new DownloadDto((await wb.xlsx.writeBuffer()) as Buffer, DownloadFormat.Xlsx, '사업별 시간관리 집계');
+  }
+
   async getUserRecordsFile(query: AnalysisDateRangeQuery) {
     const results = await this.getUserRecords(query);
 
