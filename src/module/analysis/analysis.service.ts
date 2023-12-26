@@ -2,9 +2,22 @@ import { DateTime } from 'luxon';
 import { DataSource } from 'typeorm';
 
 import { Injectable } from '@nestjs/common';
-import { BusinessCategoryQuery, CustomerQuery, IndustryCategoryQuery, ProjectRecordQuery } from '@server/common';
+import {
+  BusinessCategoryQuery,
+  CustomerQuery,
+  IndustryCategoryQuery,
+  ProjectQuery,
+  ProjectRecordQuery,
+  TimeRecordQuery,
+  UserQuery,
+} from '@server/common';
 
-import { AnalysisDateRangeQuery, AnalysisProjectAmountRowDto, AnalysisProjectAmountColDto } from './dto';
+import {
+  AnalysisDateRangeQuery,
+  AnalysisProjectAmountRowDto,
+  AnalysisProjectAmountColDto,
+  AnalysisTimeRecordDto,
+} from './dto';
 
 @Injectable()
 export class AnalysisService {
@@ -115,5 +128,28 @@ export class AnalysisService {
       businessCategory: { years: businessCategoryYears, rows: businessCategoryRows },
       industryCategory: { years: industryCategoryYears, rows: industryCategoryRows },
     };
+  }
+
+  async getTimesRecords(query: AnalysisDateRangeQuery) {
+    const projectQuery = new ProjectQuery(this.dataSource);
+    const projects = await projectQuery.findAll();
+
+    const userQuery = new UserQuery(this.dataSource);
+    const users = await userQuery.findAll();
+
+    const s = DateTime.fromJSDate(new Date(query.s));
+    const e = DateTime.fromJSDate(new Date(query.e));
+    const years = new Array(Math.ceil(e.diff(s, 'years').get('years')) + 1)
+      .fill(null)
+      .map((_, year) => s.plus({ year }).toFormat('yyyy'));
+
+    const timeRecordQuery = new TimeRecordQuery(this.dataSource);
+    const timeRecordRaws = await timeRecordQuery.findTimeRecordAnalysis(
+      [0].concat(projects.map((project) => project.id)),
+      [0].concat(users.map((user) => user.id)),
+      query,
+    );
+
+    return projects.map((project) => new AnalysisTimeRecordDto(project, years, timeRecordRaws));
   }
 }

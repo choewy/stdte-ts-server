@@ -25,4 +25,11 @@ export class AnalysisController {
   async getProjectSales(@Query() query: AnalysisDateRangeQuery) {
     return this.analysisService.getProjectRecords('sales', query);
   }
+
+  @Get('times')
+  @UseGuards(RoleGuard)
+  @SetRolePolicy({ project: RolePolicyLevel.Read })
+  async getTimesRecords(@Query() query: AnalysisDateRangeQuery) {
+    return this.analysisService.getTimesRecords(query);
+  }
 }

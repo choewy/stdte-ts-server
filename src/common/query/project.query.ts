@@ -46,7 +46,7 @@ export class ProjectQuery extends EntityQuery<Project> {
         externalManagers: { user: true },
         externalLeaders: { user: true },
       },
-      where: { priority: ProjectPriority.Business },
+      order: { priority: 'ASC' },
     });
   }
 

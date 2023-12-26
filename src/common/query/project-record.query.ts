@@ -59,15 +59,12 @@ export class ProjectRecordQuery {
     const queryBuilder = repository
       .createQueryBuilder('row')
       .innerJoin('row.project', 'project')
-      .select('SUM(row.amount)', 'amount')
+      .select('DATE_FORMAT(row.date, "%Y" )', 'year')
+      .addSelect('SUM(row.amount)', 'amount')
       .where('row.date >= :s', { s: args.s })
       .andWhere('row.date <= :e', { e: args.e });
 
-    const customerQueryBuilder = queryBuilder
-      .clone()
-      .innerJoin('project.customer', 'customer')
-      .addSelect('DATE_FORMAT(row.date, "%Y" )', 'year');
-
+    const customerQueryBuilder = queryBuilder.clone().innerJoin('project.customer', 'customer');
     const customerYearsQueryBuilder = customerQueryBuilder.clone().groupBy('year');
     const customerRowsQueryBuilder = customerQueryBuilder
       .clone()
@@ -76,11 +73,7 @@ export class ProjectRecordQuery {
       .groupBy('customer.id')
       .addGroupBy('year');
 
-    const businessCategoryQueryBuilder = queryBuilder
-      .clone()
-      .innerJoin('project.businessCategory', 'businessCategory')
-      .addSelect('DATE_FORMAT(row.date, "%Y" )', 'year');
-
+    const businessCategoryQueryBuilder = queryBuilder.clone().innerJoin('project.businessCategory', 'businessCategory');
     const businessCategoryYearsQueryBuilder = businessCategoryQueryBuilder.clone().groupBy('year');
     const businessCategoryRowsQueryBuilder = businessCategoryQueryBuilder
       .clone()
@@ -89,11 +82,7 @@ export class ProjectRecordQuery {
       .groupBy('businessCategory.id')
       .addGroupBy('year');
 
-    const industryCategoryQueryBuilder = queryBuilder
-      .clone()
-      .innerJoin('project.industryCategory', 'industryCategory')
-      .addSelect('DATE_FORMAT(row.date, "%Y" )', 'year');
-
+    const industryCategoryQueryBuilder = queryBuilder.clone().innerJoin('project.industryCategory', 'industryCategory');
     const industryCategoryYearsQueryBuilder = industryCategoryQueryBuilder.clone().groupBy('year');
     const industryCategoryRowsQueryBuilder = industryCategoryQueryBuilder
       .clone()

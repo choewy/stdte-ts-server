@@ -1,6 +1,6 @@
 import { DataSource, DeepPartial, EntityManager, FindOptionsRelations, In, IsNull, Not } from 'typeorm';
 
-import { CredentialsStatus, User } from '@entity';
+import { CredentialsStatus, User, UserStatus } from '@entity';
 
 import { EntityQuery } from '../class';
 import { FindListArgs, UserQueryFindListArgs } from './types';
@@ -12,6 +12,19 @@ export class UserQuery extends EntityQuery<User> {
 
   async hasUserById(id: number) {
     return this.repository.exist({ where: { id } });
+  }
+
+  async findAll() {
+    return this.repository.find({
+      relations: {
+        credentials: true,
+      },
+      where: {
+        onInit: false,
+        credentials: { status: CredentialsStatus.Active },
+        status: UserStatus.Active,
+      },
+    });
   }
 
   async findUserList(args: UserQueryFindListArgs) {

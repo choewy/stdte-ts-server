@@ -65,3 +65,11 @@ export type ProjectRecordAnalysisResults = [
   ProjectRecordAnalysisYear[],
   ProjectRecordAnalysisRaw[],
 ];
+
+export type TimeRecordAnalysisRaw = {
+  pid: number;
+  uid: number;
+  uname: string;
+  year: string;
+  time: string;
+};

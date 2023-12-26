@@ -3,7 +3,12 @@ import { And, DataSource, DeepPartial, EntityManager, LessThanOrEqual, MoreThanO
 import { TimeRecord } from '@entity';
 
 import { EntityQuery } from '../class';
-import { TimeRecordQueryFindsArgs, TimeRecordQueryHasOverTimeArgs } from './types';
+import {
+  DateRangeArgs,
+  TimeRecordAnalysisRaw,
+  TimeRecordQueryFindsArgs,
+  TimeRecordQueryHasOverTimeArgs,
+} from './types';
 
 export class TimeRecordQuery extends EntityQuery<TimeRecord> {
   constructor(connection: DataSource | EntityManager) {
@@ -22,7 +27,6 @@ export class TimeRecordQuery extends EntityQuery<TimeRecord> {
     return result ?? { sum: '0' };
   }
 
-  /** @description 프로젝트 상태 체크 하지 않음 */
   async hasOverDailyTimeRecords(id: string, args: TimeRecordQueryHasOverTimeArgs) {
     const result = await this.repository
       .createQueryBuilder('timeRecord')
@@ -33,6 +37,24 @@ export class TimeRecordQuery extends EntityQuery<TimeRecord> {
       .getRawOne<{ sum: string }>();
 
     return Number(result?.sum ?? '0') + Number(args.time) > 24;
+  }
+
+  async findTimeRecordAnalysis(projects: number[], users: number[], args: DateRangeArgs) {
+    return this.repository
+      .createQueryBuilder('timeRecord')
+      .innerJoin('timeRecord.project', 'project', 'project.id IN(:projects)', { projects })
+      .innerJoin('timeRecord.user', 'user', 'user.id IN(:users)', { users })
+      .select('DATE_FORMAT(timeRecord.date, "%Y")', 'year')
+      .addSelect('SUM(timeRecord.time)', 'time')
+      .addSelect('project.id', 'pid')
+      .addSelect('user.id', 'uid')
+      .addSelect('user.name', 'uname')
+      .where('timeRecord.date >= :s', { s: args.s })
+      .andWhere('timeRecord.date <= :e', { e: args.e })
+      .groupBy('pid')
+      .addGroupBy('uid')
+      .addGroupBy('year')
+      .getRawMany<TimeRecordAnalysisRaw>();
   }
 
   async findTimeRecordById(id: string) {
