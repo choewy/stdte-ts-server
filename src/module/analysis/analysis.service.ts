@@ -183,7 +183,7 @@ export class AnalysisService {
     for (const userRow of userRows) {
       userRow.cols = timeRecordRaws
         .filter((raw) => raw.uid === userRow.id)
-        .map((raw) => new AnalysisTimeRecordColDto(raw.year, raw.time));
+        .map((raw) => new AnalysisTimeRecordColDto(raw.year, raw.time, raw.pid));
     }
 
     return { years: yearRows, projects: projectRows, users: userRows };
