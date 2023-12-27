@@ -280,8 +280,10 @@ export class AnalysisService {
       header.push(`${year.year}년`);
     }
 
-    for (const project of results.projects) {
-      const ws = wb.addWorksheet(project.name, {
+    for (let i = 0; i < results.projects.length; i++) {
+      const project = results.projects[i];
+
+      const ws = wb.addWorksheet(`(${i + 1}) ${project.name}`, {
         views: [{ state: 'frozen', xSplit: 1, ySplit: 1 }],
       });
 
