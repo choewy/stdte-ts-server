@@ -249,8 +249,8 @@ export class AnalysisService {
 
     const wb = new ExcelJS.Workbook();
 
-    this.analysisExcelService.createTimeRecordUserSheet(wb, 'ref_구성원 목록', results.users);
     this.analysisExcelService.createTimeRecordProjectSheet(wb, 'ref_사업 목록', results.projects);
+    this.analysisExcelService.createTimeRecordUserSheet(wb, 'ref_구성원 목록', results.users);
 
     for (const project of results.projects) {
       const sheetName = `${project.id}_${project.name}`;
@@ -280,7 +280,7 @@ export class AnalysisService {
 
   private createUserRecordUserRows(users: User[], years: AnalysisUserRecordYearRowDto[]) {
     const today = DateTime.local();
-    const rows: AnalysisUserRecordUserRowDto[] = [];
+    const rows = users.map((user) => new AnalysisUserRecordUserRowDto(user));
 
     for (const year of years) {
       const datetime = DateTime.fromFormat(year.year, 'yyyy');
@@ -289,15 +289,13 @@ export class AnalysisService {
         continue;
       }
 
-      for (const user of users) {
-        if (user.enteringDay == null) {
+      for (const row of rows) {
+        if (row.enteringDay === '') {
           continue;
         }
 
-        const index = rows.push(new AnalysisUserRecordUserRowDto(user)) - 1;
-
-        const enterDatetime = DateTime.fromJSDate(new Date(rows[index].enteringDay ?? ''));
-        const leaveDatetime = DateTime.fromJSDate(new Date(rows[index].resignationDay ?? ''));
+        const enterDatetime = DateTime.fromJSDate(new Date(row.enteringDay ?? ''));
+        const leaveDatetime = DateTime.fromJSDate(new Date(row.resignationDay ?? ''));
 
         const enterDiff = enterDatetime.startOf('year').diff(datetime.startOf('year'), 'years').get('years');
         const leaveDiff = leaveDatetime.startOf('year').diff(datetime.startOf('year'), 'years').get('years');
@@ -309,7 +307,7 @@ export class AnalysisService {
         const months = Math.floor(datetime.endOf('year').diff(enterDatetime, 'months').get('months'));
         const days = Math.floor(datetime.endOf('year').diff(enterDatetime, 'days').get('days'));
 
-        rows[index].cols.push(
+        row.cols.push(
           new AnalysisuserRecordUserColDto(year.year, months, days, {
             entered: enterDiff === 0,
             leaved: leaveDiff === 0,
