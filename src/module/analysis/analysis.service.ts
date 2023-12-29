@@ -3,6 +3,8 @@ import { DateTime } from 'luxon';
 import { DataSource } from 'typeorm';
 
 import { Injectable } from '@nestjs/common';
+
+import { BusinessCategory, Customer, IndustryCategory } from '@entity';
 import {
   BusinessCategoryQuery,
   CustomerQuery,
@@ -10,6 +12,8 @@ import {
   DownloadFormat,
   IndustryCategoryQuery,
   ProjectQuery,
+  ProjectRecordAnalysisRaw,
+  ProjectRecordAnalysisYear,
   ProjectRecordQuery,
   TimeRecordQuery,
   UserQuery,
@@ -28,6 +32,7 @@ import {
   AnalysisUserRecordUserRowDto,
   AnalysisuserRecordUserColDto,
   AnalysisProjectRecordResultDto,
+  AnalysisProjectRecordYearDto,
 } from './dto';
 
 @Injectable()
@@ -37,110 +42,95 @@ export class AnalysisService {
     private readonly analysisExcelService: AnalysisExcelService,
   ) {}
 
-  async getProjectRecords(type: 'orders' | 'sales', query: AnalysisDateRangeQuery) {
-    const projectRecordQuery = new ProjectRecordQuery(this.dataSource);
-    const res = await projectRecordQuery.findProjectOrderRecordAnalysis(type, query);
-
-    const [
-      customerYearRaws,
-      customerRowRaws,
-      businessCategoryYearRaws,
-      businessCategoryRowRaws,
-      industryCategoryYearRaws,
-      industryCategoryRowRaws,
-    ] = res;
+  private createProjectYears(query: AnalysisDateRangeQuery, years: Array<ProjectRecordAnalysisYear[]>) {
+    const map: Record<'customer' | 'business' | 'industry', AnalysisProjectRecordYearDto[]> = {
+      customer: [],
+      business: [],
+      industry: [],
+    };
 
     const s = DateTime.fromJSDate(new Date(query.s));
     const e = DateTime.fromJSDate(new Date(query.e));
-    const yearRange = e.diff(s, 'years').get('years');
+    const range = e.diff(s, 'years').get('years');
 
-    const customerYears: { year: string; amount: string }[] = [];
-    const businessCategoryYears: { year: string; amount: string }[] = [];
-    const industryCategoryYears: { year: string; amount: string }[] = [];
-
-    for (let i = 0; i <= yearRange; i++) {
+    for (let i = 0; i <= range; i++) {
       const year = s.plus({ year: i }).toFormat('yyyy');
 
-      customerYears.push({
-        year,
-        amount: customerYearRaws.find((raw) => raw.year === year)?.amount ?? '0',
-      });
-
-      businessCategoryYears.push({
-        year,
-        amount: businessCategoryYearRaws.find((raw) => raw.year === year)?.amount ?? '0',
-      });
-
-      industryCategoryYears.push({
-        year,
-        amount: industryCategoryYearRaws.find((raw) => raw.year === year)?.amount ?? '0',
-      });
+      map.customer.push(new AnalysisProjectRecordYearDto(year, years[0]));
+      map.business.push(new AnalysisProjectRecordYearDto(year, years[1]));
+      map.industry.push(new AnalysisProjectRecordYearDto(year, years[2]));
     }
+
+    return map;
+  }
+
+  private createProjectRows(
+    entities: [Customer[], BusinessCategory[], IndustryCategory[]],
+    years: Array<AnalysisProjectRecordYearDto[]>,
+    raws: Array<ProjectRecordAnalysisRaw[]>,
+  ) {
+    const map: Record<'customer' | 'business' | 'industry', AnalysisProjectAmountRowDto[]> = {
+      customer: [],
+      business: [],
+      industry: [],
+    };
+
+    for (let i = 0; i < entities.length; i++) {
+      for (const entity of entities[i]) {
+        const row = new AnalysisProjectAmountRowDto(
+          entity.id,
+          (entity as Customer).alias ?? (entity as BusinessCategory | IndustryCategory).name,
+          raws[i].filter(({ id }) => id === entity.id).map((raw) => new AnalysisProjectAmountColDto(years[i], raw)),
+        );
+
+        switch (i) {
+          case 0:
+            map.customer.push(row);
+            break;
+
+          case 1:
+            map.business.push(row);
+            break;
+
+          case 2:
+            map.industry.push(row);
+            break;
+        }
+      }
+    }
+
+    return map;
+  }
+
+  async getProjectRecords(type: 'orders' | 'sales', query: AnalysisDateRangeQuery) {
+    const projectRecordQuery = new ProjectRecordQuery(this.dataSource);
+
+    const [groupByCustomer, groupByBusinessCategory, groupByIndustryCategory] = await Promise.all([
+      projectRecordQuery.findProjectRecordAnalysisGroupByCustomers(type, query),
+      projectRecordQuery.findProjectRecordAnalysisGroupByBusinessCategory(type, query),
+      projectRecordQuery.findProjectRecordAnalysisGroupByIndustryCategory(type, query),
+    ]);
+
+    const years = this.createProjectYears(query, [
+      groupByCustomer.years,
+      groupByBusinessCategory.years,
+      groupByIndustryCategory.years,
+    ]);
 
     const customerQuery = new CustomerQuery(this.dataSource);
-    const customers = await customerQuery.findAll();
-    const customerRows: AnalysisProjectAmountRowDto[] = [];
-
-    for (const customer of customers) {
-      customerRows.push(
-        new AnalysisProjectAmountRowDto(
-          customer.id,
-          customer.alias,
-          customerRowRaws
-            .filter(({ id }) => id === customer.id)
-            .map((raw) => {
-              const total = customerYears.find((row) => row.year === raw.year)?.amount ?? '0';
-
-              return new AnalysisProjectAmountColDto(total, raw);
-            }),
-        ),
-      );
-    }
-
     const businessCategoryQuery = new BusinessCategoryQuery(this.dataSource);
-    const businessCategories = await businessCategoryQuery.findAll();
-    const businessCategoryRows: AnalysisProjectAmountRowDto[] = [];
-
-    for (const businessCategory of businessCategories) {
-      businessCategoryRows.push(
-        new AnalysisProjectAmountRowDto(
-          businessCategory.id,
-          businessCategory.name,
-          businessCategoryRowRaws
-            .filter(({ id }) => id === businessCategory.id)
-            .map((raw) => {
-              const total = businessCategoryYears.find((row) => row.year === raw.year)?.amount ?? '0';
-
-              return new AnalysisProjectAmountColDto(total, raw);
-            }),
-        ),
-      );
-    }
-
     const industryCategoryQuery = new IndustryCategoryQuery(this.dataSource);
-    const industryCategories = await industryCategoryQuery.findAll();
-    const industryCategoryRows: AnalysisProjectAmountRowDto[] = [];
 
-    for (const industryCategory of industryCategories) {
-      industryCategoryRows.push(
-        new AnalysisProjectAmountRowDto(
-          industryCategory.id,
-          industryCategory.name,
-          industryCategoryRowRaws
-            .filter(({ id }) => id === industryCategory.id)
-            .map((raw) => {
-              const total = industryCategoryYears.find((row) => row.year === raw.year)?.amount ?? '0';
-
-              return new AnalysisProjectAmountColDto(total, raw);
-            }),
-        ),
-      );
-    }
+    const rows = this.createProjectRows(
+      await Promise.all([customerQuery.findAll(), businessCategoryQuery.findAll(), industryCategoryQuery.findAll()]),
+      [years.customer, years.business, years.industry],
+      [groupByCustomer.raws, groupByBusinessCategory.raws, groupByIndustryCategory.raws],
+    );
 
     return {
-      customer: new AnalysisProjectRecordResultDto(customerYears, customerRows),
-      businessCategory: new AnalysisProjectRecordResultDto(businessCategoryYears, businessCategoryRows),
-      industryCategory: new AnalysisProjectRecordResultDto(industryCategoryYears, industryCategoryRows),
+      customer: new AnalysisProjectRecordResultDto(years.customer, rows.customer),
+      businessCategory: new AnalysisProjectRecordResultDto(years.business, rows.business),
+      industryCategory: new AnalysisProjectRecordResultDto(years.industry, rows.industry),
     };
   }
 
@@ -150,16 +140,16 @@ export class AnalysisService {
       this.getProjectRecords('sales', query),
     ]);
 
-    const workbook = new ExcelJS.Workbook();
+    const wb = new ExcelJS.Workbook();
 
-    this.analysisExcelService.makeProjectRecordSheet(workbook, '수주_고객사별', '고객사', orders.customer);
-    this.analysisExcelService.makeProjectRecordSheet(workbook, '수주_사업구분별', '사업구분', orders.businessCategory);
-    this.analysisExcelService.makeProjectRecordSheet(workbook, '수주_산업분야별', '산업분야', orders.industryCategory);
-    this.analysisExcelService.makeProjectRecordSheet(workbook, '매출_고객사별', '고객사', sales.customer);
-    this.analysisExcelService.makeProjectRecordSheet(workbook, '매출_사업구분별', '사업구분', sales.businessCategory);
-    this.analysisExcelService.makeProjectRecordSheet(workbook, '매출_산업분야별', '산업분야', sales.industryCategory);
+    this.analysisExcelService.createProjectRecordSheet(wb, '수주_고객사별', '고객사', orders.customer);
+    this.analysisExcelService.createProjectRecordSheet(wb, '수주_사업구분별', '사업구분', orders.businessCategory);
+    this.analysisExcelService.createProjectRecordSheet(wb, '수주_산업분야별', '산업분야', orders.industryCategory);
+    this.analysisExcelService.createProjectRecordSheet(wb, '매출_고객사별', '고객사', sales.customer);
+    this.analysisExcelService.createProjectRecordSheet(wb, '매출_사업구분별', '사업구분', sales.businessCategory);
+    this.analysisExcelService.createProjectRecordSheet(wb, '매출_산업분야별', '산업분야', sales.industryCategory);
 
-    return new DownloadDto((await workbook.xlsx.writeBuffer()) as Buffer, DownloadFormat.Xlsx, '수주 및 매출 집계');
+    return new DownloadDto((await wb.xlsx.writeBuffer()) as Buffer, DownloadFormat.Xlsx, '수주 및 매출 집계');
   }
 
   async getTimeRecords(query: AnalysisDateRangeQuery) {

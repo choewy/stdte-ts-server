@@ -10,7 +10,7 @@ export class AnalysisExcelService {
     views: [{ state: 'frozen', xSplit: 1, ySplit: 1 }],
   };
 
-  makeProjectRecordSheet(
+  createProjectRecordSheet(
     wb: ExcelJS.Workbook,
     sheetname: string,
     header: string,

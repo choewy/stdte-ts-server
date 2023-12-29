@@ -40,6 +40,88 @@ export class ProjectRecordQuery {
     });
   }
 
+  private createFindProjectRecordAnalysisQueryBuilder(type: 'orders' | 'sales', args: DateRangeArgs) {
+    let repository: Repository<ProjectOrderRecord> | Repository<ProjectSaleRecord>;
+
+    switch (type) {
+      case 'orders':
+        repository = this.projectOrderRecordRepository;
+        break;
+
+      case 'sales':
+        repository = this.projectSaleRecordRepository;
+        break;
+    }
+
+    return repository
+      .createQueryBuilder('row')
+      .innerJoin('row.project', 'project')
+      .select('DATE_FORMAT(row.date, "%Y" )', 'year')
+      .addSelect('SUM(row.amount)', 'amount')
+      .where('row.date >= :s', { s: args.s })
+      .andWhere('row.date <= :e', { e: args.e });
+  }
+
+  async findProjectRecordAnalysisGroupByCustomers(type: 'orders' | 'sales', args: DateRangeArgs) {
+    const queryBuilder = this.createFindProjectRecordAnalysisQueryBuilder(type, args).innerJoin(
+      'project.customer',
+      'customer',
+    );
+
+    const yearsQueryBuilder = queryBuilder.clone().groupBy('year');
+    const rawsQueryBuilder = queryBuilder
+      .clone()
+      .addSelect('customer.id', 'id')
+      .addSelect('customer.alias', 'row')
+      .groupBy('customer.id')
+      .addGroupBy('year');
+
+    return {
+      years: await yearsQueryBuilder.getRawMany<ProjectRecordAnalysisYear>(),
+      raws: await rawsQueryBuilder.getRawMany<ProjectRecordAnalysisRaw>(),
+    };
+  }
+
+  async findProjectRecordAnalysisGroupByBusinessCategory(type: 'orders' | 'sales', args: DateRangeArgs) {
+    const queryBuilder = this.createFindProjectRecordAnalysisQueryBuilder(type, args).innerJoin(
+      'project.businessCategory',
+      'category',
+    );
+
+    const yearsQueryBuilder = queryBuilder.clone().groupBy('year');
+    const rawsQueryBuilder = queryBuilder
+      .clone()
+      .addSelect('category.id', 'id')
+      .addSelect('category.name', 'row')
+      .groupBy('category.id')
+      .addGroupBy('year');
+
+    return {
+      years: await yearsQueryBuilder.getRawMany<ProjectRecordAnalysisYear>(),
+      raws: await rawsQueryBuilder.getRawMany<ProjectRecordAnalysisRaw>(),
+    };
+  }
+
+  async findProjectRecordAnalysisGroupByIndustryCategory(type: 'orders' | 'sales', args: DateRangeArgs) {
+    const queryBuilder = this.createFindProjectRecordAnalysisQueryBuilder(type, args).innerJoin(
+      'project.industryCategory',
+      'category',
+    );
+
+    const yearsQueryBuilder = queryBuilder.clone().groupBy('year');
+    const rawsQueryBuilder = queryBuilder
+      .clone()
+      .addSelect('category.id', 'id')
+      .addSelect('category.name', 'row')
+      .groupBy('category.id')
+      .addGroupBy('year');
+
+    return {
+      years: await yearsQueryBuilder.getRawMany<ProjectRecordAnalysisYear>(),
+      raws: await rawsQueryBuilder.getRawMany<ProjectRecordAnalysisRaw>(),
+    };
+  }
+
   async findProjectOrderRecordAnalysis(
     type: 'orders' | 'sales',
     args: DateRangeArgs,
