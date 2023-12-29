@@ -2,7 +2,12 @@ import ExcelJS from 'exceljs';
 
 import { Injectable } from '@nestjs/common';
 
-import { AnalysisProjectRecordResultDto } from './dto';
+import {
+  AnalysisProjectRecordResultDto,
+  AnalysisTimeRecordProjectRowDto,
+  AnalysisTimeRecordUserRowDto,
+  AnalysisTimeRecordYearRow,
+} from './dto';
 
 @Injectable()
 export class AnalysisExcelService {
@@ -40,6 +45,43 @@ export class AnalysisExcelService {
     }
 
     ws.insertRows(1, rows);
+
+    return ws;
+  }
+
+  createTimeRecordSheet(
+    wb: ExcelJS.Workbook,
+    sheetName: string,
+    project: AnalysisTimeRecordProjectRowDto,
+    years: AnalysisTimeRecordYearRow[],
+    users: AnalysisTimeRecordUserRowDto[],
+  ) {
+    const ws = wb.addWorksheet(sheetName, this.WORKSHEET_OPTIONS);
+    const header: Array<string | number> = ['이름'];
+    const total: Array<string | number> = ['합계'];
+
+    for (const year of years) {
+      const col = project.cols.find((col) => col.year === year.year);
+
+      header.push(`${year.year}년`);
+      total.push(Number(col?.time ?? '0.00'));
+    }
+
+    const rows: Array<string | number>[] = [];
+
+    for (const user of users) {
+      const row: Array<string | number> = [user.name];
+
+      for (const year of years) {
+        const col = user.cols.find((col) => col.pid === project.id && col.year === year.year);
+
+        row.push(Number(col?.time ?? '0.00'));
+      }
+
+      rows.push(row);
+    }
+
+    ws.insertRows(1, [header].concat(rows).concat([total]));
 
     return ws;
   }

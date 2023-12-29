@@ -4,7 +4,7 @@ import { DataSource } from 'typeorm';
 
 import { Injectable } from '@nestjs/common';
 
-import { BusinessCategory, Customer, IndustryCategory } from '@entity';
+import { BusinessCategory, Customer, IndustryCategory, Project, User } from '@entity';
 import {
   BusinessCategoryQuery,
   CustomerQuery,
@@ -15,6 +15,7 @@ import {
   ProjectRecordAnalysisRaw,
   ProjectRecordAnalysisYear,
   ProjectRecordQuery,
+  TimeRecordAnalysisRaw,
   TimeRecordQuery,
   UserQuery,
 } from '@server/common';
@@ -42,7 +43,7 @@ export class AnalysisService {
     private readonly analysisExcelService: AnalysisExcelService,
   ) {}
 
-  private createProjectYears(query: AnalysisDateRangeQuery, years: Array<ProjectRecordAnalysisYear[]>) {
+  private createProjectRecordYears(query: AnalysisDateRangeQuery, years: Array<ProjectRecordAnalysisYear[]>) {
     const map: Record<'customer' | 'business' | 'industry', AnalysisProjectRecordYearDto[]> = {
       customer: [],
       business: [],
@@ -64,7 +65,7 @@ export class AnalysisService {
     return map;
   }
 
-  private createProjectRows(
+  private createProjectRecordRows(
     entities: [Customer[], BusinessCategory[], IndustryCategory[]],
     years: Array<AnalysisProjectRecordYearDto[]>,
     raws: Array<ProjectRecordAnalysisRaw[]>,
@@ -111,7 +112,7 @@ export class AnalysisService {
       projectRecordQuery.findProjectRecordAnalysisGroupByIndustryCategory(type, query),
     ]);
 
-    const years = this.createProjectYears(query, [
+    const years = this.createProjectRecordYears(query, [
       groupByCustomer.years,
       groupByBusinessCategory.years,
       groupByIndustryCategory.years,
@@ -121,7 +122,7 @@ export class AnalysisService {
     const businessCategoryQuery = new BusinessCategoryQuery(this.dataSource);
     const industryCategoryQuery = new IndustryCategoryQuery(this.dataSource);
 
-    const rows = this.createProjectRows(
+    const rows = this.createProjectRecordRows(
       await Promise.all([customerQuery.findAll(), businessCategoryQuery.findAll(), industryCategoryQuery.findAll()]),
       [years.customer, years.business, years.industry],
       [groupByCustomer.raws, groupByBusinessCategory.raws, groupByIndustryCategory.raws],
@@ -152,6 +153,74 @@ export class AnalysisService {
     return new DownloadDto((await wb.xlsx.writeBuffer()) as Buffer, DownloadFormat.Xlsx, '수주 및 매출 집계');
   }
 
+  private createTimeRecordYears(query: AnalysisDateRangeQuery, raws: TimeRecordAnalysisRaw[]) {
+    const s = DateTime.fromJSDate(new Date(query.s));
+    const e = DateTime.fromJSDate(new Date(query.e));
+
+    const range = e.diff(s, 'years').get('years');
+    const years: AnalysisTimeRecordYearRow[] = [];
+
+    for (let i = 0; i <= range; i++) {
+      const year = s.plus({ year: i }).toFormat('yyyy');
+      const targets = raws.filter((raw) => raw.year === year);
+
+      years.push(
+        new AnalysisTimeRecordYearRow(
+          year,
+          targets
+            .reduce<number>((t, v) => {
+              t += Number(v.time);
+              return t;
+            }, 0)
+            .toFixed(2),
+        ),
+      );
+    }
+
+    return years;
+  }
+
+  private createTimeRecordProjects(
+    projects: Project[],
+    raws: TimeRecordAnalysisRaw[],
+    years: AnalysisTimeRecordYearRow[],
+  ) {
+    const rows = projects.map((project) => new AnalysisTimeRecordProjectRowDto(project));
+
+    for (const year of years) {
+      const targets = raws.filter((raw) => raw.year === year.year);
+
+      for (const row of rows) {
+        row.cols.push(
+          new AnalysisTimeRecordColDto(
+            year.year,
+            targets
+              .filter((raw) => raw.pid === row.id)
+              .reduce<number>((t, v) => {
+                t += Number(v.time);
+                return t;
+              }, 0)
+              .toFixed(2),
+          ),
+        );
+      }
+    }
+
+    return rows;
+  }
+
+  private createTimeRecordUsers(users: User[], raws: TimeRecordAnalysisRaw[]) {
+    const rows = users.map((user) => new AnalysisTimeRecordUserRowDto(user));
+
+    for (const row of rows) {
+      row.cols = raws
+        .filter((raw) => raw.uid === row.id)
+        .map((raw) => new AnalysisTimeRecordColDto(raw.year, raw.time, raw.pid));
+    }
+
+    return rows;
+  }
+
   async getTimeRecords(query: AnalysisDateRangeQuery) {
     const projectQuery = new ProjectQuery(this.dataSource);
     const projects = await projectQuery.findAllByActive();
@@ -160,52 +229,34 @@ export class AnalysisService {
     const users = await userQuery.findAllByActive();
 
     const timeRecordQuery = new TimeRecordQuery(this.dataSource);
-    const timeRecordRaws = await timeRecordQuery.findTimeRecordAnalysis(
+    const raws = await timeRecordQuery.findTimeRecordAnalysis(
       [0].concat(projects.map((project) => project.id)),
       [0].concat(users.map((user) => user.id)),
       query,
     );
 
-    const s = DateTime.fromJSDate(new Date(query.s));
-    const e = DateTime.fromJSDate(new Date(query.e));
-    const yearRange = e.diff(s, 'years').get('years');
+    const years = this.createTimeRecordYears(query, raws);
 
-    const yearRows: AnalysisTimeRecordYearRow[] = [];
-    const projectRows = projects.map((project) => new AnalysisTimeRecordProjectRowDto(project));
-    const userRows = users.map((user) => new AnalysisTimeRecordUserRowDto(user));
+    return {
+      years,
+      projects: this.createTimeRecordProjects(projects, raws, years),
+      users: this.createTimeRecordUsers(users, raws),
+    };
+  }
 
-    for (let i = 0; i <= yearRange; i++) {
-      const year = s.plus({ year: i }).toFormat('yyyy');
-      const raws = timeRecordRaws.filter((raw) => raw.year === year);
-      const time = raws
-        .reduce<number>((t, v) => {
-          t += Number(v.time);
-          return t;
-        }, 0)
-        .toFixed(2);
+  async getTimeRecordsFile(query: AnalysisDateRangeQuery) {
+    const results = await this.getTimeRecords(query);
 
-      yearRows.push(new AnalysisTimeRecordYearRow(year, time));
+    const wb = new ExcelJS.Workbook();
 
-      for (const projectRow of projectRows) {
-        const time = raws
-          .filter((raw) => raw.pid === projectRow.id)
-          .reduce<number>((t, v) => {
-            t += Number(v.time);
-            return t;
-          }, 0)
-          .toFixed(2);
+    for (let i = 0; i < results.projects.length; i++) {
+      const project = results.projects[i];
+      const sheetName = `(${i + 1}) ${project.name}`;
 
-        projectRow.cols.push(new AnalysisTimeRecordColDto(year, time));
-      }
+      this.analysisExcelService.createTimeRecordSheet(wb, sheetName, project, results.years, results.users);
     }
 
-    for (const userRow of userRows) {
-      userRow.cols = timeRecordRaws
-        .filter((raw) => raw.uid === userRow.id)
-        .map((raw) => new AnalysisTimeRecordColDto(raw.year, raw.time, raw.pid));
-    }
-
-    return { years: yearRows, projects: projectRows, users: userRows };
+    return new DownloadDto((await wb.xlsx.writeBuffer()) as Buffer, DownloadFormat.Xlsx, '사업별 시간관리 집계');
   }
 
   async getUserRecords(query: AnalysisDateRangeQuery) {
@@ -281,48 +332,6 @@ export class AnalysisService {
     }
 
     return { years: yearRows, users: userRows };
-  }
-
-  async getTimeRecordsFile(query: AnalysisDateRangeQuery) {
-    const results = await this.getTimeRecords(query);
-    const wb = new ExcelJS.Workbook();
-
-    const header: Array<string | number> = ['이름'];
-
-    for (const year of results.years) {
-      header.push(`${year.year}년`);
-    }
-
-    for (let i = 0; i < results.projects.length; i++) {
-      const project = results.projects[i];
-
-      const ws = wb.addWorksheet(`(${i + 1}) ${project.name}`, {
-        views: [{ state: 'frozen', xSplit: 1, ySplit: 1 }],
-      });
-
-      const rows = [header];
-
-      for (const user of results.users) {
-        const row: Array<string | number> = [user.name];
-
-        for (const year of results.years) {
-          row.push(Number(user.cols.find((col) => col.pid === project.id && col.year === year.year)?.time ?? '0.00'));
-        }
-
-        rows.push(row);
-      }
-
-      const row: Array<string | number> = ['합계'];
-
-      for (const year of results.years) {
-        row.push(Number(project.cols.find((col) => col.year === year.year)?.time ?? '0.00'));
-      }
-
-      rows.push(row);
-      ws.insertRows(1, rows);
-    }
-
-    return new DownloadDto((await wb.xlsx.writeBuffer()) as Buffer, DownloadFormat.Xlsx, '사업별 시간관리 집계');
   }
 
   async getUserRecordsFile(query: AnalysisDateRangeQuery) {
