@@ -139,6 +139,8 @@ export class AnalysisService {
     };
   }
 
+  async getProjectRecordsFile(query: AnalysisDateRangeQuery) {}
+
   async getTimeRecords(query: AnalysisDateRangeQuery) {
     const projectQuery = new ProjectQuery(this.dataSource);
     const projects = await projectQuery.findAllByActive();

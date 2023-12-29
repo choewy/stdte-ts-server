@@ -12,18 +12,25 @@ import { AnalysisDateRangeQuery } from './dto';
 export class AnalysisController {
   constructor(private readonly analysisService: AnalysisService) {}
 
-  @Get('project/orders')
+  @Get('project/records/orders')
   @UseGuards(RoleGuard)
   @SetRolePolicy({ project: RolePolicyLevel.Read })
   async getProjectOrders(@Query() query: AnalysisDateRangeQuery) {
     return this.analysisService.getProjectRecords('orders', query);
   }
 
-  @Get('project/sales')
+  @Get('project/records/sales')
   @UseGuards(RoleGuard)
   @SetRolePolicy({ project: RolePolicyLevel.Read })
   async getProjectSales(@Query() query: AnalysisDateRangeQuery) {
     return this.analysisService.getProjectRecords('sales', query);
+  }
+
+  @Get('project/records/download')
+  @UseGuards(RoleGuard)
+  @SetRolePolicy({ project: RolePolicyLevel.Read })
+  async getProjectRecordsFile(@Query() query: AnalysisDateRangeQuery) {
+    return this.analysisService.getProjectRecordsFile(query);
   }
 
   @Get('times')
