@@ -15,7 +15,7 @@ import {
 @Injectable()
 export class AnalysisExcelService {
   private readonly WORKSHEET_OPTIONS: Partial<ExcelJS.AddWorksheetOptions> = {
-    views: [{ state: 'frozen', xSplit: 1, ySplit: 1 }],
+    views: [{ state: 'frozen', xSplit: 2, ySplit: 1 }],
   };
 
   createProjectRecordCustomerSheet(wb: ExcelJS.Workbook, sheetname: string, customers: AnalysisProjectAmountRowDto[]) {
@@ -115,6 +115,7 @@ export class AnalysisExcelService {
 
       if (i % 2 === 1) {
         ws.getColumn(i).numFmt = '#,##0';
+        ws.getColumn(i).width = 20;
       } else {
         ws.getColumn(i).numFmt = '0.00%';
       }
@@ -217,7 +218,7 @@ export class AnalysisExcelService {
     years: AnalysisUserRecordYearRowDto[],
     users: AnalysisUserRecordUserRowDto[],
   ) {
-    const ws = wb.addWorksheet(sheetName, this.WORKSHEET_OPTIONS);
+    const ws = wb.addWorksheet(sheetName, { views: [{ state: 'frozen', xSplit: 4, ySplit: 4 }] });
 
     const head: Array<string | number> = new Array(4).fill('');
     const stathead: Array<string | number> = ['', '연간통계'].concat(new Array(2).fill(''));
