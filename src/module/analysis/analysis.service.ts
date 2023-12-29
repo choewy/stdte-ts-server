@@ -15,6 +15,7 @@ import {
   UserQuery,
 } from '@server/common';
 
+import { AnalysisExcelService } from './analysis-excel.service';
 import {
   AnalysisDateRangeQuery,
   AnalysisProjectAmountRowDto,
@@ -26,11 +27,15 @@ import {
   AnalysisUserRecordYearRowDto,
   AnalysisUserRecordUserRowDto,
   AnalysisuserRecordUserColDto,
+  AnalysisProjectRecordResultDto,
 } from './dto';
 
 @Injectable()
 export class AnalysisService {
-  constructor(private readonly dataSource: DataSource) {}
+  constructor(
+    private readonly dataSource: DataSource,
+    private readonly analysisExcelService: AnalysisExcelService,
+  ) {}
 
   async getProjectRecords(type: 'orders' | 'sales', query: AnalysisDateRangeQuery) {
     const projectRecordQuery = new ProjectRecordQuery(this.dataSource);
@@ -133,9 +138,9 @@ export class AnalysisService {
     }
 
     return {
-      customer: { years: customerYears, rows: customerRows },
-      businessCategory: { years: businessCategoryYears, rows: businessCategoryRows },
-      industryCategory: { years: industryCategoryYears, rows: industryCategoryRows },
+      customer: new AnalysisProjectRecordResultDto(customerYears, customerRows),
+      businessCategory: new AnalysisProjectRecordResultDto(businessCategoryYears, businessCategoryRows),
+      industryCategory: new AnalysisProjectRecordResultDto(industryCategoryYears, industryCategoryRows),
     };
   }
 
@@ -146,183 +151,15 @@ export class AnalysisService {
     ]);
 
     const workbook = new ExcelJS.Workbook();
-    const wofkSheetOptions: Partial<ExcelJS.AddWorksheetOptions> = {
-      views: [{ state: 'frozen', xSplit: 1, ySplit: 1 }],
-    };
 
-    const worksheetOrderGroupByCustomer = workbook.addWorksheet(`수주_고객사별`, wofkSheetOptions);
-    const worksheetOrderGroupByCustomerRows: Array<string | number>[] = [['고객사'], ['합계']];
+    this.analysisExcelService.makeProjectRecordSheet(workbook, '수주_고객사별', '고객사', orders.customer);
+    this.analysisExcelService.makeProjectRecordSheet(workbook, '수주_사업구분별', '사업구분', orders.businessCategory);
+    this.analysisExcelService.makeProjectRecordSheet(workbook, '수주_산업분야별', '산업분야', orders.industryCategory);
+    this.analysisExcelService.makeProjectRecordSheet(workbook, '매출_고객사별', '고객사', sales.customer);
+    this.analysisExcelService.makeProjectRecordSheet(workbook, '매출_사업구분별', '사업구분', sales.businessCategory);
+    this.analysisExcelService.makeProjectRecordSheet(workbook, '매출_산업분야별', '산업분야', sales.industryCategory);
 
-    for (const year of orders.customer.years) {
-      worksheetOrderGroupByCustomerRows[0].push(`${year.year}년`, '%');
-      worksheetOrderGroupByCustomerRows[1].push(
-        year.amount ? Number(year.amount).toLocaleString('ko-KR') : '',
-        year.amount ? '100%' : '',
-      );
-    }
-
-    for (const row of orders.customer.rows) {
-      const worksheelRow: Array<string | number> = [row.row];
-
-      for (const year of orders.customer.years) {
-        const col = row.cols.find((col) => col.year === year.year);
-
-        worksheelRow.push(
-          col?.amount ? Number(col.amount).toLocaleString('ko-KR') : '',
-          col?.rate ? `${col?.rate}%` : '',
-        );
-      }
-
-      worksheetOrderGroupByCustomerRows.push(worksheelRow);
-    }
-
-    worksheetOrderGroupByCustomer.insertRows(1, worksheetOrderGroupByCustomerRows);
-
-    const worksheetOrderGroupByBusinessCategory = workbook.addWorksheet(`수주_사업구분별`, wofkSheetOptions);
-    const worksheetOrderGroupByBusinessCategoryRows: Array<string | number>[] = [['사업구분'], ['합계']];
-
-    for (const year of orders.businessCategory.years) {
-      worksheetOrderGroupByBusinessCategoryRows[0].push(`${year.year}년`, '%');
-      worksheetOrderGroupByBusinessCategoryRows[1].push(
-        year.amount ? Number(year.amount).toLocaleString('ko-KR') : '',
-        year.amount ? '100%' : '',
-      );
-    }
-
-    for (const row of orders.businessCategory.rows) {
-      const worksheelRow: Array<string | number> = [row.row];
-
-      for (const year of orders.businessCategory.years) {
-        const col = row.cols.find((col) => col.year === year.year);
-
-        worksheelRow.push(
-          col?.amount ? Number(col.amount).toLocaleString('ko-KR') : '',
-          col?.rate ? `${col?.rate}%` : '',
-        );
-      }
-
-      worksheetOrderGroupByBusinessCategoryRows.push(worksheelRow);
-    }
-
-    worksheetOrderGroupByBusinessCategory.insertRows(1, worksheetOrderGroupByBusinessCategoryRows);
-
-    const worksheetOrderGroupByIndustryCategory = workbook.addWorksheet(`수주_산업분야별`, wofkSheetOptions);
-    const worksheetOrderGroupByIndustryCategoryRows: Array<string | number>[] = [['산업분야'], ['합계']];
-
-    for (const year of orders.industryCategory.years) {
-      worksheetOrderGroupByIndustryCategoryRows[0].push(`${year.year}년`, '%');
-      worksheetOrderGroupByIndustryCategoryRows[1].push(
-        year.amount ? Number(year.amount).toLocaleString('ko-KR') : '',
-        year.amount ? '100%' : '',
-      );
-    }
-
-    for (const row of orders.industryCategory.rows) {
-      const worksheelRow: Array<string | number> = [row.row];
-
-      for (const year of orders.industryCategory.years) {
-        const col = row.cols.find((col) => col.year === year.year);
-
-        worksheelRow.push(
-          col?.amount ? Number(col.amount).toLocaleString('ko-KR') : '',
-          col?.rate ? `${col?.rate}%` : '',
-        );
-      }
-
-      worksheetOrderGroupByIndustryCategoryRows.push(worksheelRow);
-    }
-
-    worksheetOrderGroupByIndustryCategory.insertRows(1, worksheetOrderGroupByIndustryCategoryRows);
-
-    const worksheetSaleGroupByCustomer = workbook.addWorksheet(`매출_고객사별`, wofkSheetOptions);
-    const worksheetSaleGroupByCustomerRows: Array<string | number>[] = [['고객사'], ['합계']];
-
-    for (const year of sales.customer.years) {
-      worksheetSaleGroupByCustomerRows[0].push(`${year.year}년`, '%');
-      worksheetSaleGroupByCustomerRows[1].push(
-        year.amount ? Number(year.amount).toLocaleString('ko-KR') : '',
-        year.amount ? '100%' : '',
-      );
-    }
-
-    for (const row of sales.customer.rows) {
-      const worksheelRow: Array<string | number> = [row.row];
-
-      for (const year of sales.customer.years) {
-        const col = row.cols.find((col) => col.year === year.year);
-
-        worksheelRow.push(
-          col?.amount ? Number(col.amount).toLocaleString('ko-KR') : '',
-          col?.rate ? `${col?.rate}%` : '',
-        );
-      }
-
-      worksheetSaleGroupByCustomerRows.push(worksheelRow);
-    }
-
-    worksheetSaleGroupByCustomer.insertRows(1, worksheetSaleGroupByCustomerRows);
-
-    const worksheetSaleGroupByBusinessCategory = workbook.addWorksheet(`매출_사업구분별`, wofkSheetOptions);
-    const worksheetSaleGroupByBusinessCategoryRows: Array<string | number>[] = [['사업구분'], ['합계']];
-
-    for (const year of sales.businessCategory.years) {
-      worksheetSaleGroupByBusinessCategoryRows[0].push(`${year.year}년`, '%');
-      worksheetSaleGroupByBusinessCategoryRows[1].push(
-        year.amount ? Number(year.amount).toLocaleString('ko-KR') : '',
-        year.amount ? '100%' : '',
-      );
-    }
-
-    for (const row of sales.businessCategory.rows) {
-      const worksheelRow: Array<string | number> = [row.row];
-
-      for (const year of sales.businessCategory.years) {
-        const col = row.cols.find((col) => col.year === year.year);
-
-        worksheelRow.push(
-          col?.amount ? Number(col.amount).toLocaleString('ko-KR') : '',
-          col?.rate ? `${col?.rate}%` : '',
-        );
-      }
-
-      worksheetSaleGroupByBusinessCategoryRows.push(worksheelRow);
-    }
-
-    worksheetSaleGroupByBusinessCategory.insertRows(1, worksheetSaleGroupByBusinessCategoryRows);
-
-    const worksheetSaleGroupByIndustryCategory = workbook.addWorksheet(`매출_산업분야별`, wofkSheetOptions);
-    const worksheetSaleGroupByIndustryCategoryRows: Array<string | number>[] = [['산업분야'], ['합계']];
-
-    for (const year of sales.industryCategory.years) {
-      worksheetSaleGroupByIndustryCategoryRows[0].push(`${year.year}년`, '%');
-      worksheetSaleGroupByIndustryCategoryRows[1].push(
-        year.amount ? Number(year.amount).toLocaleString('ko-KR') : '',
-        year.amount ? '100%' : '',
-      );
-    }
-
-    for (const row of sales.industryCategory.rows) {
-      const worksheelRow: Array<string | number> = [row.row];
-
-      for (const year of sales.industryCategory.years) {
-        const col = row.cols.find((col) => col.year === year.year);
-
-        worksheelRow.push(
-          col?.amount ? Number(col.amount).toLocaleString('ko-KR') : '',
-          col?.rate ? `${col?.rate}%` : '',
-        );
-      }
-
-      worksheetSaleGroupByIndustryCategoryRows.push(worksheelRow);
-    }
-
-    worksheetSaleGroupByIndustryCategory.insertRows(1, worksheetSaleGroupByIndustryCategoryRows);
-
-    return new DownloadDto(
-      (await workbook.xlsx.writeBuffer()) as Buffer,
-      DownloadFormat.Xlsx,
-      '년도별 수주 및 매출 집계',
-    );
+    return new DownloadDto((await workbook.xlsx.writeBuffer()) as Buffer, DownloadFormat.Xlsx, '수주 및 매출 집계');
   }
 
   async getTimeRecords(query: AnalysisDateRangeQuery) {
