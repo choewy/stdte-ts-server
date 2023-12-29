@@ -43,7 +43,7 @@ export class AnalysisService {
     private readonly analysisExcelService: AnalysisExcelService,
   ) {}
 
-  private createProjectRecordYears(query: AnalysisDateRangeQuery, years: Array<ProjectRecordAnalysisYear[]>) {
+  private createProjectRecordYearRows(query: AnalysisDateRangeQuery, years: Array<ProjectRecordAnalysisYear[]>) {
     const map: Record<'customer' | 'business' | 'industry', AnalysisProjectRecordYearDto[]> = {
       customer: [],
       business: [],
@@ -112,7 +112,7 @@ export class AnalysisService {
       projectRecordQuery.findProjectRecordAnalysisGroupByIndustryCategory(type, query),
     ]);
 
-    const years = this.createProjectRecordYears(query, [
+    const years = this.createProjectRecordYearRows(query, [
       groupByCustomer.years,
       groupByBusinessCategory.years,
       groupByIndustryCategory.years,
@@ -135,7 +135,7 @@ export class AnalysisService {
     };
   }
 
-  async getProjectRecordsFile(query: AnalysisDateRangeQuery) {
+  async createProjectRecordsFile(query: AnalysisDateRangeQuery) {
     const [orders, sales] = await Promise.all([
       this.getProjectRecords('orders', query),
       this.getProjectRecords('sales', query),
@@ -153,7 +153,7 @@ export class AnalysisService {
     return new DownloadDto((await wb.xlsx.writeBuffer()) as Buffer, DownloadFormat.Xlsx, '수주 및 매출 집계');
   }
 
-  private createTimeRecordYears(query: AnalysisDateRangeQuery, raws: TimeRecordAnalysisRaw[]) {
+  private createTimeRecordYearRows(query: AnalysisDateRangeQuery, raws: TimeRecordAnalysisRaw[]) {
     const s = DateTime.fromJSDate(new Date(query.s));
     const e = DateTime.fromJSDate(new Date(query.e));
 
@@ -180,7 +180,7 @@ export class AnalysisService {
     return years;
   }
 
-  private createTimeRecordProjects(
+  private createTimeRecordProjectRows(
     projects: Project[],
     raws: TimeRecordAnalysisRaw[],
     years: AnalysisTimeRecordYearRow[],
@@ -209,7 +209,7 @@ export class AnalysisService {
     return rows;
   }
 
-  private createTimeRecordUsers(users: User[], raws: TimeRecordAnalysisRaw[]) {
+  private createTimeRecordUserRows(users: User[], raws: TimeRecordAnalysisRaw[]) {
     const rows = users.map((user) => new AnalysisTimeRecordUserRowDto(user));
 
     for (const row of rows) {
@@ -235,16 +235,16 @@ export class AnalysisService {
       query,
     );
 
-    const years = this.createTimeRecordYears(query, raws);
+    const years = this.createTimeRecordYearRows(query, raws);
 
     return {
       years,
-      projects: this.createTimeRecordProjects(projects, raws, years),
-      users: this.createTimeRecordUsers(users, raws),
+      projects: this.createTimeRecordProjectRows(projects, raws, years),
+      users: this.createTimeRecordUserRows(users, raws),
     };
   }
 
-  async getTimeRecordsFile(query: AnalysisDateRangeQuery) {
+  async createTimeRecordsFile(query: AnalysisDateRangeQuery) {
     const results = await this.getTimeRecords(query);
 
     const wb = new ExcelJS.Workbook();
@@ -259,41 +259,43 @@ export class AnalysisService {
     return new DownloadDto((await wb.xlsx.writeBuffer()) as Buffer, DownloadFormat.Xlsx, '사업별 시간관리 집계');
   }
 
-  async getUserRecords(query: AnalysisDateRangeQuery) {
-    const userQuery = new UserQuery(this.dataSource);
-    const users = await userQuery.findAll();
-
+  private createUserRecordYearRows(query: AnalysisDateRangeQuery) {
     const s = DateTime.fromJSDate(new Date(query.s));
     const e = DateTime.fromJSDate(new Date(query.e));
-    const yearRange = e.diff(s, 'years').get('years');
+    const range = e.diff(s, 'years').get('years');
 
-    const yearRows: AnalysisUserRecordYearRowDto[] = [];
-    const userRows: AnalysisUserRecordUserRowDto[] = [];
+    const rows: AnalysisUserRecordYearRowDto[] = [];
 
-    for (const user of users) {
-      if (user.enteringDay == null) {
-        continue;
-      }
+    for (let i = 0; i <= range; i++) {
+      const year = s.plus({ year: i }).toFormat('yyyy');
+      const row = new AnalysisUserRecordYearRowDto(year);
 
-      userRows.push(new AnalysisUserRecordUserRowDto(user));
+      rows.push(row);
     }
 
+    return rows;
+  }
+
+  private createUserRecordUserRows(users: User[], years: AnalysisUserRecordYearRowDto[]) {
     const today = DateTime.local();
+    const rows: AnalysisUserRecordUserRowDto[] = [];
 
-    for (let i = 0; i <= yearRange; i++) {
-      const datetime = s.plus({ year: i });
-      const year = datetime.toFormat('yyyy');
-      const yearRow = new AnalysisUserRecordYearRowDto(year);
-
-      yearRows.push(yearRow);
+    for (const year of years) {
+      const datetime = DateTime.fromFormat(year.year, 'yyyy');
 
       if (datetime.diff(today, 'days').get('days') > 0) {
         continue;
       }
 
-      for (const userRow of userRows) {
-        const enterDatetime = DateTime.fromJSDate(new Date(userRow.enteringDay ?? ''));
-        const leaveDatetime = DateTime.fromJSDate(new Date(userRow.resignationDay ?? ''));
+      for (const user of users) {
+        if (user.enteringDay == null) {
+          continue;
+        }
+
+        const index = rows.push(new AnalysisUserRecordUserRowDto(user)) - 1;
+
+        const enterDatetime = DateTime.fromJSDate(new Date(rows[index].enteringDay ?? ''));
+        const leaveDatetime = DateTime.fromJSDate(new Date(rows[index].resignationDay ?? ''));
 
         const enterDiff = enterDatetime.startOf('year').diff(datetime.startOf('year'), 'years').get('years');
         const leaveDiff = leaveDatetime.startOf('year').diff(datetime.startOf('year'), 'years').get('years');
@@ -305,107 +307,45 @@ export class AnalysisService {
         const months = Math.floor(datetime.endOf('year').diff(enterDatetime, 'months').get('months'));
         const days = Math.floor(datetime.endOf('year').diff(enterDatetime, 'days').get('days'));
 
-        yearRow.months += months;
-        yearRow.days += days;
-        yearRow.active += 1;
-
-        if (enterDiff === 0) {
-          yearRow.enter += 1;
-        }
-
-        if (leaveDiff === 0) {
-          yearRow.leave += 1;
-        }
-
-        userRow.cols.push(
-          new AnalysisuserRecordUserColDto(year, months, days, {
+        rows[index].cols.push(
+          new AnalysisuserRecordUserColDto(year.year, months, days, {
             entered: enterDiff === 0,
             leaved: leaveDiff === 0,
           }),
         );
+
+        year.months += months;
+        year.days += days;
+        year.active += 1;
+        year.enter += enterDiff === 0 ? 1 : 0;
+        year.leave += leaveDiff === 0 ? 1 : 0;
       }
 
-      if (yearRow.months > 0 && yearRow.days > 0 && yearRow.active > 0) {
-        yearRow.avgMonths = Math.round(yearRow.months / yearRow.active);
-        yearRow.avgDays = Math.round(yearRow.days / yearRow.active);
-      }
-    }
-
-    return { years: yearRows, users: userRows };
-  }
-
-  async getUserRecordsFile(query: AnalysisDateRangeQuery) {
-    const results = await this.getUserRecords(query);
-
-    const rows: Array<string | number>[] = [
-      ['', '', ''],
-      ['연간통계', '', ''],
-      ['', '', ''],
-      ['이름', '입사일자', '퇴사일자'],
-    ];
-
-    for (const year of results.years) {
-      rows[0].push(`${year.year}년`, '', '', '', '', '');
-      rows[1].push('총일수', '평균일수', '총개월수', '평균개월수', '입사자수', '퇴사자수');
-      rows[2].push(year.days, year.avgDays, year.months, year.avgMonths, year.enter, year.leave);
-      rows[3].push('누적근속일수', '', '누적근속개월수', '', '비고', '');
-    }
-
-    for (const user of results.users) {
-      const row: Array<string | number> = [user.name, user.enteringDay, user.resignationDay];
-
-      for (const year of results.years) {
-        const values = new Array(6).fill('');
-        const col = user.cols.find((col) => col.year === year.year);
-
-        if (col) {
-          values[0] = col.days;
-          values[2] = col.months;
-          values[4] = [col.descriptions.entered && '입사', col.descriptions.leaved && '퇴사']
-            .filter((v) => v)
-            .join(', ');
-        }
-
-        row.push(...values);
-      }
-
-      rows.push(row);
-    }
-
-    const wb = new ExcelJS.Workbook();
-    const ws = wb.addWorksheet('인력변동현황', {
-      views: [{ state: 'frozen', xSplit: 3, ySplit: 3 }],
-    });
-
-    for (let i = 0; i < rows.length; i++) {
-      ws.insertRow(i + 1, rows[i]);
-      ws.getRow(i + 1).alignment = { vertical: 'middle', horizontal: 'center' };
-      ws.getRow(i + 1).border = {
-        top: { style: 'thin' },
-        left: { style: 'thin' },
-        bottom: { style: 'thin' },
-        right: { style: 'thin' },
-      };
-
-      if (i < 3) {
+      if (year.months === 0 || year.days === 0 || year.active === 0) {
         continue;
       }
 
-      for (let c = 4; c <= rows[i].length; c += 2) {
-        ws.mergeCells(i + 1, c, i + 1, c + 1);
-      }
+      year.avgMonths = Math.round(year.months / year.active);
+      year.avgDays = Math.round(year.days / year.active);
     }
 
-    ws.mergeCells(1, 1, 1, 3);
-    ws.mergeCells(2, 1, 3, 3);
+    return rows;
+  }
 
-    for (let c = 4; c <= rows[0].length; c += 6) {
-      ws.mergeCells(1, c, 1, c + 5);
-    }
+  async getUserRecords(query: AnalysisDateRangeQuery) {
+    const userQuery = new UserQuery(this.dataSource);
 
-    ws.getColumn(1).width = 10;
-    ws.getColumn(2).width = 10;
-    ws.getColumn(3).width = 10;
+    const years = this.createUserRecordYearRows(query);
+    const users = this.createUserRecordUserRows(await userQuery.findAll(), years);
+
+    return { years, users };
+  }
+
+  async createUserRecordsFile(query: AnalysisDateRangeQuery) {
+    const results = await this.getUserRecords(query);
+    const wb = new ExcelJS.Workbook();
+
+    this.analysisExcelService.createUserRecordSheet(wb, '인력변동현황', results.years, results.users);
 
     return new DownloadDto((await wb.xlsx.writeBuffer()) as Buffer, DownloadFormat.Xlsx, '인력변동현황');
   }

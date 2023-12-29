@@ -29,8 +29,8 @@ export class AnalysisController {
   @Get('project/records/download')
   @UseGuards(RoleGuard)
   @SetRolePolicy({ project: RolePolicyLevel.Read })
-  async getProjectRecordsFile(@Query() query: AnalysisDateRangeQuery) {
-    return this.analysisService.getProjectRecordsFile(query);
+  async createProjectRecordsFile(@Query() query: AnalysisDateRangeQuery) {
+    return this.analysisService.createProjectRecordsFile(query);
   }
 
   @Get('times')
@@ -43,8 +43,8 @@ export class AnalysisController {
   @Get('times/download')
   @UseGuards(RoleGuard)
   @SetRolePolicy({ project: RolePolicyLevel.Read })
-  async getTimeRecordsFile(@Query() query: AnalysisDateRangeQuery) {
-    return this.analysisService.getTimeRecordsFile(query);
+  async createTimeRecordsFile(@Query() query: AnalysisDateRangeQuery) {
+    return this.analysisService.createTimeRecordsFile(query);
   }
 
   @Get('users')
@@ -57,7 +57,7 @@ export class AnalysisController {
   @Get('users/download')
   @UseGuards(RoleGuard)
   @SetRolePolicy({ user: RolePolicyLevel.Read })
-  async getUserRecordsFile(@Query() query: AnalysisDateRangeQuery) {
-    return this.analysisService.getUserRecordsFile(query);
+  async createUserRecordsFile(@Query() query: AnalysisDateRangeQuery) {
+    return this.analysisService.createUserRecordsFile(query);
   }
 }
