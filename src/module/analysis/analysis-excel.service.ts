@@ -3,6 +3,7 @@ import ExcelJS from 'exceljs';
 import { Injectable } from '@nestjs/common';
 
 import {
+  AnalysisProjectAmountRowDto,
   AnalysisProjectRecordResultDto,
   AnalysisTimeRecordProjectRowDto,
   AnalysisTimeRecordUserRowDto,
@@ -16,6 +17,56 @@ export class AnalysisExcelService {
   private readonly WORKSHEET_OPTIONS: Partial<ExcelJS.AddWorksheetOptions> = {
     views: [{ state: 'frozen', xSplit: 1, ySplit: 1 }],
   };
+
+  createProjectRecordCustomerSheet(wb: ExcelJS.Workbook, sheetname: string, customers: AnalysisProjectAmountRowDto[]) {
+    const ws = wb.addWorksheet(sheetname, this.WORKSHEET_OPTIONS);
+
+    const rows: Array<string | number>[] = [['PK', '고객사']];
+
+    for (const customer of customers) {
+      rows.push([customer.id, customer.row]);
+    }
+
+    ws.insertRows(1, rows);
+
+    return ws;
+  }
+
+  createProjectRecordBusinessCategorySheet(
+    wb: ExcelJS.Workbook,
+    sheetname: string,
+    businessCategories: AnalysisProjectAmountRowDto[],
+  ) {
+    const ws = wb.addWorksheet(sheetname, this.WORKSHEET_OPTIONS);
+
+    const rows: Array<string | number>[] = [['PK', '사업구분']];
+
+    for (const businessCategory of businessCategories) {
+      rows.push([businessCategory.id, businessCategory.row]);
+    }
+
+    ws.insertRows(1, rows);
+
+    return ws;
+  }
+
+  createProjectRecordIndustryCategorySheet(
+    wb: ExcelJS.Workbook,
+    sheetname: string,
+    industryCategories: AnalysisProjectAmountRowDto[],
+  ) {
+    const ws = wb.addWorksheet(sheetname, this.WORKSHEET_OPTIONS);
+
+    const rows: Array<string | number>[] = [['PK', '산업분야']];
+
+    for (const industryCategory of industryCategories) {
+      rows.push([industryCategory.id, industryCategory.row]);
+    }
+
+    ws.insertRows(1, rows);
+
+    return ws;
+  }
 
   createProjectRecordSheet(
     wb: ExcelJS.Workbook,

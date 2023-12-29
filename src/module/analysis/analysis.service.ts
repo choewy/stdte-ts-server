@@ -143,6 +143,9 @@ export class AnalysisService {
 
     const wb = new ExcelJS.Workbook();
 
+    this.analysisExcelService.createProjectRecordCustomerSheet(wb, 'ref_고객사', orders.customer.rows);
+    this.analysisExcelService.createProjectRecordCustomerSheet(wb, 'ref_사업구분', orders.businessCategory.rows);
+    this.analysisExcelService.createProjectRecordCustomerSheet(wb, 'ref_산업분야', orders.industryCategory.rows);
     this.analysisExcelService.createProjectRecordSheet(wb, '수주_고객사별', '고객사', orders.customer);
     this.analysisExcelService.createProjectRecordSheet(wb, '수주_사업구분별', '사업구분', orders.businessCategory);
     this.analysisExcelService.createProjectRecordSheet(wb, '수주_산업분야별', '산업분야', orders.industryCategory);
