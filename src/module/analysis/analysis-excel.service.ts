@@ -24,15 +24,18 @@ export class AnalysisExcelService {
     result: AnalysisProjectRecordResultDto,
   ) {
     const ws = wb.addWorksheet(sheetname, this.WORKSHEET_OPTIONS);
-    const rows: Array<string | number>[] = [[header], ['합계']];
+    const head: Array<string | number> = ['PK', header];
+    const total: Array<string | number> = ['', '합계'];
 
     for (const year of result.years) {
-      rows[0].push(`${year.year}년`, '%');
-      rows[1].push(year.amount ? Number(year.amount) : 0, 1);
+      head.push(`${year.year}년`, '%');
+      total.push(year.amount ? Number(year.amount) : 0, 1);
     }
 
+    const rows: Array<string | number>[] = [head];
+
     for (const row of result.rows) {
-      const worksheelRow: Array<string | number> = [row.row];
+      const worksheelRow: Array<string | number> = [row.id, row.row];
 
       for (const year of result.years) {
         const col = row.cols.find((col) => col.year === year.year);
@@ -42,6 +45,8 @@ export class AnalysisExcelService {
 
       rows.push(worksheelRow);
     }
+
+    rows.push(total);
 
     ws.insertRows(1, rows);
 
@@ -54,17 +59,46 @@ export class AnalysisExcelService {
       };
     }
 
-    for (let i = 2; i <= rows[0].length; i++) {
+    for (let i = 3; i <= rows[0].length; i++) {
+      ws.getColumn(i).alignment = { vertical: 'middle', horizontal: 'right' };
+
       if (i % 2 === 1) {
-        ws.getColumn(i).numFmt = '0.00%';
-        ws.getColumn(i).alignment = { vertical: 'middle', horizontal: 'right' };
-      } else {
         ws.getColumn(i).numFmt = '#,##0';
-        ws.getColumn(i).alignment = { vertical: 'middle', horizontal: 'right' };
+      } else {
+        ws.getColumn(i).numFmt = '0.00%';
       }
     }
 
     ws.getRow(1).alignment = { vertical: 'middle', horizontal: 'center' };
+    ws.getColumn(1).hidden = true;
+
+    return ws;
+  }
+
+  createTimeRecordProjectSheet(wb: ExcelJS.Workbook, sheetName: string, projects: AnalysisTimeRecordProjectRowDto[]) {
+    const ws = wb.addWorksheet(sheetName, this.WORKSHEET_OPTIONS);
+
+    const rows: Array<string | number>[] = [['PK', '사업명', '코드']];
+
+    for (const project of projects) {
+      rows.push([project.id, project.name, project.code]);
+    }
+
+    ws.insertRows(1, rows);
+
+    return ws;
+  }
+
+  createTimeRecordUserSheet(wb: ExcelJS.Workbook, sheetName: string, users: AnalysisTimeRecordUserRowDto[]) {
+    const ws = wb.addWorksheet(sheetName, this.WORKSHEET_OPTIONS);
+
+    const rows: Array<string | number>[] = [['PK', '이름']];
+
+    for (const user of users) {
+      rows.push([user.id, user.name]);
+    }
+
+    ws.insertRows(1, rows);
 
     return ws;
   }
@@ -77,8 +111,9 @@ export class AnalysisExcelService {
     users: AnalysisTimeRecordUserRowDto[],
   ) {
     const ws = wb.addWorksheet(sheetName, this.WORKSHEET_OPTIONS);
-    const head: Array<string | number> = ['이름'];
-    const total: Array<string | number> = ['합계'];
+
+    const head: Array<string | number> = ['PK', '이름'];
+    const total: Array<string | number> = ['', '합계'];
 
     for (const year of years) {
       const col = project.cols.find((col) => col.year === year.year);
@@ -90,7 +125,7 @@ export class AnalysisExcelService {
     const rows: Array<string | number>[] = [head];
 
     for (const user of users) {
-      const row: Array<string | number> = [user.name];
+      const row: Array<string | number> = [user.id, user.name];
 
       for (const year of years) {
         const col = user.cols.find((col) => col.pid === project.id && col.year === year.year);
@@ -114,12 +149,13 @@ export class AnalysisExcelService {
       };
     }
 
-    for (let i = 2; i <= rows[0].length; i++) {
+    for (let i = 3; i <= rows[0].length; i++) {
       ws.getColumn(i).alignment = { vertical: 'middle', horizontal: 'right' };
     }
 
     ws.getRow(1).alignment = { vertical: 'middle', horizontal: 'center' };
-    ws.getColumn(1).alignment = { vertical: 'middle', horizontal: 'center' };
+    ws.getColumn(1).hidden = true;
+    ws.getColumn(2).alignment = { vertical: 'middle', horizontal: 'center' };
 
     return ws;
   }

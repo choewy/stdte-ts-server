@@ -249,9 +249,11 @@ export class AnalysisService {
 
     const wb = new ExcelJS.Workbook();
 
-    for (let i = 0; i < results.projects.length; i++) {
-      const project = results.projects[i];
-      const sheetName = `(${i + 1}) ${project.name}`;
+    this.analysisExcelService.createTimeRecordUserSheet(wb, 'ref_구성원 목록', results.users);
+    this.analysisExcelService.createTimeRecordProjectSheet(wb, 'ref_사업 목록', results.projects);
+
+    for (const project of results.projects) {
+      const sheetName = `${project.id}_${project.name}`;
 
       this.analysisExcelService.createTimeRecordSheet(wb, sheetName, project, results.years, results.users);
     }
