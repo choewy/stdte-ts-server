@@ -52,7 +52,7 @@ export class ProjectQuery extends EntityQuery<Project> {
 
   async findAllByActive() {
     return this.repository.find({
-      where: { status: ProjectStatus.Active },
+      where: { canExpose: true },
       order: { priority: 'ASC' },
     });
   }
