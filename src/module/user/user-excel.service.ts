@@ -149,10 +149,10 @@ export class UserExcelService {
       };
     }
 
-    ws.mergeCells(1, 2, 1, 4);
-    ws.mergeCells(1, 5, 1, 9);
-    ws.mergeCells(1, 10, 1, 12);
-    ws.mergeCells(1, 13, 1, 14);
+    ws.mergeCells(1, 2, 1, 5);
+    ws.mergeCells(1, 6, 1, 10);
+    ws.mergeCells(1, 11, 1, 13);
+    ws.mergeCells(1, 14, 1, 15);
     ws.getColumn(6).width = 30;
 
     for (const c of [3, 5, 9, 10]) {
