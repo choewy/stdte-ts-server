@@ -23,6 +23,12 @@ export class IndustryCategoryController {
     return this.industryCategoryService.getIndustryCategories(query);
   }
 
+  @Get('download')
+  @SetRolePolicy({ industryCategory: RolePolicyLevel.Read })
+  async createIndustryCategoriesFile() {
+    return this.industryCategoryService.createIndustryCategoriesFile();
+  }
+
   @Post()
   @SetRolePolicy({ industryCategory: RolePolicyLevel.Create })
   async createIndustryCategory(@Body() body: IndustryCategoryCreateBodyDto) {

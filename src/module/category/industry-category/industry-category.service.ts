@@ -1,8 +1,11 @@
 import { DataSource } from 'typeorm';
 import { Injectable } from '@nestjs/common';
+import ExcelJS from 'exceljs';
 
 import {
   AlreadyExistIndustryCategoryException,
+  DownloadDto,
+  DownloadFormat,
   IndustryCategoryQuery,
   ListDto,
   NotFoundIndustryCategoryException,
@@ -15,6 +18,7 @@ import {
   IndustryCategoryParamDto,
   IndustryCategoryUpdateBodyDto,
 } from './dto';
+import { IndustryCategoryExcelService } from './industry-category-excel.service';
 
 @Injectable()
 export class IndustryCategoryService {
@@ -24,6 +28,17 @@ export class IndustryCategoryService {
     const industryCategoryQuery = new IndustryCategoryQuery(this.dataSource);
 
     return new ListDto(query, await industryCategoryQuery.findIndustryCategoryList(query), IndustryCategoryDto);
+  }
+
+  async createIndustryCategoriesFile() {
+    const industryCategories = await new IndustryCategoryQuery(this.dataSource).findAll();
+
+    const wb = new ExcelJS.Workbook();
+    const excelService = new IndustryCategoryExcelService();
+
+    excelService.createIndustryCategorySheet(wb, '산업분야', industryCategories);
+
+    return new DownloadDto((await wb.xlsx.writeBuffer()) as Buffer, DownloadFormat.Xlsx, '산업분야 목록');
   }
 
   async createIndustryCategory(body: IndustryCategoryCreateBodyDto) {
