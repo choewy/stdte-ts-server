@@ -3,7 +3,7 @@ import { DataSource, DeepPartial, EntityManager, In, Not } from 'typeorm';
 import { Role } from '@entity';
 
 import { EntityQuery } from '../class';
-import { FindListArgs, RoleQueryFindListArgs } from './types';
+import { FindListArgs } from './types';
 
 export class RoleQuery extends EntityQuery<Role> {
   constructor(connection: DataSource | EntityManager) {
@@ -54,23 +54,13 @@ export class RoleQuery extends EntityQuery<Role> {
     });
   }
 
-  async findRoleList(args: RoleQueryFindListArgs) {
+  async findRoleList(args: FindListArgs) {
     return this.repository.findAndCount({
       relations: { policy: true, users: true },
       where: { onInit: false },
       skip: args.skip,
       take: args.take,
-      order: { createdAt: 'DESC' },
-    });
-  }
-
-  async findRoleSelectListOrderByName(args: FindListArgs) {
-    return this.repository.findAndCount({
-      select: { id: true, name: true, onInit: true },
-      where: { onInit: false },
-      skip: args.skip,
-      take: args.take,
-      order: { name: 'ASC' },
+      order: { id: 'ASC' },
     });
   }
 

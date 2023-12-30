@@ -46,7 +46,7 @@ export class CredentialsQuery extends EntityQuery<Credentials> {
         user: { name: true },
       },
       where: { status: args.status, onInit: false },
-      order: { createdAt: 'DESC' },
+      order: { id: 'ASC' },
       skip: args.skip,
       take: args.take,
     });

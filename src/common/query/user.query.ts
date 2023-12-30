@@ -3,7 +3,7 @@ import { DataSource, DeepPartial, EntityManager, FindOptionsRelations, In, IsNul
 import { CredentialsStatus, User, UserStatus } from '@entity';
 
 import { EntityQuery } from '../class';
-import { FindListArgs, UserQueryFindListArgs } from './types';
+import { UserQueryFindListArgs } from './types';
 
 export class UserQuery extends EntityQuery<User> {
   constructor(connection: DataSource | EntityManager) {
@@ -45,18 +45,7 @@ export class UserQuery extends EntityQuery<User> {
       where: { onInit: false, credentials: { status: CredentialsStatus.Active } },
       skip: args.skip,
       take: args.take,
-      order: { name: 'ASC' },
-    });
-  }
-
-  async findUserSelectListOrderByName(args: FindListArgs) {
-    return this.repository.findAndCount({
-      relations: { role: true },
-      select: { id: true, name: true, onInit: true },
-      where: { onInit: false, credentials: { status: Not(CredentialsStatus.Wating) } },
-      skip: args.skip,
-      take: args.take,
-      order: { name: 'ASC' },
+      order: { id: 'ASC' },
     });
   }
 

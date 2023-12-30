@@ -53,7 +53,7 @@ export class ProjectDto {
       const startDate = DateTime.fromJSDate(new Date(project.startDate));
       const endDate = DateTime.fromJSDate(new Date(project.endDate));
 
-      this.months = endDate.diff(startDate, 'months').get('months');
+      this.months = Math.floor(endDate.diff(startDate, 'months').get('months'));
     }
 
     this.customer = project.customer ? new ProjectCustomerDto(project.customer) : null;

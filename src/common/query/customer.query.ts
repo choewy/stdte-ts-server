@@ -33,7 +33,7 @@ export class CustomerQuery extends EntityQuery<Customer> {
     return this.repository.findAndCount({
       skip: args.skip,
       take: args.take,
-      order: { createdAt: 'DESC' },
+      order: { id: 'ASC' },
     });
   }
 

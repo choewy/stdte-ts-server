@@ -29,13 +29,13 @@ export class SelectService {
   async getUsers(query: ListQueryDto) {
     const userQuery = new UserQuery(this.dataSource);
 
-    return new ListDto(query, await userQuery.findUserSelectListOrderByName(query), SelectUserDto);
+    return new ListDto(query, await userQuery.findUserList(query), SelectUserDto);
   }
 
   async getRoles(query: ListQueryDto) {
     const roleQuery = new RoleQuery(this.dataSource);
 
-    return new ListDto(query, await roleQuery.findRoleSelectListOrderByName(query), SelectRoleDto);
+    return new ListDto(query, await roleQuery.findRoleList(query), SelectRoleDto);
   }
 
   async getCustomers(query: ListQueryDto) {
@@ -47,30 +47,18 @@ export class SelectService {
   async getBusinessCategories(query: ListQueryDto) {
     const businessCategoryQuery = new BusinessCategoryQuery(this.dataSource);
 
-    return new ListDto(
-      query,
-      await businessCategoryQuery.findBusinessCategorySelectListOrderByName(query),
-      SelectBusinessCategoryDto,
-    );
+    return new ListDto(query, await businessCategoryQuery.findBusinessCategoryList(query), SelectBusinessCategoryDto);
   }
 
   async getIndustryCategories(query: ListQueryDto) {
     const industryCategoryQuery = new IndustryCategoryQuery(this.dataSource);
 
-    return new ListDto(
-      query,
-      await industryCategoryQuery.findIndustryCategorySelectListOrderByName(query),
-      SelectIndustryCategoryDto,
-    );
+    return new ListDto(query, await industryCategoryQuery.findIndustryCategoryList(query), SelectIndustryCategoryDto);
   }
 
   async getTaskCategories(query: ListQueryDto) {
     const taskMainCategoryQuery = new TaskMainCategoryQuery(this.dataSource);
 
-    return new ListDto(
-      query,
-      await taskMainCategoryQuery.findTaskMainCategorySelectListOrderByName(query),
-      SelectTaskCategoryDto,
-    );
+    return new ListDto(query, await taskMainCategoryQuery.findTaskMainCategoryList(query), SelectTaskCategoryDto);
   }
 }

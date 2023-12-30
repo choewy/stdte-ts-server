@@ -1,6 +1,6 @@
 import { DataSource, DeepPartial, EntityManager } from 'typeorm';
 
-import { Project, ProjectPriority, ProjectStatus } from '@entity';
+import { Project, ProjectPriority } from '@entity';
 
 import { EntityQuery } from '../class';
 import { ProjectQueryFindListArgs } from './types';
@@ -112,7 +112,7 @@ export class ProjectQuery extends EntityQuery<Project> {
     const sumQueryBuilder = queryBuilder.clone();
 
     return Promise.all([
-      listQueryBuilder.skip(args.skip).take(args.take).orderBy('project.createdAt', 'DESC').getManyAndCount(),
+      listQueryBuilder.skip(args.skip).take(args.take).orderBy('project.id', 'ASC').getManyAndCount(),
       sumQueryBuilder.select('SUM(project.amount)', 'amounts').getRawOne<{ amounts: string }>(),
     ]);
   }
