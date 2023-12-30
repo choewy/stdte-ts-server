@@ -78,42 +78,39 @@ export class ProjectQuery extends EntityQuery<Project> {
       .leftJoinAndMapOne('externalLeaders.user', 'externalLeaders.user', 'externalLeader')
       .where({ priority: ProjectPriority.Business });
 
-    if (args.businessCategory) {
+    if (typeof args.businessCategory === 'number') {
       queryBuilder.andWhere('businessCategory.id = :businessCategory', {
         businessCategory: args.businessCategory,
       });
     }
 
-    if (args.industryCategory) {
+    if (typeof args.industryCategory === 'number') {
       queryBuilder.andWhere('industryCategory.id = :industryCategory', {
         industryCategory: args.industryCategory,
       });
     }
 
-    if (args.taskMainCategory) {
+    if (typeof args.taskMainCategory === 'number') {
       queryBuilder.andWhere('taskMainCategory.id = :taskMainCategory', {
         taskMainCategory: args.taskMainCategory,
       });
     }
 
-    if (args.status) {
-      queryBuilder.andWhere('project.status = :status', {
-        status: args.status,
-      });
-    }
-
-    if (args.customer) {
+    if (typeof args.customer === 'number') {
       queryBuilder.andWhere('project.customer = :customer', {
         customer: args.customer,
       });
     }
 
-    const listQueryBuilder = queryBuilder.clone();
-    const sumQueryBuilder = queryBuilder.clone();
+    if (typeof args.status === 'number') {
+      queryBuilder.andWhere('project.status = :status', {
+        status: args.status,
+      });
+    }
 
     return Promise.all([
-      listQueryBuilder.skip(args.skip).take(args.take).orderBy('project.id', 'ASC').getManyAndCount(),
-      sumQueryBuilder.select('SUM(project.amount)', 'amounts').getRawOne<{ amounts: string }>(),
+      queryBuilder.clone().skip(args.skip).take(args.take).orderBy('project.id', 'ASC').getManyAndCount(),
+      queryBuilder.clone().select('SUM(project.amount)', 'amounts').getRawOne<{ amounts: string }>(),
     ]);
   }
 

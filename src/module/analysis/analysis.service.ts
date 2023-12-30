@@ -153,7 +153,7 @@ export class AnalysisService {
     this.analysisExcelService.createProjectRecordSheet(wb, '매출_사업구분별', '사업구분', sales.businessCategory);
     this.analysisExcelService.createProjectRecordSheet(wb, '매출_산업분야별', '산업분야', sales.industryCategory);
 
-    return new DownloadDto((await wb.xlsx.writeBuffer()) as Buffer, DownloadFormat.Xlsx, '수주 및 매출 집계');
+    return new DownloadDto((await wb.xlsx.writeBuffer()) as Buffer, DownloadFormat.Xlsx, '수주 및 매출');
   }
 
   private createTimeRecordYearRows(query: AnalysisDateRangeQuery, raws: TimeRecordAnalysisRaw[]) {

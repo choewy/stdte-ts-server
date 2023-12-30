@@ -27,16 +27,16 @@ export class ProjectController {
     return this.projectService.getProjects(query);
   }
 
+  @Get('download')
+  @SetRolePolicy({ project: RolePolicyLevel.Read })
+  async createProjectsFile() {
+    return this.projectService.createProjectsFile();
+  }
+
   @Post()
   @SetRolePolicy({ project: RolePolicyLevel.Create })
   async createProject(@Body() body: ProjectCreateBodyDto) {
     return this.projectService.createProject(body);
-  }
-
-  @Post('download')
-  @SetRolePolicy({ project: RolePolicyLevel.Read })
-  async downloadProjects() {
-    return this.projectService.downloadProjects();
   }
 
   @Patch(':id(\\d+)')

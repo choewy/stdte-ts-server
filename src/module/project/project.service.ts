@@ -1,9 +1,9 @@
+import ExcelJS from 'exceljs';
 import { DataSource, InsertResult } from 'typeorm';
 
 import { Injectable } from '@nestjs/common';
 
 import { ProjectOrderRecord, ProjectSaleRecord } from '@entity';
-import { XlsxService } from '@server/core';
 import {
   BusinessCategoryQuery,
   CustomerQuery,
@@ -20,6 +20,7 @@ import {
   TaskMainCategoryQuery,
 } from '@server/common';
 
+import { ProjectExcelService } from './project-excel.service';
 import { ProjectRecordType } from './enums';
 import {
   ProjectCreateBodyDto,
@@ -32,13 +33,15 @@ import {
   ProjectRecordListQueryDto,
   ProjectRecordUpdateBodyDto,
   ProjectUpdateBodyDto,
-  ProjectXlsxRowDto,
   ProjectListDto,
 } from './dto';
 
 @Injectable()
 export class ProjectService {
-  constructor(private readonly dataSource: DataSource) {}
+  constructor(
+    private readonly dataSource: DataSource,
+    private readonly projectExcelService: ProjectExcelService,
+  ) {}
 
   async getProjects(query: ProjectListQueryDto) {
     const projectQuery = new ProjectQuery(this.dataSource);
@@ -47,15 +50,24 @@ export class ProjectService {
     return new ProjectListDto(query, list, ProjectDto, sum?.amounts);
   }
 
-  async downloadProjects() {
-    const projectQuery = new ProjectQuery(this.dataSource);
-    const projects = await projectQuery.findAll();
+  async createProjectsFile() {
+    const [projects, customers, businessCategories, industryCategories, taskMainCategories] = await Promise.all([
+      new ProjectQuery(this.dataSource).findAll(),
+      new CustomerQuery(this.dataSource).findAll(),
+      new BusinessCategoryQuery(this.dataSource).findAll(),
+      new IndustryCategoryQuery(this.dataSource).findAll(),
+      new TaskMainCategoryQuery(this.dataSource).findAll(),
+    ]);
 
-    const xlsxService = new XlsxService();
-    const worksheet = xlsxService.fromObjects(projects.map((project) => new ProjectXlsxRowDto(project)));
-    const buffer = xlsxService.save([{ sheet: worksheet, name: '사업목록' }]);
+    const wb = new ExcelJS.Workbook();
 
-    return new DownloadDto(buffer, DownloadFormat.Xlsx, '사업목록');
+    this.projectExcelService.createCustomerSheet(wb, 'ref_고객사', customers);
+    this.projectExcelService.createBusinessCategorySheet(wb, 'ref_사업구분', businessCategories);
+    this.projectExcelService.createBusinessCategorySheet(wb, 'ref_산업분야', industryCategories);
+    this.projectExcelService.createBusinessCategorySheet(wb, 'ref_수행업무구분', taskMainCategories);
+    this.projectExcelService.createProjectSheet(wb, '사업목록', projects);
+
+    return new DownloadDto((await wb.xlsx.writeBuffer()) as Buffer, DownloadFormat.Xlsx, '사업목록');
   }
 
   async createProject(body: ProjectCreateBodyDto) {

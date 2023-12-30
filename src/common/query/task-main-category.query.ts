@@ -22,6 +22,10 @@ export class TaskMainCategoryQuery extends EntityQuery<TaskMainCategory> {
     return this.repository.exist({ where: { id: Not(id), name } });
   }
 
+  async findAll() {
+    return this.repository.find();
+  }
+
   async findTaskMainCategoryOnlyId(entity?: TaskMainCategory | null) {
     if (entity == null) {
       return entity;
