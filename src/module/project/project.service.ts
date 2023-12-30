@@ -38,10 +38,7 @@ import {
 
 @Injectable()
 export class ProjectService {
-  constructor(
-    private readonly dataSource: DataSource,
-    private readonly projectExcelService: ProjectExcelService,
-  ) {}
+  constructor(private readonly dataSource: DataSource) {}
 
   async getProjects(query: ProjectListQueryDto) {
     const projectQuery = new ProjectQuery(this.dataSource);
@@ -60,12 +57,13 @@ export class ProjectService {
     ]);
 
     const wb = new ExcelJS.Workbook();
+    const excelService = new ProjectExcelService();
 
-    this.projectExcelService.createCustomerSheet(wb, 'ref_고객사', customers);
-    this.projectExcelService.createBusinessCategorySheet(wb, 'ref_사업구분', businessCategories);
-    this.projectExcelService.createBusinessCategorySheet(wb, 'ref_산업분야', industryCategories);
-    this.projectExcelService.createBusinessCategorySheet(wb, 'ref_수행업무구분', taskMainCategories);
-    this.projectExcelService.createProjectSheet(wb, '사업목록', projects);
+    excelService.createCustomerSheet(wb, 'ref_고객사', customers);
+    excelService.createBusinessCategorySheet(wb, 'ref_사업구분', businessCategories);
+    excelService.createBusinessCategorySheet(wb, 'ref_산업분야', industryCategories);
+    excelService.createBusinessCategorySheet(wb, 'ref_수행업무구분', taskMainCategories);
+    excelService.createProjectSheet(wb, '사업목록', projects);
 
     return new DownloadDto((await wb.xlsx.writeBuffer()) as Buffer, DownloadFormat.Xlsx, '사업목록');
   }

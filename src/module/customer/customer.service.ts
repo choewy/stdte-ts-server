@@ -1,9 +1,11 @@
+import ExcelJS from 'exceljs';
 import { DataSource } from 'typeorm';
 
 import { Injectable } from '@nestjs/common';
 
-import { CustomerQuery, ListDto, NotFoundCustomerException } from '@server/common';
+import { CustomerQuery, DownloadDto, DownloadFormat, ListDto, NotFoundCustomerException } from '@server/common';
 
+import { CustomerExcelService } from './customer-excel.service';
 import {
   CustomerCreateBodyDto,
   CustomerDto,
@@ -31,6 +33,17 @@ export class CustomerService {
     }
 
     return new CustomerDto(customer);
+  }
+
+  async createCustomersFile() {
+    const customers = await new CustomerQuery(this.dataSource).findAll();
+
+    const wb = new ExcelJS.Workbook();
+    const excelService = new CustomerExcelService();
+
+    excelService.createCustomerSheet(wb, '고객사', customers);
+
+    return new DownloadDto((await wb.xlsx.writeBuffer()) as Buffer, DownloadFormat.Xlsx, '고객사 목록');
   }
 
   async createCustomer(body: CustomerCreateBodyDto) {

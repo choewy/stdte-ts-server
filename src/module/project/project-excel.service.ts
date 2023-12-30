@@ -1,10 +1,8 @@
 import ExcelJS from 'exceljs';
 
-import { Injectable } from '@nestjs/common';
 import { BusinessCategory, Customer, IndustryCategory, Project, ProjectStatus, TaskMainCategory } from '@entity';
 import { DateTime } from 'luxon';
 
-@Injectable()
 export class ProjectExcelService {
   private readonly WORKSHEET_OPTIONS: Partial<ExcelJS.AddWorksheetOptions> = {
     views: [{ state: 'frozen', xSplit: 2, ySplit: 1 }],
@@ -196,7 +194,6 @@ export class ProjectExcelService {
     }
 
     ws.getColumn(1).hidden = true;
-
     ws.getColumn(3).width = 80;
     ws.getColumn(7).width = 30;
     ws.getColumn(10).width = 50;

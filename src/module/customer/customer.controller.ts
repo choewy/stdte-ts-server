@@ -18,6 +18,12 @@ export class CustomerController {
     return this.customerService.getCustomers(query);
   }
 
+  @Get('download')
+  @SetRolePolicy({ customer: RolePolicyLevel.Read })
+  async createCustomersFile() {
+    return this.customerService.createCustomersFile();
+  }
+
   @Post()
   @SetRolePolicy({ customer: RolePolicyLevel.Create })
   async createCustomer(@Body() body: CustomerCreateBodyDto) {
