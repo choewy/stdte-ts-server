@@ -6,6 +6,8 @@ import {
   AlreadyExistTaskMainCategoryException,
   CannotDeleteTaskMainCategoryException,
   CannotUpdateTaskMainCategoryException,
+  DownloadDto,
+  DownloadFormat,
   ListDto,
   NotFoundTaskMainCategoryException,
   NotFoundTaskSubCategoryException,
@@ -23,6 +25,8 @@ import {
   TaskSubCategoryDto,
   TaskSubCategoryUpdateBodyDto,
 } from './dto';
+import { TaskCategoryExcelService } from './task-category-excel.service';
+import ExcelJS from 'exceljs';
 
 @Injectable()
 export class TaskCategoryService {
@@ -34,17 +38,17 @@ export class TaskCategoryService {
     return new ListDto(query, await taskMainCategoryQuery.findTaskMainCategoryList(query), TaskMainCategoryDto);
   }
 
-  async getTaskMainCategory(param: TaskCategoryParamDto) {
-    const taskMainCategoryQuery = new TaskMainCategoryQuery(this.dataSource);
-    const taskMainCategory = await taskMainCategoryQuery.findTaskMainCategoryById(param.id, {
+  async createTaskCategoriesFile() {
+    const categories = await new TaskMainCategoryQuery(this.dataSource).findAll({
       children: true,
     });
 
-    if (taskMainCategory == null) {
-      throw new NotFoundTaskMainCategoryException();
-    }
+    const wb = new ExcelJS.Workbook();
+    const excelService = new TaskCategoryExcelService();
 
-    return new TaskMainCategoryDto(taskMainCategory);
+    excelService.createTaskCategorySheet(wb, '수행업무구분', categories);
+
+    return new DownloadDto((await wb.xlsx.writeBuffer()) as Buffer, DownloadFormat.Xlsx, '수행업무구분 목록');
   }
 
   async createTaskMainCategory(body: TaskMainCategoryCreateBodyDto) {

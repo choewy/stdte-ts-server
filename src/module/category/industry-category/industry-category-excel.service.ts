@@ -4,7 +4,7 @@ import { IndustryCategory } from '@entity';
 
 export class IndustryCategoryExcelService {
   private readonly WORKSHEET_OPTIONS: Partial<ExcelJS.AddWorksheetOptions> = {
-    views: [{ state: 'frozen', xSplit: 2, ySplit: 1 }],
+    views: [{ state: 'frozen', ySplit: 1 }],
   };
 
   createIndustryCategorySheet(wb: ExcelJS.Workbook, sheetName: string, industryCategories: IndustryCategory[]) {

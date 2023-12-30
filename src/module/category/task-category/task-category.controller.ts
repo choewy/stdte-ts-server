@@ -25,10 +25,10 @@ export class TaskCategoryController {
     return this.taskCategoryService.getTaskMainCategories(query);
   }
 
-  @Get(':id(\\d+)')
+  @Get('download')
   @SetRolePolicy({ taskCategory: RolePolicyLevel.Read })
-  async getTaskMainCategory(@Param() param: TaskCategoryParamDto) {
-    return this.taskCategoryService.getTaskMainCategory(param);
+  async createTaskCategoriesFile() {
+    return this.taskCategoryService.createTaskCategoriesFile();
   }
 
   @Post()
