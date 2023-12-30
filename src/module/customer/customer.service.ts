@@ -24,17 +24,6 @@ export class CustomerService {
     return new ListDto(query, await customerQuery.findCustomerList(query), CustomerDto);
   }
 
-  async getCustomer(param: CustomerParamDto) {
-    const customerQuery = new CustomerQuery(this.dataSource);
-    const customer = await customerQuery.findCustomerById(param.id);
-
-    if (customer == null) {
-      throw new NotFoundCustomerException();
-    }
-
-    return new CustomerDto(customer);
-  }
-
   async createCustomersFile() {
     const customers = await new CustomerQuery(this.dataSource).findAll();
 

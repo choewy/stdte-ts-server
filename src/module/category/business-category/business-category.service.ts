@@ -1,10 +1,13 @@
 import { DataSource } from 'typeorm';
 
 import { Injectable } from '@nestjs/common';
+import ExcelJS from 'exceljs';
 
 import {
   AlreadyExistBusinessCategoryException,
   BusinessCategoryQuery,
+  DownloadDto,
+  DownloadFormat,
   ListDto,
   NotFoundBusinessCategoryException,
 } from '@server/common';
@@ -16,6 +19,7 @@ import {
   BusinessCategoryParamDto,
   BusinessCategoryUpdateBodyDto,
 } from './dto';
+import { BusinessCategoryExcelService } from './business-category-excel.service';
 
 @Injectable()
 export class BusinessCategoryService {
@@ -25,6 +29,17 @@ export class BusinessCategoryService {
     const businessCategoryQuery = new BusinessCategoryQuery(this.dataSource);
 
     return new ListDto(query, await businessCategoryQuery.findBusinessCategoryList(query), BusinessCategoryDto);
+  }
+
+  async createBusinessCategoriesFile() {
+    const businessCategories = await new BusinessCategoryQuery(this.dataSource).findAll();
+
+    const wb = new ExcelJS.Workbook();
+    const excelService = new BusinessCategoryExcelService();
+
+    excelService.createBusinessCategorySheet(wb, '사업구분', businessCategories);
+
+    return new DownloadDto((await wb.xlsx.writeBuffer()) as Buffer, DownloadFormat.Xlsx, '사업구분 목록');
   }
 
   async createBusinessCategory(body: BusinessCategoryCreateBodyDto) {

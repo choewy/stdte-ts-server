@@ -23,6 +23,12 @@ export class BusinessCategoryController {
     return this.businessCategoryService.getBusinessCategories(query);
   }
 
+  @Get('download')
+  @SetRolePolicy({ businessCategory: RolePolicyLevel.Read })
+  async createBusinessCategoriesFile() {
+    return this.businessCategoryService.createBusinessCategoriesFile();
+  }
+
   @Post()
   @SetRolePolicy({ businessCategory: RolePolicyLevel.Create })
   async createBusinessCategory(@Body() body: BusinessCategoryCreateBodyDto) {
