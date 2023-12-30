@@ -14,10 +14,11 @@ export class UserQuery extends EntityQuery<User> {
     return this.repository.exist({ where: { id } });
   }
 
-  async findAll() {
+  async findAll(relations?: FindOptionsRelations<User>) {
     return this.repository.find({
       relations: {
         credentials: true,
+        ...(relations ?? {}),
       },
       where: {
         onInit: false,

@@ -143,15 +143,15 @@ export class AnalysisService {
 
     const wb = new ExcelJS.Workbook();
 
-    this.analysisExcelService.createProjectRecordCustomerSheet(wb, 'ref_고객사', orders.customer.rows);
-    this.analysisExcelService.createProjectRecordCustomerSheet(wb, 'ref_사업구분', orders.businessCategory.rows);
-    this.analysisExcelService.createProjectRecordCustomerSheet(wb, 'ref_산업분야', orders.industryCategory.rows);
     this.analysisExcelService.createProjectRecordSheet(wb, '수주_고객사별', '고객사', orders.customer);
     this.analysisExcelService.createProjectRecordSheet(wb, '수주_사업구분별', '사업구분', orders.businessCategory);
     this.analysisExcelService.createProjectRecordSheet(wb, '수주_산업분야별', '산업분야', orders.industryCategory);
     this.analysisExcelService.createProjectRecordSheet(wb, '매출_고객사별', '고객사', sales.customer);
     this.analysisExcelService.createProjectRecordSheet(wb, '매출_사업구분별', '사업구분', sales.businessCategory);
     this.analysisExcelService.createProjectRecordSheet(wb, '매출_산업분야별', '산업분야', sales.industryCategory);
+    this.analysisExcelService.createProjectRecordCustomerSheet(wb, 'ref_고객사', orders.customer.rows);
+    this.analysisExcelService.createProjectRecordCustomerSheet(wb, 'ref_사업구분', orders.businessCategory.rows);
+    this.analysisExcelService.createProjectRecordCustomerSheet(wb, 'ref_산업분야', orders.industryCategory.rows);
 
     return new DownloadDto((await wb.xlsx.writeBuffer()) as Buffer, DownloadFormat.Xlsx, '수주 및 매출');
   }
@@ -252,14 +252,14 @@ export class AnalysisService {
 
     const wb = new ExcelJS.Workbook();
 
-    this.analysisExcelService.createTimeRecordProjectSheet(wb, 'ref_사업 목록', results.projects);
-    this.analysisExcelService.createTimeRecordUserSheet(wb, 'ref_구성원 목록', results.users);
-
     for (const project of results.projects) {
       const sheetName = `${project.id}_${project.name}`;
 
       this.analysisExcelService.createTimeRecordSheet(wb, sheetName, project, results.years, results.users);
     }
+
+    this.analysisExcelService.createTimeRecordProjectSheet(wb, 'ref_사업 목록', results.projects);
+    this.analysisExcelService.createTimeRecordUserSheet(wb, 'ref_구성원 목록', results.users);
 
     return new DownloadDto((await wb.xlsx.writeBuffer()) as Buffer, DownloadFormat.Xlsx, '사업별 시간관리 집계');
   }

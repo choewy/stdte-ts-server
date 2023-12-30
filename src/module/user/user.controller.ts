@@ -19,6 +19,12 @@ export class UserController {
     return this.userService.getUsers(query);
   }
 
+  @Get('download')
+  @UseGuards(CredentialsGuard)
+  async createUsersFile() {
+    return this.userService.createUsersFile();
+  }
+
   @Get(':id(\\d+)')
   @UseGuards(CredentialsGuard)
   async getUser(@Param() param: UserParamDto) {

@@ -59,11 +59,11 @@ export class ProjectService {
     const wb = new ExcelJS.Workbook();
     const excelService = new ProjectExcelService();
 
+    excelService.createProjectSheet(wb, '사업목록', projects);
     excelService.createCustomerSheet(wb, 'ref_고객사', customers);
     excelService.createBusinessCategorySheet(wb, 'ref_사업구분', businessCategories);
     excelService.createBusinessCategorySheet(wb, 'ref_산업분야', industryCategories);
     excelService.createBusinessCategorySheet(wb, 'ref_수행업무구분', taskMainCategories);
-    excelService.createProjectSheet(wb, '사업목록', projects);
 
     return new DownloadDto((await wb.xlsx.writeBuffer()) as Buffer, DownloadFormat.Xlsx, '사업목록');
   }

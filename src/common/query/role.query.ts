@@ -1,4 +1,4 @@
-import { DataSource, DeepPartial, EntityManager, In, Not } from 'typeorm';
+import { DataSource, DeepPartial, EntityManager, FindOptionsRelations, In, Not } from 'typeorm';
 
 import { Role } from '@entity';
 
@@ -20,6 +20,13 @@ export class RoleQuery extends EntityQuery<Role> {
 
   async hasRoleByNameOmitId(id: number, name: string) {
     return this.repository.exist({ where: { id: Not(id), name } });
+  }
+
+  async findAll(relations?: FindOptionsRelations<Role>) {
+    return this.repository.find({
+      relations,
+      where: { onInit: false },
+    });
   }
 
   async findRoleByDefault() {
