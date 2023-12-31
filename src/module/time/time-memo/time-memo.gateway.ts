@@ -3,7 +3,6 @@ import { Namespace, Socket } from 'socket.io';
 import { OnGatewayConnection, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { OnEvent } from '@nestjs/event-emitter';
 
-import { TimeMemoIdProperty } from '@entity';
 import { TimeMemoEvent } from '@server/common';
 import { CookieKey, Gateway, JwtService, JwtTokenType } from '@server/core';
 
@@ -49,7 +48,7 @@ export class TimeMemoGateway implements OnGatewayConnection {
   }
 
   @OnEvent(TimeMemoEvent.Delete)
-  onDeleteTimeMemo(userId: number, payload: TimeMemoIdProperty) {
+  onDeleteTimeMemo(userId: number, payload: Pick<TimeMemoDto, 'id'>) {
     this.server.in(this.generateRoom(userId)).emit(TimeMemoGatewayEvent.Delete, payload);
   }
 }
