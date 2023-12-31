@@ -1,15 +1,10 @@
-import cookie from 'cookie';
-
-import { IncomingMessage } from 'http';
 import { Namespace, Socket } from 'socket.io';
 
 import { OnGatewayConnection, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { OnEvent } from '@nestjs/event-emitter';
 
-import { TimeRecordIdProperty } from '@entity';
 import { TimeRecordEvent } from '@server/common';
-import { CookieKey, JwtService, JwtTokenType } from '@server/core';
-import { CorsConfig } from '@server/config';
+import { CookieKey, Gateway, JwtService, JwtTokenType } from '@server/core';
 
 import { TimeRecordGatewayEvent } from './enums';
 import { TimeRecordRowDto } from './dto';
@@ -17,11 +12,7 @@ import { TimeRecordRowDto } from './dto';
 @WebSocketGateway({
   namespace: 'timerecord',
   transports: ['websocket'],
-  allowRequest: (req: IncomingMessage, func) => {
-    const pass = new CorsConfig().checkOrigin(req.headers.origin ?? '');
-
-    func(null, pass);
-  },
+  allowRequest: Gateway.allowRequest,
 })
 export class TimeRecordGateway implements OnGatewayConnection {
   @WebSocketServer()
@@ -33,7 +24,7 @@ export class TimeRecordGateway implements OnGatewayConnection {
   }
 
   async handleConnection(client: Socket) {
-    const cookies = cookie.parse(client.handshake.headers.cookie ?? '');
+    const cookies = Gateway.parseCookies(client);
     const result = this.jwtService.verify(JwtTokenType.Access, cookies[CookieKey.Access]);
 
     if (result.payload == null) {
@@ -54,10 +45,5 @@ export class TimeRecordGateway implements OnGatewayConnection {
   @OnEvent(TimeRecordEvent.Upsert)
   onUpsertTimeRecord(userId: number, payload: TimeRecordRowDto) {
     this.server.in(this.generateRoom(userId)).emit(TimeRecordGatewayEvent.Upsert, payload);
-  }
-
-  @OnEvent(TimeRecordEvent.Delete)
-  onDeleteTimeRecord(userId: number, payload: TimeRecordIdProperty) {
-    this.server.in(this.generateRoom(userId)).emit(TimeRecordGatewayEvent.Delete, payload);
   }
 }
