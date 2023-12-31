@@ -1,6 +1,3 @@
-import cookie from 'cookie';
-
-import { IncomingMessage } from 'http';
 import { Namespace, Socket } from 'socket.io';
 
 import { OnGatewayConnection, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
@@ -8,8 +5,7 @@ import { OnEvent } from '@nestjs/event-emitter';
 
 import { TimeMemoIdProperty } from '@entity';
 import { TimeMemoEvent } from '@server/common';
-import { CookieKey, JwtService, JwtTokenType } from '@server/core';
-import { CorsConfig } from '@server/config';
+import { CookieKey, Gateway, JwtService, JwtTokenType } from '@server/core';
 
 import { TimeMemoGatewayEvent } from './enums';
 import { TimeMemoDto } from './dto';
@@ -17,11 +13,7 @@ import { TimeMemoDto } from './dto';
 @WebSocketGateway({
   namespace: 'timememo',
   transports: ['websocket'],
-  allowRequest: (req: IncomingMessage, func) => {
-    const pass = new CorsConfig().checkOrigin(req.headers.origin ?? '');
-
-    func(null, pass);
-  },
+  allowRequest: Gateway.allowRequest,
 })
 export class TimeMemoGateway implements OnGatewayConnection {
   @WebSocketServer()
@@ -33,7 +25,7 @@ export class TimeMemoGateway implements OnGatewayConnection {
   }
 
   async handleConnection(client: Socket) {
-    const cookies = cookie.parse(client.handshake.headers.cookie ?? '');
+    const cookies = Gateway.parseCookies(client);
     const result = this.jwtService.verify(JwtTokenType.Access, cookies[CookieKey.Access]);
 
     if (result.payload == null) {
