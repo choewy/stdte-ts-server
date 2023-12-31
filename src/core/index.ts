@@ -8,3 +8,4 @@ export * from './interceptor';
 export * from './filter';
 export * from './aws';
 export * from './zip';
+export * from './gateway';
