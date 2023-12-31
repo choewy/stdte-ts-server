@@ -11,7 +11,18 @@ export class TimeMemoQuery extends EntityQuery<TimeMemo> {
   }
 
   async findTimeMemoById(id: number) {
-    return this.repository.findOne({ where: { id } });
+    return this.repository.findOne({
+      relations: { user: true },
+      select: {
+        user: { id: true },
+        id: true,
+        date: true,
+        text: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+      where: { id },
+    });
   }
 
   async findTImeMemoList(args: TimeMemoQueryFindsArgs) {

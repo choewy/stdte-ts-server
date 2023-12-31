@@ -13,7 +13,7 @@ import {
   TimeMemoEvent,
 } from '@server/common';
 
-import { TimeMemoDto, TimeMemoListBodyDto, TimeMemoParamDto, TimeMemoUpdateBodyDto } from './dto';
+import { TimeMemoDto, TimeMemoListBodyDto, TimeMemoParamDto, TimeMemoUpsertBodyDto } from './dto';
 
 @Injectable()
 export class TimeMemoService {
@@ -36,7 +36,7 @@ export class TimeMemoService {
     );
   }
 
-  async updateTimeMemo(userId: number, body: TimeMemoUpdateBodyDto) {
+  async upsertTimeMemo(userId: number, body: TimeMemoUpsertBodyDto) {
     if (userId !== body.user.id) {
       throw new CannotUpdateTimeMemoException();
     }
@@ -75,7 +75,7 @@ export class TimeMemoService {
 
     const timeMemoDto = new TimeMemoDto(timeMemo);
 
-    this.eventEmitter.emit(TimeMemoEvent.Update, userId, timeMemoDto);
+    this.eventEmitter.emit(TimeMemoEvent.Upsert, userId, timeMemoDto);
     this.eventEmitter.emit(TimeLogEvent.Update, userId);
 
     return timeMemoDto;

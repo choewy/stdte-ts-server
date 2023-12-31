@@ -42,9 +42,9 @@ export class TimeMemoGateway implements OnGatewayConnection {
     await client.join(this.generateRoom(id));
   }
 
-  @OnEvent(TimeMemoEvent.Update)
-  onUpdateTimeMemo(userId: number, payload: TimeMemoDto) {
-    this.server.in(this.generateRoom(userId)).emit(TimeMemoGatewayEvent.Update, payload);
+  @OnEvent(TimeMemoEvent.Upsert)
+  onUpsertTimeMemo(userId: number, payload: TimeMemoDto) {
+    this.server.in(this.generateRoom(userId)).emit(TimeMemoGatewayEvent.Upsert, payload);
   }
 
   @OnEvent(TimeMemoEvent.Delete)

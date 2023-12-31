@@ -31,7 +31,7 @@ export enum TimeRecordEvent {
 }
 
 export enum TimeMemoEvent {
-  Update = 'timememo.update',
+  Upsert = 'timememo.upsert',
   Delete = 'timememo.delete',
 }
 

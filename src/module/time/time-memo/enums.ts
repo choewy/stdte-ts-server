@@ -1,4 +1,4 @@
 export enum TimeMemoGatewayEvent {
-  Update = 'update',
+  Upsert = 'upsert',
   Delete = 'delete',
 }

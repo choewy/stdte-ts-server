@@ -4,7 +4,7 @@ import { IsDateString, IsInstance, IsInt, IsNotEmpty, IsOptional, IsString } fro
 import { User } from '@entity';
 import { toEmptyNull, toEntity, toSQLDate } from '@server/common';
 
-export class TimeMemoUpdateBodyDto {
+export class TimeMemoUpsertBodyDto {
   @IsOptional()
   @IsInt()
   @Transform(({ value }) => value ?? null)
