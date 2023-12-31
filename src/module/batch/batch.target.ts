@@ -5,7 +5,7 @@ import { AppConfig } from '@server/config';
 import { ZipFileTarget } from '@server/core';
 
 export class BatchTarget {
-  get logFiles() {
+  getLogFiles() {
     const appConfig = new AppConfig();
 
     const map: Record<string, ZipFileTarget[]> = {};
