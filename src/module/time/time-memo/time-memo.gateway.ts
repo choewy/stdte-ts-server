@@ -48,7 +48,7 @@ export class TimeMemoGateway implements OnGatewayConnection {
   }
 
   @OnEvent(TimeMemoEvent.Delete)
-  onDeleteTimeMemo(userId: number, payload: Pick<TimeMemoDto, 'id'>) {
-    this.server.in(this.generateRoom(userId)).emit(TimeMemoGatewayEvent.Delete, payload);
+  onDeleteTimeMemo(userId: number, id: number) {
+    this.server.in(this.generateRoom(userId)).emit(TimeMemoGatewayEvent.Delete, { id });
   }
 }

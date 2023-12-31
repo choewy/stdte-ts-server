@@ -73,12 +73,8 @@ export class TimeMemoService {
       throw new NotFoundTimeMemoException();
     }
 
-    const timeMemoDto = new TimeMemoDto(timeMemo);
-
-    this.eventEmitter.emit(TimeMemoEvent.Upsert, userId, timeMemoDto);
+    this.eventEmitter.emit(TimeMemoEvent.Upsert, userId, new TimeMemoDto(timeMemo));
     this.eventEmitter.emit(TimeLogEvent.Update, userId);
-
-    return timeMemoDto;
   }
 
   async deleteTimeMemo(userId: number, param: TimeMemoParamDto) {
@@ -95,7 +91,7 @@ export class TimeMemoService {
 
     await timeMemoQuery.deleteTimeMemo(param.id);
 
-    this.eventEmitter.emit(TimeMemoEvent.Delete, userId, timeMemo);
+    this.eventEmitter.emit(TimeMemoEvent.Delete, userId, param.id);
     this.eventEmitter.emit(TimeLogEvent.Update, userId);
   }
 }
