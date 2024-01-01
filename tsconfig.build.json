@@ -8,7 +8,6 @@
     "docker",
     "**/*spec.ts",
     "sub_modules/entity/src/main.ts",
-    "sub_modules/entity/src/test.ts",
     "sub_modules/entity/src/dump.ts",
     "sub_modules/entity/src/dumps",
     "sub_modules/entity/src/config.ts",
