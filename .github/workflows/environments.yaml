@@ -3,7 +3,7 @@ name: Environments
 on: workflow_dispatch
 
 jobs:
-  slack_webhook:
+  send_to_slack:
     runs-on: ubuntu-22.04
 
     env:
@@ -14,11 +14,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-        with:
-          token: ${{ secrets.ACTION_TOKEN }}
-          submodules: true
 
-      - name: Send environments
+      - name: Send to slack
         run: |
           sh scripts/send-env-to-slack.sh "develop" "$SLACK_WEBHOOK_URL" "$ENV_DEVELOP"
           sh scripts/send-env-to-slack.sh "product" "$SLACK_WEBHOOK_URL" "$ENV_PRODUCT"
