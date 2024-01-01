@@ -10,6 +10,24 @@ import { plainToInstance } from 'class-transformer';
 export const SetRolePolicy = (value: Partial<RolePolicyProperty>, nullable: boolean = false) =>
   applyDecorators(SetMetadata(MetadataKey.RolePolicy, value), SetMetadata(MetadataKey.RoleNullable, nullable));
 
+export const toBoolean = (value?: boolean | number | string | null) => {
+  if (value == null) {
+    return value;
+  }
+
+  if (typeof value === 'boolean') {
+    return value;
+  }
+
+  if (['true', 'True', 'TRUE', 1].includes(value)) {
+    return true;
+  }
+
+  if (['false', 'False', 'FALSE', 0].includes(value)) {
+    return false;
+  }
+};
+
 export const toDateFormat = (format: string, date?: string | DateTime | Date | null) => {
   if (typeof date === 'string') {
     date = new Date(date);

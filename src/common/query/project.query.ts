@@ -90,9 +90,9 @@ export class ProjectQuery extends EntityQuery<Project> {
       });
     }
 
-    if (typeof args.taskMainCategory === 'number') {
-      queryBuilder.andWhere('taskMainCategory.id = :taskMainCategory', {
-        taskMainCategory: args.taskMainCategory,
+    if (typeof args.canExpose === 'boolean') {
+      queryBuilder.andWhere('project.canExpose = :canExpose', {
+        canExpose: args.canExpose,
       });
     }
 

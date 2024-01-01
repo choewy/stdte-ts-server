@@ -24,7 +24,7 @@ export type CustomerQueryFindListArgs = FindListArgs;
 export type ProjectQueryFindListArgs = FindListArgs & {
   businessCategory?: number;
   industryCategory?: number;
-  taskMainCategory?: number;
+  canExpose?: boolean;
   customer?: number;
   status?: ProjectStatus;
 };
