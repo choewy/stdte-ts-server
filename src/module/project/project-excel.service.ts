@@ -81,29 +81,7 @@ export class ProjectExcelService {
     const ws = wb.addWorksheet(sheetName, { views: [{ state: 'frozen', xSplit: 3, ySplit: 2 }] });
 
     const head: Array<string | number>[] = [
-      [
-        '',
-        '사업정보',
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
-        '담당자(대외)',
-        '',
-        '',
-        '담당자(대내)',
-        '',
-        '',
-        '기간',
-        '',
-        '',
-        '시간관리',
-        '',
-      ],
+      ['', '사업정보', '', '', '', '', '', '', '', '', '담당자', '', '', '기간', '', '', '시간관리', ''],
       [
         'PK',
         '약어',
@@ -115,11 +93,8 @@ export class ProjectExcelService {
         '금액',
         '상태',
         '비고',
-        'PO',
-        'PM',
-        'PL',
-        'PO',
-        'PM',
+        'PM(용수계)',
+        'PM(실제)',
         'PL',
         '착수',
         '준공',
@@ -177,14 +152,14 @@ export class ProjectExcelService {
       };
     }
 
-    for (const c of [2, 4, 5, 6, 7, 9, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21]) {
+    for (const c of [2, 4, 5, 6, 7, 9, 11, 12, 13, 14, 15, 16, 17, 18]) {
       ws.getColumn(c).alignment = { vertical: 'middle', horizontal: 'center' };
 
       if (c === 4) {
         ws.getColumn(c).numFmt = '0.0';
       }
 
-      if ([17, 18].includes(c)) {
+      if ([14, 15].includes(c)) {
         ws.getColumn(c).width = 15;
         ws.getColumn(c).numFmt = 'yyyy-mm-dd';
       }
@@ -195,7 +170,7 @@ export class ProjectExcelService {
     ws.getColumn(7).width = 30;
     ws.getColumn(10).width = 50;
 
-    for (const c of [8, 11, 12, 13, 14, 15, 16, 20]) {
+    for (const c of [8, 11, 12, 13, 14, 15, 17]) {
       ws.getColumn(c).width = 20;
 
       if (c === 8) {
@@ -207,8 +182,7 @@ export class ProjectExcelService {
     ws.mergeCells(1, 2, 1, 10);
     ws.mergeCells(1, 11, 1, 13);
     ws.mergeCells(1, 14, 1, 16);
-    ws.mergeCells(1, 17, 1, 19);
-    ws.mergeCells(1, 20, 1, 21);
+    ws.mergeCells(1, 17, 1, 18);
     ws.getRow(1).alignment = { vertical: 'middle', horizontal: 'center' };
     ws.getRow(2).alignment = { vertical: 'middle', horizontal: 'center' };
 
