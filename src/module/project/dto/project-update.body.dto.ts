@@ -91,7 +91,7 @@ export class ProjectUpdateBodyDto {
   @IsArray()
   @IsInstance(User, { each: true })
   @Transform(({ value }) => toEntities(User, value))
-  internalOwners?: User[];
+  externalManagers?: User[];
 
   @IsOptional()
   @IsArray()
@@ -104,24 +104,6 @@ export class ProjectUpdateBodyDto {
   @IsInstance(User, { each: true })
   @Transform(({ value }) => toEntities(User, value))
   internalLeaders?: User[];
-
-  @IsOptional()
-  @IsArray()
-  @IsInstance(User, { each: true })
-  @Transform(({ value }) => toEntities(User, value))
-  externalOwners?: User[];
-
-  @IsOptional()
-  @IsArray()
-  @IsInstance(User, { each: true })
-  @Transform(({ value }) => toEntities(User, value))
-  externalManagers?: User[];
-
-  @IsOptional()
-  @IsArray()
-  @IsInstance(User, { each: true })
-  @Transform(({ value }) => toEntities(User, value))
-  externalLeaders?: User[];
 
   @IsOptional()
   @IsBoolean()

@@ -21,12 +21,9 @@ export class ProjectQuery extends EntityQuery<Project> {
         industryCategory: true,
         taskMainCategory: true,
         customer: true,
-        internalOwners: { user: true },
+        externalManagers: { user: true },
         internalManagers: { user: true },
         internalLeaders: { user: true },
-        externalOwners: { user: true },
-        externalManagers: { user: true },
-        externalLeaders: { user: true },
       },
       where: { id },
     });
@@ -39,12 +36,9 @@ export class ProjectQuery extends EntityQuery<Project> {
         industryCategory: true,
         taskMainCategory: true,
         customer: true,
-        internalOwners: { user: true },
+        externalManagers: { user: true },
         internalManagers: { user: true },
         internalLeaders: { user: true },
-        externalOwners: { user: true },
-        externalManagers: { user: true },
-        externalLeaders: { user: true },
       },
       order: { priority: 'ASC' },
     });
@@ -64,18 +58,12 @@ export class ProjectQuery extends EntityQuery<Project> {
       .leftJoinAndMapOne('project.industryCategory', 'project.industryCategory', 'industryCategory')
       .leftJoinAndMapOne('project.taskMainCategory', 'project.taskMainCategory', 'taskMainCategory')
       .leftJoinAndMapOne('project.customer', 'project.customer', 'customer')
-      .leftJoinAndMapMany('project.internalOwners', 'project.internalOwners', 'internalOwners')
+      .leftJoinAndMapMany('project.externalManagers', 'project.externalManagers', 'externalManagers')
       .leftJoinAndMapMany('project.internalManagers', 'project.internalManagers', 'internalManagers')
       .leftJoinAndMapMany('project.internalLeaders', 'project.internalLeaders', 'internalLeaders')
-      .leftJoinAndMapMany('project.externalOwners', 'project.externalOwners', 'externalOwners')
-      .leftJoinAndMapMany('project.externalManagers', 'project.externalManagers', 'externalManagers')
-      .leftJoinAndMapMany('project.externalLeaders', 'project.externalLeaders', 'externalLeaders')
-      .leftJoinAndMapOne('internalOwners.user', 'internalOwners.user', 'internalOwner')
+      .leftJoinAndMapOne('externalManagers.user', 'externalManagers.user', 'externalManager')
       .leftJoinAndMapOne('internalManagers.user', 'internalManagers.user', 'internalManager')
       .leftJoinAndMapOne('internalLeaders.user', 'internalLeaders.user', 'internalLeader')
-      .leftJoinAndMapOne('externalOwners.user', 'externalOwners.user', 'externalOwner')
-      .leftJoinAndMapOne('externalManagers.user', 'externalManagers.user', 'externalManager')
-      .leftJoinAndMapOne('externalLeaders.user', 'externalLeaders.user', 'externalLeader')
       .where({ priority: ProjectPriority.Business });
 
     if (typeof args.businessCategory === 'number') {

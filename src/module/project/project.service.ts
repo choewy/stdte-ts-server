@@ -95,10 +95,7 @@ export class ProjectService {
 
       const projectId = insert.raw.insertId;
       await projectUsersQuery.updateProjectUsers(projectId, {
-        externalOwners: body.externalOwners,
         externalManagers: body.externalManagers,
-        externalLeaders: body.externalLeaders,
-        internalOwners: body.internalOwners,
         internalManagers: body.internalManagers,
         internalLeaders: body.internalLeaders,
       });
@@ -155,10 +152,7 @@ export class ProjectService {
       });
 
       await projectUsersQuery.updateProjectUsers(param.id, {
-        externalOwners: body.externalOwners,
         externalManagers: body.externalManagers,
-        externalLeaders: body.externalLeaders,
-        internalOwners: body.internalOwners,
         internalManagers: body.internalManagers,
         internalLeaders: body.internalLeaders,
       });

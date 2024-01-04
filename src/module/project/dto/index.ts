@@ -9,7 +9,6 @@ export * from './project-list.dto';
 export * from './project-list.query.dto';
 export * from './project-create.body.dto';
 export * from './project-update.body.dto';
-export * from './project-xlsx-row.dto';
 export * from './project-record.dto';
 export * from './project-record.param.dto';
 export * from './project-record-list.query.dto';

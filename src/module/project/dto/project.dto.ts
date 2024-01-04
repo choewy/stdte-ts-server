@@ -26,12 +26,9 @@ export class ProjectDto {
   industryCategory: ProjectBusinessCategoryDto | null;
   taskCategory: ProjectTaskMainCategoryDto | null;
   customer: ProjectCustomerDto | null;
-  internalOwners: ProjectUserDto[];
+  externalManagers: ProjectUserDto[];
   internalManagers: ProjectUserDto[];
   internalLeaders: ProjectUserDto[];
-  externalOwners: ProjectUserDto[];
-  externalManagers: ProjectUserDto[];
-  externalLeaders: ProjectUserDto[];
   canExpose: boolean;
   createdAt: string | null;
   updatedAt: string | null;
@@ -60,12 +57,9 @@ export class ProjectDto {
     this.businessCategory = project.businessCategory ? new ProjectBusinessCategoryDto(project.businessCategory) : null;
     this.industryCategory = project.industryCategory ? new ProjectIndustryCategoryDto(project.industryCategory) : null;
     this.taskCategory = project.taskMainCategory ? new ProjectTaskMainCategoryDto(project.taskMainCategory) : null;
-    this.internalOwners = project.internalOwners.map((projectUser) => new ProjectUserDto(projectUser));
+    this.externalManagers = project.externalManagers.map((projectUser) => new ProjectUserDto(projectUser));
     this.internalManagers = project.internalManagers.map((projectUser) => new ProjectUserDto(projectUser));
     this.internalLeaders = project.internalLeaders.map((projectUser) => new ProjectUserDto(projectUser));
-    this.externalOwners = project.externalOwners.map((projectUser) => new ProjectUserDto(projectUser));
-    this.externalManagers = project.externalManagers.map((projectUser) => new ProjectUserDto(projectUser));
-    this.externalLeaders = project.externalLeaders.map((projectUser) => new ProjectUserDto(projectUser));
     this.canExpose = project.canExpose;
     this.createdAt = toISOString(project.createdAt);
     this.updatedAt = toISOString(project.updatedAt);

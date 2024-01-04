@@ -1,32 +1,18 @@
 import { DataSource, DeepPartial, EntityManager, FindOptionsWhere, In, Repository } from 'typeorm';
 
-import {
-  ProjectExternalLeaders,
-  ProjectExternalManagers,
-  ProjectExternalOwners,
-  ProjectInternalLeaders,
-  ProjectInternalManagers,
-  ProjectInternalOwners,
-  User,
-} from '@entity';
+import { ProjectExternalManagers, ProjectInternalLeaders, ProjectInternalManagers, User } from '@entity';
 
 export class ProjectUsersQuery {
   private readonly userRepository: Repository<User>;
-  private readonly projectInternalOwnersRepository: Repository<ProjectInternalOwners>;
   private readonly projectInternalManagersRepository: Repository<ProjectInternalManagers>;
   private readonly projectInternalLeadersRepository: Repository<ProjectInternalLeaders>;
-  private readonly projectExternalOwnersRepository: Repository<ProjectExternalOwners>;
   private readonly projectExternalManagersRepository: Repository<ProjectExternalManagers>;
-  private readonly projectExternalLeadersRepository: Repository<ProjectExternalLeaders>;
 
   constructor(connection: DataSource | EntityManager) {
     this.userRepository = connection.getRepository(User);
-    this.projectInternalOwnersRepository = connection.getRepository(ProjectInternalOwners);
+    this.projectExternalManagersRepository = connection.getRepository(ProjectExternalManagers);
     this.projectInternalManagersRepository = connection.getRepository(ProjectInternalManagers);
     this.projectInternalLeadersRepository = connection.getRepository(ProjectInternalLeaders);
-    this.projectExternalOwnersRepository = connection.getRepository(ProjectExternalOwners);
-    this.projectExternalManagersRepository = connection.getRepository(ProjectExternalManagers);
-    this.projectExternalLeadersRepository = connection.getRepository(ProjectExternalLeaders);
   }
 
   async findUsersOnlyId(entities: User[]) {
@@ -44,24 +30,14 @@ export class ProjectUsersQuery {
 
   async updateProjectUsers(
     projectId: number,
-    args: Partial<
-      Record<
-        | 'internalOwners'
-        | 'internalManagers'
-        | 'internalLeaders'
-        | 'externalOwners'
-        | 'externalManagers'
-        | 'externalLeaders',
-        User[]
-      >
-    >,
+    args: Partial<Record<'externalManagers' | 'internalManagers' | 'internalLeaders', User[]>>,
   ) {
-    if (args.internalOwners) {
-      const users = await this.findUsersOnlyId(args.internalOwners);
-      await this.deleteProjectInternalOwners({ projectId });
+    if (args.externalManagers) {
+      const users = await this.findUsersOnlyId(args.externalManagers);
+      await this.deleteProjectExternalManagers({ projectId });
 
-      if (args.internalOwners.length > 0) {
-        await this.upsertProjectInternalOwners(users.map((user) => ({ projectId, userId: user.id })));
+      if (args.externalManagers.length > 0) {
+        await this.upsertProjectExternalManagers(users.map((user) => ({ projectId, userId: user.id })));
       }
     }
 
@@ -82,37 +58,10 @@ export class ProjectUsersQuery {
         await this.upsertProjectInternalLeaders(users.map((user) => ({ projectId, userId: user.id })));
       }
     }
-
-    if (args.externalOwners) {
-      const users = await this.findUsersOnlyId(args.externalOwners);
-      await this.deleteProjectExternalOwners({ projectId });
-
-      if (args.externalOwners.length > 0) {
-        await this.upsertProjectExternalOwners(users.map((user) => ({ projectId, userId: user.id })));
-      }
-    }
-
-    if (args.externalManagers) {
-      const users = await this.findUsersOnlyId(args.externalManagers);
-      await this.deleteProjectExternalManagers({ projectId });
-
-      if (args.externalManagers.length > 0) {
-        await this.upsertProjectExternalManagers(users.map((user) => ({ projectId, userId: user.id })));
-      }
-    }
-
-    if (args.externalLeaders) {
-      const users = await this.findUsersOnlyId(args.externalLeaders);
-      await this.deleteProjectExternalLeaders({ projectId });
-
-      if (args.externalLeaders.length > 0) {
-        await this.upsertProjectExternalLeaders(users.map((user) => ({ projectId, userId: user.id })));
-      }
-    }
   }
 
-  async upsertProjectInternalOwners(entities: DeepPartial<ProjectInternalOwners>[]) {
-    return this.projectInternalOwnersRepository.upsert(entities, {
+  async upsertProjectExternalManagers(entities: DeepPartial<ProjectExternalManagers>[]) {
+    return this.projectExternalManagersRepository.upsert(entities, {
       conflictPaths: { projectId: true, userId: true },
     });
   }
@@ -129,26 +78,8 @@ export class ProjectUsersQuery {
     });
   }
 
-  async upsertProjectExternalOwners(entities: DeepPartial<ProjectExternalOwners>[]) {
-    return this.projectExternalOwnersRepository.upsert(entities, {
-      conflictPaths: { projectId: true, userId: true },
-    });
-  }
-
-  async upsertProjectExternalManagers(entities: DeepPartial<ProjectExternalManagers>[]) {
-    return this.projectExternalManagersRepository.upsert(entities, {
-      conflictPaths: { projectId: true, userId: true },
-    });
-  }
-
-  async upsertProjectExternalLeaders(entities: DeepPartial<ProjectExternalLeaders>[]) {
-    return this.projectExternalLeadersRepository.upsert(entities, {
-      conflictPaths: { projectId: true, userId: true },
-    });
-  }
-
-  async deleteProjectInternalOwners(where: FindOptionsWhere<ProjectInternalOwners>) {
-    return this.projectInternalOwnersRepository.delete(where);
+  async deleteProjectExternalManagers(where: FindOptionsWhere<ProjectExternalManagers>) {
+    return this.projectExternalManagersRepository.delete(where);
   }
 
   async deleteProjectInternalManagers(where: FindOptionsWhere<ProjectInternalManagers>) {
@@ -157,17 +88,5 @@ export class ProjectUsersQuery {
 
   async deleteProjectInternalLeaders(where: FindOptionsWhere<ProjectInternalLeaders>) {
     return this.projectInternalLeadersRepository.delete(where);
-  }
-
-  async deleteProjectExternalOwners(where: FindOptionsWhere<ProjectExternalOwners>) {
-    return this.projectExternalOwnersRepository.delete(where);
-  }
-
-  async deleteProjectExternalManagers(where: FindOptionsWhere<ProjectExternalManagers>) {
-    return this.projectExternalManagersRepository.delete(where);
-  }
-
-  async deleteProjectExternalLeaders(where: FindOptionsWhere<ProjectExternalLeaders>) {
-    return this.projectExternalLeadersRepository.delete(where);
   }
 }

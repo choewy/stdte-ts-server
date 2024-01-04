@@ -86,7 +86,7 @@ export class ProjectCreateBodyDto {
   @IsArray()
   @IsInstance(User, { each: true })
   @Transform(({ value }) => toEntities(User, value))
-  internalOwners: User[];
+  externalManagers: User[];
 
   @IsNotEmpty()
   @IsArray()
@@ -99,24 +99,6 @@ export class ProjectCreateBodyDto {
   @IsInstance(User, { each: true })
   @Transform(({ value }) => toEntities(User, value))
   internalLeaders: User[];
-
-  @IsNotEmpty()
-  @IsArray()
-  @IsInstance(User, { each: true })
-  @Transform(({ value }) => toEntities(User, value))
-  externalOwners: User[];
-
-  @IsNotEmpty()
-  @IsArray()
-  @IsInstance(User, { each: true })
-  @Transform(({ value }) => toEntities(User, value))
-  externalManagers: User[];
-
-  @IsNotEmpty()
-  @IsArray()
-  @IsInstance(User, { each: true })
-  @Transform(({ value }) => toEntities(User, value))
-  externalLeaders: User[];
 
   @IsNotEmpty()
   @IsBoolean()
