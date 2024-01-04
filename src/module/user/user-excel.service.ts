@@ -26,10 +26,10 @@ export class UserExcelService {
   };
 
   private STATUS: Record<UserStatus, string> = {
-    [UserStatus.Wating]: '',
     [UserStatus.Active]: '재직',
     [UserStatus.Vacate]: '휴직',
     [UserStatus.Retire]: '퇴직',
+    [UserStatus.Reference]: '참조',
   };
 
   createRoleSheet(wb: ExcelJS.Workbook, sheetName: string, roles: Role[]) {

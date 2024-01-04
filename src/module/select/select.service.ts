@@ -29,7 +29,7 @@ export class SelectService {
   async getUsers(query: ListQueryDto) {
     const userQuery = new UserQuery(this.dataSource);
 
-    return new ListDto(query, await userQuery.findUserList(query), SelectUserDto);
+    return new ListDto(query, await userQuery.findUserSelectList(query), SelectUserDto);
   }
 
   async getRoles(query: ListQueryDto) {
