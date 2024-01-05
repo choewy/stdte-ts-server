@@ -6,3 +6,4 @@ export * from './redis.config';
 export * from './mysql.config';
 export * from './credentials.config';
 export * from './aws.config';
+export * from './slack.config';
