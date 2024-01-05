@@ -38,3 +38,7 @@ export enum TimeMemoEvent {
 export enum TimeLogEvent {
   Update = 'timelog.update',
 }
+
+export enum SlackEvent {
+  Webhook = 'slack.webhook',
+}
