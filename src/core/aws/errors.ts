@@ -1,11 +1,11 @@
 import { ErrorDto } from '@server/common';
 
 export class S3UploadFailError extends Error {
-  details: ErrorDto;
+  cause: ErrorDto;
 
   constructor(e: any) {
     super(e);
 
-    this.details = new ErrorDto(e);
+    this.cause = new ErrorDto(e);
   }
 }

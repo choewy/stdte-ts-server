@@ -3,9 +3,10 @@ import { DataSource } from 'typeorm';
 
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
-import { BatchQuery } from '@server/common';
-import { S3Service, ZipService } from '@server/core';
+import { BatchQuery, SlackEvent } from '@server/common';
+import { S3Service, SlackWebhookSendErrorDto, ZipService } from '@server/core';
 
 import { BatchTarget } from './batch.target';
 import { LogUploadBatchFailError } from './errors';
@@ -14,7 +15,10 @@ import { LogUploadBatchFailError } from './errors';
 export class BatchService {
   private readonly logger = new Logger(BatchService.name);
 
-  constructor(private readonly dataSource: DataSource) {
+  constructor(
+    private readonly dataSource: DataSource,
+    private readonly eventEmitter: EventEmitter2,
+  ) {
     if (existsSync('./logs') === false) {
       mkdirSync('./logs');
     }
@@ -43,7 +47,7 @@ export class BatchService {
 
         const files = new BatchTarget().getLogFiles();
         const zipService = new ZipService();
-        const s3Service = new S3Service();
+        const s3Service = new S3Service(this.eventEmitter);
 
         for (const zipname of Object.keys(files)) {
           const zip = await zipService.zip(`./temp/${zipname}`, { files: files[zipname] });
@@ -59,7 +63,9 @@ export class BatchService {
         const context = [BatchService.name, this.uploadLogFiles.name].join('.');
         const error = new LogUploadBatchFailError(e);
 
-        this.logger.error(error.name, error.details, context);
+        this.logger.error(error.name, error.cause, context);
+
+        this.eventEmitter.emit(SlackEvent.Webhook, new SlackWebhookSendErrorDto(error));
       });
   }
 }

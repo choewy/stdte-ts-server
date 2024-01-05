@@ -9,7 +9,7 @@ import { HttpModule } from '@nestjs/axios';
 import { AppController } from './app.controller';
 
 import { MySQLConfig } from './config';
-import { HttpExceptionFilter, LogInterceptor, RequestMiddleware, TransformInterceptor } from './core';
+import { HttpExceptionFilter, LogInterceptor, RequestMiddleware, TransformInterceptor, SlackModule } from './core';
 import {
   BatchModule,
   CategoryModule,
@@ -41,6 +41,7 @@ import {
     TimeModule,
     SelectModule,
     AnalysisModule,
+    SlackModule,
   ],
   controllers: [AppController],
   providers: [RequestMiddleware, HttpExceptionFilter, LogInterceptor, TransformInterceptor],
