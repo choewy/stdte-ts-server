@@ -15,4 +15,20 @@ export class SystemConfig {
   getNodeEnv() {
     return this.NODE_ENV as NodeEnv;
   }
+
+  getNodeEnvText() {
+    switch (this.NODE_ENV) {
+      case NodeEnv.Local:
+        return '로컬';
+
+      case NodeEnv.Develop:
+        return '개발';
+
+      case NodeEnv.Product:
+        return '상용';
+
+      default:
+        return this.NODE_ENV ?? '';
+    }
+  }
 }
