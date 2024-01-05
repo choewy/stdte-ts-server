@@ -340,7 +340,7 @@ export class AnalysisService {
     const userQuery = new UserQuery(this.dataSource);
 
     const years = this.createUserRecordYearRows(query);
-    const users = this.createUserRecordUserRows(await userQuery.findAll(), years);
+    const users = this.createUserRecordUserRows(await userQuery.findUsersOmitReference(), years);
 
     return { years, users };
   }

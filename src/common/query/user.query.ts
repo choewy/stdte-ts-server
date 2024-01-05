@@ -27,6 +27,20 @@ export class UserQuery extends EntityQuery<User> {
     });
   }
 
+  async findUsersOmitReference(relations?: FindOptionsRelations<User>) {
+    return this.repository.find({
+      relations: {
+        credentials: true,
+        ...(relations ?? {}),
+      },
+      where: {
+        onInit: false,
+        credentials: { status: CredentialsStatus.Active },
+        status: Not(UserStatus.Reference),
+      },
+    });
+  }
+
   async findAllByActive() {
     return this.repository.find({
       relations: {
