@@ -9,3 +9,4 @@ export * from './filter';
 export * from './aws';
 export * from './zip';
 export * from './gateway';
+export * from './slack';
