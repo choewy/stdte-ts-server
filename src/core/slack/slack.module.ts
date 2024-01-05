@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
 
-import { SlackConfig } from '@server/config';
+import { SlackService } from './slack.service';
 
 @Module({
-  imports: [HttpModule.register({ baseURL: new SlackConfig().getWebhookUrl() })],
+  imports: [HttpModule],
+  providers: [SlackService],
 })
 export class SlackModule {}
