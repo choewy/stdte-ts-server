@@ -14,21 +14,21 @@ export class AnalysisController {
 
   @Get('project/records/orders')
   @UseGuards(RoleGuard)
-  @SetRolePolicy({ project: RolePolicyLevel.Read })
+  @SetRolePolicy({ project: RolePolicyLevel.Admin })
   async getProjectOrders(@Query() query: AnalysisDateRangeQuery) {
     return this.analysisService.getProjectRecords('orders', query);
   }
 
   @Get('project/records/sales')
   @UseGuards(RoleGuard)
-  @SetRolePolicy({ project: RolePolicyLevel.Read })
+  @SetRolePolicy({ project: RolePolicyLevel.Admin })
   async getProjectSales(@Query() query: AnalysisDateRangeQuery) {
     return this.analysisService.getProjectRecords('sales', query);
   }
 
   @Get('project/records/download')
   @UseGuards(RoleGuard)
-  @SetRolePolicy({ project: RolePolicyLevel.Read })
+  @SetRolePolicy({ project: RolePolicyLevel.Admin })
   async createProjectRecordsFile(@Query() query: AnalysisDateRangeQuery) {
     return this.analysisService.createProjectRecordsFile(query);
   }

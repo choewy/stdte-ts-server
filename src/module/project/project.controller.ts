@@ -28,7 +28,7 @@ export class ProjectController {
   }
 
   @Get('download')
-  @SetRolePolicy({ project: RolePolicyLevel.Read })
+  @SetRolePolicy({ project: RolePolicyLevel.Admin })
   async createProjectsFile() {
     return this.projectService.createProjectsFile();
   }
@@ -52,25 +52,25 @@ export class ProjectController {
   }
 
   @Get(':id(\\d+)/records')
-  @SetRolePolicy({ project: RolePolicyLevel.Read })
+  @SetRolePolicy({ project: RolePolicyLevel.Admin })
   async getProjectRecords(@Param() param: ProjectParamDto, @Query() query: ProjectRecordListQueryDto) {
     return this.projectService.getProjectRecords(param, query);
   }
 
   @Post('records')
-  @SetRolePolicy({ project: RolePolicyLevel.Update })
+  @SetRolePolicy({ project: RolePolicyLevel.Admin })
   async createProjectRecord(@Body() body: ProjectRecordCreateBodyDto) {
     return this.projectService.createProjectRecord(body);
   }
 
   @Patch('records/:type/:id(\\d+)')
-  @SetRolePolicy({ project: RolePolicyLevel.Update })
+  @SetRolePolicy({ project: RolePolicyLevel.Admin })
   async updateProjectRecord(@Param() param: ProjectRecordParamDto, @Body() body: ProjectRecordUpdateBodyDto) {
     return this.projectService.updateProjectRecord(param, body);
   }
 
   @Delete('records/:type/:id(\\d+)')
-  @SetRolePolicy({ project: RolePolicyLevel.Update })
+  @SetRolePolicy({ project: RolePolicyLevel.Admin })
   async deleteProjectRecord(@Param() param: ProjectRecordParamDto) {
     return this.projectService.deleteProjectRecord(param);
   }
