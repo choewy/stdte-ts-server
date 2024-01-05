@@ -18,6 +18,7 @@ import {
   TimeRecordAnalysisRaw,
   TimeRecordQuery,
   UserQuery,
+  replaceCharacters,
 } from '@server/common';
 
 import { AnalysisExcelService } from './analysis-excel.service';
@@ -253,7 +254,7 @@ export class AnalysisService {
     const wb = new ExcelJS.Workbook();
 
     for (const project of results.projects) {
-      const sheetName = `${project.id}_${project.name}`;
+      const sheetName = replaceCharacters(`${project.id}_${project.name}`);
 
       this.analysisExcelService.createTimeRecordSheet(wb, sheetName, project, results.years, results.users);
     }

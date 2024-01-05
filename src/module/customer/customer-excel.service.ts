@@ -1,6 +1,7 @@
 import ExcelJS from 'exceljs';
 
 import { Customer } from '@entity';
+import { replaceCharacters } from '@server/common';
 
 export class CustomerExcelService {
   private readonly WORKSHEET_OPTIONS: Partial<ExcelJS.AddWorksheetOptions> = {
@@ -8,7 +9,7 @@ export class CustomerExcelService {
   };
 
   createCustomerSheet(wb: ExcelJS.Workbook, sheetName: string, customers: Customer[]) {
-    const ws = wb.addWorksheet(sheetName, this.WORKSHEET_OPTIONS);
+    const ws = wb.addWorksheet(replaceCharacters(sheetName), this.WORKSHEET_OPTIONS);
 
     const rows: Array<string | number>[] = [['PK', '별칭', '국문명', '영문명', '비고']];
 

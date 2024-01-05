@@ -11,6 +11,7 @@ import {
   AnalysisUserRecordUserRowDto,
   AnalysisUserRecordYearRowDto,
 } from './dto';
+import { replaceCharacters } from '@server/common';
 
 @Injectable()
 export class AnalysisExcelService {
@@ -18,8 +19,8 @@ export class AnalysisExcelService {
     views: [{ state: 'frozen', xSplit: 2, ySplit: 1 }],
   };
 
-  createProjectRecordCustomerSheet(wb: ExcelJS.Workbook, sheetname: string, customers: AnalysisProjectAmountRowDto[]) {
-    const ws = wb.addWorksheet(sheetname, this.WORKSHEET_OPTIONS);
+  createProjectRecordCustomerSheet(wb: ExcelJS.Workbook, sheetName: string, customers: AnalysisProjectAmountRowDto[]) {
+    const ws = wb.addWorksheet(replaceCharacters(sheetName), this.WORKSHEET_OPTIONS);
 
     const rows: Array<string | number>[] = [['PK', '고객사']];
 
@@ -34,10 +35,10 @@ export class AnalysisExcelService {
 
   createProjectRecordBusinessCategorySheet(
     wb: ExcelJS.Workbook,
-    sheetname: string,
+    sheetName: string,
     businessCategories: AnalysisProjectAmountRowDto[],
   ) {
-    const ws = wb.addWorksheet(sheetname, this.WORKSHEET_OPTIONS);
+    const ws = wb.addWorksheet(replaceCharacters(sheetName), this.WORKSHEET_OPTIONS);
 
     const rows: Array<string | number>[] = [['PK', '사업구분']];
 
@@ -52,10 +53,10 @@ export class AnalysisExcelService {
 
   createProjectRecordIndustryCategorySheet(
     wb: ExcelJS.Workbook,
-    sheetname: string,
+    sheetName: string,
     industryCategories: AnalysisProjectAmountRowDto[],
   ) {
-    const ws = wb.addWorksheet(sheetname, this.WORKSHEET_OPTIONS);
+    const ws = wb.addWorksheet(replaceCharacters(sheetName), this.WORKSHEET_OPTIONS);
 
     const rows: Array<string | number>[] = [['PK', '산업분야']];
 
@@ -70,11 +71,11 @@ export class AnalysisExcelService {
 
   createProjectRecordSheet(
     wb: ExcelJS.Workbook,
-    sheetname: string,
+    sheetName: string,
     header: string,
     result: AnalysisProjectRecordResultDto,
   ) {
-    const ws = wb.addWorksheet(sheetname, this.WORKSHEET_OPTIONS);
+    const ws = wb.addWorksheet(replaceCharacters(sheetName), this.WORKSHEET_OPTIONS);
     const head: Array<string | number> = ['PK', header];
     const total: Array<string | number> = ['', '합계'];
 
@@ -128,7 +129,7 @@ export class AnalysisExcelService {
   }
 
   createTimeRecordProjectSheet(wb: ExcelJS.Workbook, sheetName: string, projects: AnalysisTimeRecordProjectRowDto[]) {
-    const ws = wb.addWorksheet(sheetName, this.WORKSHEET_OPTIONS);
+    const ws = wb.addWorksheet(replaceCharacters(sheetName), this.WORKSHEET_OPTIONS);
 
     const rows: Array<string | number>[] = [['PK', '사업명', '코드']];
 
@@ -142,7 +143,7 @@ export class AnalysisExcelService {
   }
 
   createTimeRecordUserSheet(wb: ExcelJS.Workbook, sheetName: string, users: AnalysisTimeRecordUserRowDto[]) {
-    const ws = wb.addWorksheet(sheetName, this.WORKSHEET_OPTIONS);
+    const ws = wb.addWorksheet(replaceCharacters(sheetName), this.WORKSHEET_OPTIONS);
 
     const rows: Array<string | number>[] = [['PK', '이름']];
 
@@ -162,7 +163,7 @@ export class AnalysisExcelService {
     years: AnalysisTimeRecordYearRow[],
     users: AnalysisTimeRecordUserRowDto[],
   ) {
-    const ws = wb.addWorksheet(sheetName, this.WORKSHEET_OPTIONS);
+    const ws = wb.addWorksheet(replaceCharacters(sheetName), this.WORKSHEET_OPTIONS);
 
     const head: Array<string | number> = ['PK', '이름'];
     const total: Array<string | number> = ['', '합계'];
@@ -218,7 +219,9 @@ export class AnalysisExcelService {
     years: AnalysisUserRecordYearRowDto[],
     users: AnalysisUserRecordUserRowDto[],
   ) {
-    const ws = wb.addWorksheet(sheetName, { views: [{ state: 'frozen', xSplit: 4, ySplit: 4 }] });
+    const ws = wb.addWorksheet(replaceCharacters(sheetName), {
+      views: [{ state: 'frozen', xSplit: 4, ySplit: 4 }],
+    });
 
     const head: Array<string | number> = new Array(4).fill('');
     const stathead: Array<string | number> = ['', '연간통계'].concat(new Array(2).fill(''));

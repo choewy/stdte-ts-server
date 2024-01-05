@@ -1,6 +1,7 @@
 import ExcelJS from 'exceljs';
 
 import { TaskMainCategory } from '@entity';
+import { replaceCharacters } from '@server/common';
 
 export class TaskCategoryExcelService {
   private readonly WORKSHEET_OPTIONS: Partial<ExcelJS.AddWorksheetOptions> = {
@@ -8,7 +9,7 @@ export class TaskCategoryExcelService {
   };
 
   createTaskCategorySheet(wb: ExcelJS.Workbook, sheetName: string, taskCategories: TaskMainCategory[]) {
-    const ws = wb.addWorksheet(sheetName, this.WORKSHEET_OPTIONS);
+    const ws = wb.addWorksheet(replaceCharacters(sheetName), this.WORKSHEET_OPTIONS);
 
     const rows: Array<string | number>[] = [
       ['', '대분류', '', '', '소분류', ''],

@@ -1,6 +1,7 @@
 import ExcelJS from 'exceljs';
 
 import { IndustryCategory } from '@entity';
+import { replaceCharacters } from '@server/common';
 
 export class IndustryCategoryExcelService {
   private readonly WORKSHEET_OPTIONS: Partial<ExcelJS.AddWorksheetOptions> = {
@@ -8,7 +9,7 @@ export class IndustryCategoryExcelService {
   };
 
   createIndustryCategorySheet(wb: ExcelJS.Workbook, sheetName: string, industryCategories: IndustryCategory[]) {
-    const ws = wb.addWorksheet(sheetName, this.WORKSHEET_OPTIONS);
+    const ws = wb.addWorksheet(replaceCharacters(sheetName), this.WORKSHEET_OPTIONS);
 
     const rows: Array<string | number>[] = [['PK', '산업분야명', '비고']];
 

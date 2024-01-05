@@ -1,6 +1,7 @@
 import ExcelJS from 'exceljs';
 
 import { Degree, Role, RolePolicyLevel, User, UserStatus } from '@entity';
+import { replaceCharacters } from '@server/common';
 
 export class UserExcelService {
   private readonly WORKSHEET_OPTIONS: Partial<ExcelJS.AddWorksheetOptions> = {
@@ -33,7 +34,7 @@ export class UserExcelService {
   };
 
   createRoleSheet(wb: ExcelJS.Workbook, sheetName: string, roles: Role[]) {
-    const ws = wb.addWorksheet(sheetName);
+    const ws = wb.addWorksheet(replaceCharacters(sheetName));
 
     const rows: Array<string | number>[] = [
       ['', '역할명', '권한', ...new Array(8)],
@@ -94,7 +95,7 @@ export class UserExcelService {
   }
 
   createUserSheet(wb: ExcelJS.Workbook, sheetName: string, users: User[]) {
-    const ws = wb.addWorksheet(sheetName, this.WORKSHEET_OPTIONS);
+    const ws = wb.addWorksheet(replaceCharacters(sheetName), this.WORKSHEET_OPTIONS);
 
     const rows: Array<string | number | Date>[] = [
       ['', '인적사항', '', '', '', '계정정보', '', '', '', '', '학력사항', '', '', '차량정보', ''],

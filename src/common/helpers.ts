@@ -10,6 +10,16 @@ import { plainToInstance } from 'class-transformer';
 export const SetRolePolicy = (value: Partial<RolePolicyProperty>, nullable: boolean = false) =>
   applyDecorators(SetMetadata(MetadataKey.RolePolicy, value), SetMetadata(MetadataKey.RoleNullable, nullable));
 
+export const replaceCharacters = (value: string, replace = '_') => {
+  const characters = ['*', '?', ':', '\\', '/', '[', ']'];
+
+  for (const character of characters) {
+    value = value.replaceAll(character, replace);
+  }
+
+  return value;
+};
+
 export const toBoolean = (value?: boolean | number | string | null) => {
   if (value == null) {
     return value;

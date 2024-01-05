@@ -2,6 +2,7 @@ import ExcelJS from 'exceljs';
 
 import { BusinessCategory, Customer, IndustryCategory, Project, ProjectStatus, TaskMainCategory } from '@entity';
 import { DateTime } from 'luxon';
+import { replaceCharacters } from '@server/common';
 
 export class ProjectExcelService {
   private readonly WORKSHEET_OPTIONS: Partial<ExcelJS.AddWorksheetOptions> = {
@@ -18,7 +19,7 @@ export class ProjectExcelService {
   };
 
   createCustomerSheet(wb: ExcelJS.Workbook, sheetName: string, customers: Customer[]) {
-    const ws = wb.addWorksheet(sheetName, this.WORKSHEET_OPTIONS);
+    const ws = wb.addWorksheet(replaceCharacters(sheetName), this.WORKSHEET_OPTIONS);
 
     const head: Array<string | number> = ['PK', '고객사'];
     const rows: Array<string | number>[] = [head];
@@ -33,7 +34,7 @@ export class ProjectExcelService {
   }
 
   createBusinessCategorySheet(wb: ExcelJS.Workbook, sheetName: string, businessCategories: BusinessCategory[]) {
-    const ws = wb.addWorksheet(sheetName, this.WORKSHEET_OPTIONS);
+    const ws = wb.addWorksheet(replaceCharacters(sheetName), this.WORKSHEET_OPTIONS);
 
     const head: Array<string | number> = ['PK', '사업구분'];
     const rows: Array<string | number>[] = [head];
@@ -48,7 +49,7 @@ export class ProjectExcelService {
   }
 
   createIndustryCategorySheet(wb: ExcelJS.Workbook, sheetName: string, industryCategoires: IndustryCategory[]) {
-    const ws = wb.addWorksheet(sheetName, this.WORKSHEET_OPTIONS);
+    const ws = wb.addWorksheet(replaceCharacters(sheetName), this.WORKSHEET_OPTIONS);
 
     const head: Array<string | number> = ['PK', '산업분야'];
     const rows: Array<string | number>[] = [head];
@@ -63,7 +64,7 @@ export class ProjectExcelService {
   }
 
   createTaskMainCategorySheet(wb: ExcelJS.Workbook, sheetName: string, taskMainCategories: TaskMainCategory[]) {
-    const ws = wb.addWorksheet(sheetName, this.WORKSHEET_OPTIONS);
+    const ws = wb.addWorksheet(replaceCharacters(sheetName), this.WORKSHEET_OPTIONS);
 
     const head: Array<string | number> = ['PK', '산업분야'];
     const rows: Array<string | number>[] = [head];
@@ -78,7 +79,7 @@ export class ProjectExcelService {
   }
 
   createProjectSheet(wb: ExcelJS.Workbook, sheetName: string, projects: Project[]) {
-    const ws = wb.addWorksheet(sheetName, { views: [{ state: 'frozen', xSplit: 3, ySplit: 2 }] });
+    const ws = wb.addWorksheet(replaceCharacters(sheetName), { views: [{ state: 'frozen', xSplit: 3, ySplit: 2 }] });
 
     const head: Array<string | number>[] = [
       ['', '사업정보', '', '', '', '', '', '', '', '', '담당자', '', '', '기간', '', '', '시간관리', ''],
