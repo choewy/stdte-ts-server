@@ -12,6 +12,6 @@ export class AnalysisProjectAmountColDto {
 
     this.year = raw.year;
     this.amount = raw.amount;
-    this.rate = (Math.round((Number(raw.amount) / Number(total)) * 1000) / 10).toFixed(1);
+    this.rate = (Math.round((Number(raw.amount) / Number(total)) * 100000) / 1000).toFixed(3);
   }
 }
